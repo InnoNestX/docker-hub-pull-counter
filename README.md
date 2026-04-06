@@ -3,11 +3,6 @@
 [![GitHub stars](https://img.shields.io/github/stars/InnoNestX/docker-hub-pull-counter?style=flat-square)](https://github.com/InnoNestX/docker-hub-pull-counter)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
-> Unified API gateway for Docker Hub with interactive documentation and real-time testing
-
-![XuXuClassMate's GitHub stats](https://github-readme-stats.vercel.app/api?username=XuXuClassMate&show_icons=true&theme=vue&show=prs_merged,prs_merged_percentage)
-
-
 ## ✨ Features
 
 - 📊 **User Statistics** - Get total pull counts across all repositories
