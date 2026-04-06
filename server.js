@@ -1,6 +1,7 @@
 const { Hono } = require('hono');
 const { cors } = require('hono/cors');
 const { serveStatic } = require('hono/serve-static');
+const { Redis } = require('@upstash/redis');
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -10,27 +11,65 @@ app.use('/*', serveStatic({ root: './public' }));
 
 const DOCKER_HUB_API = 'https://hub.docker.com/v2';
 
-// In-memory stats (simple and reliable)
-let stats = {
-  totalCalls: 0,
-  byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 }
-};
+// Initialize Upstash Redis
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
-// Track API call
-function trackCall(endpoint) {
-  stats.totalCalls++;
-  if (stats.byEndpoint[endpoint] !== undefined) {
-    stats.byEndpoint[endpoint]++;
+// Track API call with Redis persistence
+async function trackCall(endpoint) {
+  if (redis) {
+    await redis.incr('stats:totalCalls');
+    await redis.incr(`stats:endpoint:${endpoint}`);
+    await redis.set('stats:lastUpdated', new Date().toISOString());
   }
 }
 
-// Get stats
-function getStats() {
-  return {
-    totalCalls: stats.totalCalls,
-    byEndpoint: stats.byEndpoint,
-    lastUpdated: new Date().toISOString()
-  };
+// Get stats from Redis
+async function getStats() {
+  if (!redis) {
+    return {
+      totalCalls: 0,
+      byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 },
+      lastUpdated: new Date().toISOString(),
+      warning: 'Redis not configured'
+    };
+  }
+  
+  try {
+    const [totalCalls, userStats, repoDetails, repoTags, search, health, lastUpdated] = await Promise.all([
+      redis.get('stats:totalCalls') || 0,
+      redis.get('stats:endpoint:user/stats') || 0,
+      redis.get('stats:endpoint:repo/details') || 0,
+      redis.get('stats:endpoint:repo/tags') || 0,
+      redis.get('stats:endpoint:search') || 0,
+      redis.get('stats:endpoint:health') || 0,
+      redis.get('stats:lastUpdated') || new Date().toISOString()
+    ]);
+    
+    return {
+      totalCalls: Number(totalCalls),
+      byEndpoint: {
+        'user/stats': Number(userStats),
+        'repo/details': Number(repoDetails),
+        'repo/tags': Number(repoTags),
+        'search': Number(search),
+        'health': Number(health)
+      },
+      lastUpdated
+    };
+  } catch (error) {
+    console.error('Redis error:', error);
+    return {
+      totalCalls: 0,
+      byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 },
+      lastUpdated: new Date().toISOString(),
+      error: 'Failed to fetch stats'
+    };
+  }
 }
 
 async function fetchDockerHub(endpoint, authToken = null) {
@@ -75,7 +114,7 @@ app.get('/api/user/stats', async (c) => {
   const fields = c.req.query('fields')?.split(',') || ['name', 'pull_count', 'star_count'];
   if (!username) return c.json({ error: 'username parameter required' }, 400);
   
-  trackCall('user/stats');
+  await trackCall('user/stats');
   
   try {
     const authToken = await getAuthToken();
@@ -121,7 +160,7 @@ app.get('/api/repo/details', async (c) => {
   const repo = c.req.query('repo');
   if (!namespace || !repo) return c.json({ error: 'namespace and repo parameters required' }, 400);
   
-  trackCall('repo/details');
+  await trackCall('repo/details');
   
   try {
     const data = await fetchDockerHub(`/repositories/${namespace}/${repo}`);
@@ -138,7 +177,7 @@ app.get('/api/repo/tags', async (c) => {
   const limit = parseInt(c.req.query('limit') || '100');
   if (!namespace || !repo) return c.json({ error: 'namespace and repo parameters required' }, 400);
   
-  trackCall('repo/tags');
+  await trackCall('repo/tags');
   
   try {
     const data = await fetchDockerHub(`/repositories/${namespace}/${repo}/tags/?page_size=${Math.min(limit, 100)}`);
@@ -160,7 +199,7 @@ app.get('/api/search', async (c) => {
   const pageSize = parseInt(c.req.query('page_size') || '25');
   if (!query) return c.json({ error: 'q (search query) parameter required' }, 400);
   
-  trackCall('search');
+  await trackCall('search');
   
   try {
     const data = await fetchDockerHub(`/repositories/search?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`);
@@ -176,15 +215,20 @@ app.get('/api/search', async (c) => {
 });
 
 // API: Stats (public)
-app.get('/api/stats', (c) => {
-  trackCall('health');
-  return c.json(getStats());
+app.get('/api/stats', async (c) => {
+  await trackCall('health');
+  return c.json(await getStats());
 });
 
 // API: Health Check
-app.get('/api/health', (c) => {
-  trackCall('health');
-  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/api/health', async (c) => {
+  await trackCall('health');
+  const redisStatus = redis ? 'connected' : 'not-configured';
+  return c.json({ 
+    status: 'ok', 
+    redis: redisStatus,
+    timestamp: new Date().toISOString() 
+  });
 });
 
 export default app;
