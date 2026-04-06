@@ -125,41 +125,41 @@
     <div class="stats-banner" id="statsBanner">
       <div class="stat-box">
         <div class="stat-value" id="totalCalls">-</div>
-        <div class="stat-label">Total API Calls</div>
+        <div class="stat-label" data-i18n="label-total-calls">Total API Calls</div>
       </div>
       <div class="stat-box">
         <div class="stat-value" id="userStatsCalls">-</div>
-        <div class="stat-label">User Stats API</div>
+        <div class="stat-label" data-i18n="label-user-stats">User Stats API</div>
       </div>
       <div class="stat-box">
         <div class="stat-value" id="repoDetailsCalls">-</div>
-        <div class="stat-label">Repo Details API</div>
+        <div class="stat-label" data-i18n="label-repo-details">Repo Details API</div>
       </div>
       <div class="stat-box">
         <div class="stat-value" id="searchCalls">-</div>
-        <div class="stat-label">Search API</div>
+        <div class="stat-label" data-i18n="label-search">Search API</div>
       </div>
     </div>
     
     <div class="quick-links">
       <div class="quick-card" onclick="scrollToId('user-stats')">
-        <h3>📊 User Statistics</h3>
-        <p>Get total pull counts for a user</p>
+        <h3 data-i18n="quick-user-stats">📊 User Statistics</h3>
+        <p data-i18n="desc-user-stats">Get total pull counts for a user</p>
         <code>GET /api/user/stats</code>
       </div>
       <div class="quick-card" onclick="scrollToId('repo-details')">
-        <h3>📦 Repository Details</h3>
-        <p>Get repository information</p>
+        <h3 data-i18n="quick-repo-details">📦 Repository Details</h3>
+        <p data-i18n="desc-repo-details">Get repository information</p>
         <code>GET /api/repo/details</code>
       </div>
       <div class="quick-card" onclick="scrollToId('repo-tags')">
-        <h3>🏷️ Repository Tags</h3>
-        <p>List image tags</p>
+        <h3 data-i18n="quick-repo-tags">🏷️ Repository Tags</h3>
+        <p data-i18n="desc-repo-tags">List image tags</p>
         <code>GET /api/repo/tags</code>
       </div>
       <div class="quick-card" onclick="scrollToId('search')">
-        <h3>🔍 Search</h3>
-        <p>Search Docker Hub repositories</p>
+        <h3 data-i18n="quick-search">🔍 Search</h3>
+        <p data-i18n="desc-search">Search Docker Hub repositories</p>
         <code>GET /api/search</code>
       </div>
     </div>
@@ -289,24 +289,62 @@
       en: {
         title: 'Docker Hub API Gateway',
         subtitle: 'Unified API gateway for Docker Hub with interactive documentation and real-time testing',
+        'label-total-calls': 'Total API Calls',
+        'label-user-stats': 'User Stats API',
+        'label-repo-details': 'Repo Details API',
+        'label-search': 'Search API',
+        'label-repo-tags': 'Repo Tags API',
         'desc-user-stats': 'Get total pull counts and statistics for a Docker Hub user',
         'desc-repo-details': 'Get detailed information about a specific repository',
         'desc-repo-tags': 'List all tags for a specific repository',
+        'desc-search': 'Search Docker Hub repositories',
         'try-it': 'Try it out',
         'send': 'Send Request',
         'required': 'Required',
-        'optional': 'Optional'
+        'optional': 'Optional',
+        'calls': 'calls',
+        'quick-user-stats': 'User Statistics',
+        'quick-repo-details': 'Repository Details',
+        'quick-repo-tags': 'Repository Tags',
+        'quick-search': 'Search',
+        'placeholder-username': 'Docker Hub username',
+        'placeholder-namespace': 'Docker Hub namespace',
+        'placeholder-repo': 'Repository name',
+        'placeholder-search': 'Search query',
+        'label-fields': 'fields',
+        'label-limit': 'limit',
+        'label-page': 'page',
+        'label-page-size': 'page_size'
       },
       zh: {
         title: 'Docker Hub API 网关',
         subtitle: '统一的 Docker Hub API 网关，提供交互式文档和实时测试',
+        'label-total-calls': '总 API 调用次数',
+        'label-user-stats': '用户统计 API',
+        'label-repo-details': '仓库详情 API',
+        'label-search': '搜索 API',
+        'label-repo-tags': '仓库标签 API',
         'desc-user-stats': '获取 Docker Hub 用户的总拉取次数和统计信息',
         'desc-repo-details': '获取特定仓库的详细信息',
         'desc-repo-tags': '列出特定仓库的所有标签',
+        'desc-search': '搜索 Docker Hub 仓库',
         'try-it': '试一试',
         'send': '发送请求',
         'required': '必填',
-        'optional': '可选'
+        'optional': '可选',
+        'calls': '次调用',
+        'quick-user-stats': '用户统计',
+        'quick-repo-details': '仓库详情',
+        'quick-repo-tags': '仓库标签',
+        'quick-search': '搜索',
+        'placeholder-username': 'Docker Hub 用户名',
+        'placeholder-namespace': 'Docker Hub 命名空间',
+        'placeholder-repo': '仓库名称',
+        'placeholder-search': '搜索关键词',
+        'label-fields': '字段',
+        'label-limit': '数量限制',
+        'label-page': '页码',
+        'label-page-size': '每页数量'
       }
     };
     

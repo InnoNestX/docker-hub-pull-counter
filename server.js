@@ -20,12 +20,24 @@ const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_RE
     })
   : null;
 
+console.log('Redis initialized:', !!redis);
+if (redis) {
+  console.log('Redis URL:', process.env.UPSTASH_REDIS_REST_URL?.substring(0, 20) + '...');
+} else {
+  console.log('Redis not configured - check UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN env vars');
+}
+
 // Track API call with Redis persistence
 async function trackCall(endpoint) {
   if (redis) {
-    await redis.incr('stats:totalCalls');
-    await redis.incr(`stats:endpoint:${endpoint}`);
-    await redis.set('stats:lastUpdated', new Date().toISOString());
+    try {
+      await redis.incr('stats:totalCalls');
+      await redis.incr(`stats:endpoint:${endpoint}`);
+      await redis.set('stats:lastUpdated', new Date().toISOString());
+      console.log(`Tracked call: ${endpoint}`);
+    } catch (error) {
+      console.error('Track call error:', error);
+    }
   }
 }
 
