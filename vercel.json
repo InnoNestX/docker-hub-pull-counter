@@ -2,17 +2,19 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "package.json",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "public/$1"
     }
   ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "outputDirectory": "public"
 }

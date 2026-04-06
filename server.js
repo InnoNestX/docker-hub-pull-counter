@@ -1,74 +1,41 @@
 const { Hono } = require('hono');
 const { cors } = require('hono/cors');
 const { serveStatic } = require('hono/serve-static');
-const fs = require('fs');
-const path = require('path');
 
 const app = new Hono();
 app.use('/api/*', cors());
 
 // Serve static files
 app.use('/*', serveStatic({ root: './public' }));
-app.use('/public/*', serveStatic({ root: './' }));
 
 const DOCKER_HUB_API = 'https://hub.docker.com/v2';
-const STATS_FILE = path.join(__dirname, 'stats.json');
 
-// Load stats
-function loadStats() {
-  try {
-    if (fs.existsSync(STATS_FILE)) {
-      return JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
-    }
-  } catch (e) {
-    console.error('Failed to load stats:', e);
-  }
-  return {
-    totalCalls: 0,
-    lastReset: new Date().toISOString(),
-    byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 },
-    byUser: {},
-    dailyStats: {}
-  };
-}
-
-// Save stats
-function saveStats(stats) {
-  try {
-    fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2), 'utf8');
-  } catch (e) {
-    console.error('Failed to save stats:', e);
-  }
-}
+// In-memory stats (resets on cold start)
+let stats = {
+  totalCalls: 0,
+  lastReset: new Date().toISOString(),
+  byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 },
+  byUser: {},
+  dailyStats: {}
+};
 
 // Track API call
 function trackCall(endpoint, username = null) {
-  const stats = loadStats();
   stats.totalCalls++;
-  
-  // Track by endpoint
   if (stats.byEndpoint[endpoint] !== undefined) {
     stats.byEndpoint[endpoint]++;
   }
-  
-  // Track by username (for user stats)
   if (username) {
     if (!stats.byUser[username]) stats.byUser[username] = 0;
     stats.byUser[username]++;
   }
-  
-  // Track daily stats
   const today = new Date().toISOString().split('T')[0];
   if (!stats.dailyStats[today]) stats.dailyStats[today] = 0;
   stats.dailyStats[today]++;
-  
-  saveStats(stats);
-  return stats;
 }
 
-// Get public stats (without sensitive data)
+// Get public stats
 function getPublicStats() {
-  const stats = loadStats();
   return {
     totalCalls: stats.totalCalls,
     byEndpoint: stats.byEndpoint,
@@ -85,13 +52,18 @@ async function fetchDockerHub(endpoint, authToken = null) {
   const headers = { 'User-Agent': 'docker-hub-api-gateway/1.0', 'Accept': 'application/json' };
   if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
   
-  const response = await fetch(`${DOCKER_HUB_API}${endpoint}`, { headers });
-  if (!response.ok) {
-    if (response.status === 404) throw new Error('Resource not found');
-    if (response.status === 429) throw new Error('Docker Hub rate limit exceeded');
-    throw new Error(`Docker Hub API error: ${response.status}`);
+  try {
+    const response = await fetch(`${DOCKER_HUB_API}${endpoint}`, { headers, signal: AbortSignal.timeout(10000) });
+    if (!response.ok) {
+      if (response.status === 404) throw new Error('Resource not found');
+      if (response.status === 429) throw new Error('Docker Hub rate limit exceeded');
+      throw new Error(`Docker Hub API error: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    if (error.name === 'TimeoutError') throw new Error('Docker Hub API timeout');
+    throw error;
   }
-  return response.json();
 }
 
 async function getAuthToken() {
@@ -118,7 +90,6 @@ app.get('/api/user/stats', async (c) => {
   const fields = c.req.query('fields')?.split(',') || ['name', 'pull_count', 'star_count'];
   if (!username) return c.json({ error: 'username parameter required' }, 400);
   
-  // Track call
   trackCall('user/stats', username);
   
   try {
