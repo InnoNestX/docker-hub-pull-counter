@@ -2,12 +2,13 @@ const { Hono } = require('hono');
 const { cors } = require('hono/cors');
 const { serveStatic } = require('hono/serve-static');
 const { Redis } = require('@upstash/redis');
+const fs = require('fs');
+const path = require('path');
 
 const app = new Hono();
-app.use('/api/*', cors());
 
-// Serve static files
-app.use('/*', serveStatic({ root: './public' }));
+// CORS for API routes
+app.use('/api/*', cors());
 
 const DOCKER_HUB_API = 'https://hub.docker.com/v2';
 
@@ -107,6 +108,8 @@ async function getAuthToken() {
   } catch (e) { console.error('Auth failed:', e); }
   return null;
 }
+
+// ==================== API ROUTES (必须先定义 API 路由) ====================
 
 // API: User Stats
 app.get('/api/user/stats', async (c) => {
@@ -229,6 +232,62 @@ app.get('/api/health', async (c) => {
     redis: redisStatus,
     timestamp: new Date().toISOString() 
   });
+});
+
+// ==================== 静态文件服务 (必须放在最后) ====================
+
+// Serve index.html for root
+app.get('/', (c) => {
+  const indexPath = path.join(process.cwd(), 'public', 'index.html');
+  const indexHtml = fs.readFileSync(indexPath, 'utf-8');
+  return c.html(indexHtml);
+});
+
+// Serve static files from public folder
+app.get('/favicon.ico', (c) => {
+  try {
+    const faviconPath = path.join(process.cwd(), 'public', 'favicon.ico');
+    const favicon = fs.readFileSync(faviconPath);
+    return c.body(favicon, 200, {
+      'Content-Type': 'image/x-icon'
+    });
+  } catch {
+    return c.notFound();
+  }
+});
+
+app.get('/*', (c) => {
+  const reqPath = c.req.path;
+  const filePath = path.join(process.cwd(), 'public', reqPath);
+  
+  try {
+    if (!fs.existsSync(filePath)) {
+      return c.notFound();
+    }
+    
+    const ext = path.extname(filePath).toLowerCase();
+    const mimeTypes = {
+      '.html': 'text/html',
+      '.js': 'application/javascript',
+      '.css': 'text/css',
+      '.json': 'application/json',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.svg': 'image/svg+xml',
+      '.ico': 'image/x-icon'
+    };
+    
+    const mimeType = mimeTypes[ext] || 'application/octet-stream';
+    const fileContent = fs.readFileSync(filePath);
+    
+    return c.body(fileContent, 200, {
+      'Content-Type': mimeType
+    });
+  } catch (error) {
+    console.error('Static file error:', error);
+    return c.notFound();
+  }
 });
 
 module.exports = app;
