@@ -483,6 +483,7 @@
         document.getElementById('userStatsCalls').textContent = (stats.byEndpoint['user/stats'] || 0).toLocaleString();
         document.getElementById('repoDetailsCalls').textContent = (stats.byEndpoint['repo/details'] || 0).toLocaleString();
         document.getElementById('searchCalls').textContent = (stats.byEndpoint['search'] || 0).toLocaleString();
+        document.getElementById('repoTagsCalls').textContent = (stats.byEndpoint['repo/tags'] || 0).toLocaleString();
         
         // Update endpoint call counts
         for (const [endpoint, count] of Object.entries(stats.byEndpoint)) {
