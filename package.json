@@ -6,8 +6,19 @@
     "build": "echo 'No build step required'",
     "start": "node server.js"
   },
+  "keywords": [
+    "docker",
+    "dockerhub",
+    "pull-count",
+    "api"
+  ],
+  "license": "MIT",
   "dependencies": {
-    "hono": "^4.0.0",
-    "@upstash/redis": "^1.28.0"
+    "@upstash/redis": "^1.28.0",
+    "@vercel/speed-insights": "^2.0.0",
+    "hono": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
