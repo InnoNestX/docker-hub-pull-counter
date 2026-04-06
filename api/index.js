@@ -238,7 +238,7 @@ app.get('/api/health', async (c) => {
 
 // Serve index.html for root
 app.get('/', (c) => {
-  const indexPath = path.join(__dirname, 'public', 'index.html');
+  const indexPath = path.join(__dirname, '..', 'public', 'index.html');
   const indexHtml = fs.readFileSync(indexPath, 'utf-8');
   return c.html(indexHtml);
 });
@@ -246,7 +246,7 @@ app.get('/', (c) => {
 // Serve static files from public folder
 app.get('/favicon.ico', (c) => {
   try {
-    const faviconPath = path.join(__dirname, 'public', 'favicon.ico');
+    const faviconPath = path.join(__dirname, '..', 'public', 'favicon.ico');
     const favicon = fs.readFileSync(faviconPath);
     return c.body(favicon, 200, {
       'Content-Type': 'image/x-icon'
@@ -258,7 +258,7 @@ app.get('/favicon.ico', (c) => {
 
 app.get('/*', (c) => {
   const reqPath = c.req.path;
-  const filePath = path.join(__dirname, 'public', reqPath);
+  const filePath = path.join(__dirname, '..', 'public', reqPath);
   
   try {
     if (!fs.existsSync(filePath)) {
