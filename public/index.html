@@ -176,18 +176,18 @@
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc">Get total pull counts and statistics for a Docker Hub user</p>
+        <p class="api-desc" data-i18n="desc-user-stats">Get total pull counts and statistics for a Docker Hub user</p>
         <table class="param-table">
-          <tr><th>username <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub username</td></tr>
-          <tr><th>fields <span class="badge badge-opt">Optional</span></th><td>string</td><td>Comma-separated fields to return</td></tr>
+          <tr><th data-i18n="th-username">username</th><td data-i18n="td-string">string</td><td data-i18n="td-docker-username">Docker Hub username</td></tr>
+          <tr><th data-i18n="th-fields">fields</th><td data-i18n="td-string">string</td><td data-i18n="td-fields-desc">Comma-separated fields to return</td></tr>
         </table>
         <div class="try-it">
-          <h4>Try it out</h4>
+          <h4 data-i18n="try-it">Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group"><label>username *</label><input class="param-input" id="stats-username" placeholder="xuxuclassmate"></div>
-            <div class="param-input-group"><label>fields</label><input class="param-input" id="stats-fields" placeholder="name,pull_count,star_count"></div>
+            <div class="param-input-group"><label data-i18n="label-username">username</label><input class="param-input" id="stats-username" placeholder="xuxuclassmate"></div>
+            <div class="param-input-group"><label data-i18n="label-fields">fields</label><input class="param-input" id="stats-fields" placeholder="name,pull_count,star_count"></div>
           </div>
-          <button class="try-btn" onclick="testUserStats()" id="stats-btn">Send Request</button>
+          <button class="try-btn" onclick="testUserStats()" id="stats-btn" data-i18n="send">Send Request</button>
           <div id="stats-response" class="response hidden"><pre></pre></div>
         </div>
       </div>
@@ -203,18 +203,18 @@
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc">Get detailed information about a specific repository</p>
+        <p class="api-desc" data-i18n="desc-repo-details">Get detailed information about a specific repository</p>
         <table class="param-table">
-          <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub namespace</td></tr>
-          <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td>Repository name</td></tr>
+          <tr><th data-i18n="th-namespace">namespace</th><td data-i18n="td-string">string</td><td data-i18n="td-docker-namespace">Docker Hub namespace</td></tr>
+          <tr><th data-i18n="th-repo">repo</th><td data-i18n="td-string">string</td><td data-i18n="td-repo-name">Repository name</td></tr>
         </table>
         <div class="try-it">
-          <h4>Try it out</h4>
+          <h4 data-i18n="try-it">Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group"><label>namespace *</label><input class="param-input" id="repo-namespace" placeholder="xuxuclassmate"></div>
-            <div class="param-input-group"><label>repo *</label><input class="param-input" id="repo-name" placeholder="my-image"></div>
+            <div class="param-input-group"><label data-i18n="label-namespace">namespace</label><input class="param-input" id="repo-namespace" placeholder="xuxuclassmate"></div>
+            <div class="param-input-group"><label data-i18n="label-repo">repo</label><input class="param-input" id="repo-name" placeholder="my-image"></div>
           </div>
-          <button class="try-btn" onclick="testRepoDetails()" id="repo-btn">Send Request</button>
+          <button class="try-btn" onclick="testRepoDetails()" id="repo-btn" data-i18n="send">Send Request</button>
           <div id="repo-response" class="response hidden"><pre></pre></div>
         </div>
       </div>
@@ -230,20 +230,20 @@
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc">List all tags for a specific repository</p>
+        <p class="api-desc" data-i18n="desc-repo-tags">List all tags for a specific repository</p>
         <table class="param-table">
-          <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub namespace</td></tr>
-          <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td>Repository name</td></tr>
-          <tr><th>limit <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Maximum tags (default: 100)</td></tr>
+          <tr><th data-i18n="th-namespace">namespace</th><td data-i18n="td-string">string</td><td data-i18n="td-docker-namespace">Docker Hub namespace</td></tr>
+          <tr><th data-i18n="th-repo">repo</th><td data-i18n="td-string">string</td><td data-i18n="td-repo-name">Repository name</td></tr>
+          <tr><th data-i18n="th-limit">limit</th><td data-i18n="td-integer">integer</td><td data-i18n="td-max-tags">Maximum tags (default: 100)</td></tr>
         </table>
         <div class="try-it">
-          <h4>Try it out</h4>
+          <h4 data-i18n="try-it">Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group"><label>namespace *</label><input class="param-input" id="tags-namespace" placeholder="library"></div>
-            <div class="param-input-group"><label>repo *</label><input class="param-input" id="tags-repo" placeholder="nginx"></div>
-            <div class="param-input-group"><label>limit</label><input class="param-input" id="tags-limit" type="number" value="10" max="100"></div>
+            <div class="param-input-group"><label data-i18n="label-namespace">namespace</label><input class="param-input" id="tags-namespace" placeholder="library"></div>
+            <div class="param-input-group"><label data-i18n="label-repo">repo</label><input class="param-input" id="tags-repo" placeholder="nginx"></div>
+            <div class="param-input-group"><label data-i18n="label-limit">limit</label><input class="param-input" id="tags-limit" type="number" value="10" max="100"></div>
           </div>
-          <button class="try-btn" onclick="testRepoTags()" id="tags-btn">Send Request</button>
+          <button class="try-btn" onclick="testRepoTags()" id="tags-btn" data-i18n="send">Send Request</button>
           <div id="tags-response" class="response hidden"><pre></pre></div>
         </div>
       </div>
@@ -259,20 +259,20 @@
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc">Search Docker Hub repositories</p>
+        <p class="api-desc" data-i18n="desc-search">Search Docker Hub repositories</p>
         <table class="param-table">
-          <tr><th>q <span class="badge badge-req">Required</span></th><td>string</td><td>Search query</td></tr>
-          <tr><th>page <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Page number (default: 1)</td></tr>
-          <tr><th>page_size <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Results per page (default: 25)</td></tr>
+          <tr><th data-i18n="th-q">q</th><td data-i18n="td-string">string</td><td data-i18n="td-search-query">Search query</td></tr>
+          <tr><th data-i18n="th-page">page</th><td data-i18n="td-integer">integer</td><td data-i18n="td-page-num">Page number (default: 1)</td></tr>
+          <tr><th data-i18n="th-page-size">page_size</th><td data-i18n="td-integer">integer</td><td data-i18n="td-page-size-val">Results per page (default: 25)</td></tr>
         </table>
         <div class="try-it">
-          <h4>Try it out</h4>
+          <h4 data-i18n="try-it">Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group"><label>q *</label><input class="param-input" id="search-q" placeholder="nginx"></div>
-            <div class="param-input-group"><label>page</label><input class="param-input" id="search-page" type="number" value="1"></div>
-            <div class="param-input-group"><label>page_size</label><input class="param-input" id="search-pagesize" type="number" value="10" max="100"></div>
+            <div class="param-input-group"><label data-i18n="label-q">q</label><input class="param-input" id="search-q" placeholder="nginx"></div>
+            <div class="param-input-group"><label data-i18n="label-page">page</label><input class="param-input" id="search-page" type="number" value="1"></div>
+            <div class="param-input-group"><label data-i18n="label-page-size">page_size</label><input class="param-input" id="search-pagesize" type="number" value="10" max="100"></div>
           </div>
-          <button class="try-btn" onclick="testSearch()" id="search-btn">Send Request</button>
+          <button class="try-btn" onclick="testSearch()" id="search-btn" data-i18n="send">Send Request</button>
           <div id="search-response" class="response hidden"><pre></pre></div>
         </div>
       </div>
@@ -314,7 +314,33 @@
         'label-fields': 'fields',
         'label-limit': 'limit',
         'label-page': 'page',
-        'label-page-size': 'page_size'
+        'label-page-size': 'page_size',
+        'th-username': 'username',
+        'th-fields': 'fields',
+        'th-namespace': 'namespace',
+        'th-repo': 'repo',
+        'th-limit': 'limit',
+        'th-q': 'q',
+        'th-page': 'page',
+        'th-page-size': 'page_size',
+        'td-string': 'string',
+        'td-integer': 'integer',
+        'td-docker-username': 'Docker Hub username',
+        'td-docker-namespace': 'Docker Hub namespace',
+        'td-repo-name': 'Repository name',
+        'td-max-tags': 'Maximum tags (default: 100)',
+        'td-search-query': 'Search query',
+        'td-page-num': 'Page number (default: 1)',
+        'td-page-size-val': 'Results per page (default: 25)',
+        'td-fields-desc': 'Comma-separated fields to return',
+        'label-username': 'username',
+        'label-namespace': 'namespace',
+        'label-repo': 'repo',
+        'label-limit': 'limit',
+        'label-q': 'q',
+        'label-page': 'page',
+        'label-page-size': 'page_size',
+        'label-response': 'Response'
       },
       zh: {
         title: 'Docker Hub API 网关',
@@ -344,7 +370,33 @@
         'label-fields': '字段',
         'label-limit': '数量限制',
         'label-page': '页码',
-        'label-page-size': '每页数量'
+        'label-page-size': '每页数量',
+        'th-username': '用户名',
+        'th-fields': '字段',
+        'th-namespace': '命名空间',
+        'th-repo': '仓库',
+        'th-limit': '数量限制',
+        'th-q': '搜索词',
+        'th-page': '页码',
+        'th-page-size': '每页数量',
+        'td-string': '字符串',
+        'td-integer': '整数',
+        'td-docker-username': 'Docker Hub 用户名',
+        'td-docker-namespace': 'Docker Hub 命名空间',
+        'td-repo-name': '仓库名称',
+        'td-max-tags': '最大标签数量（默认：100）',
+        'td-search-query': '搜索关键词',
+        'td-page-num': '页码（默认：1）',
+        'td-page-size-val': '每页结果数（默认：25）',
+        'td-fields-desc': '逗号分隔的返回字段',
+        'label-username': '用户名',
+        'label-namespace': '命名空间',
+        'label-repo': '仓库',
+        'label-limit': '数量限制',
+        'label-q': '搜索词',
+        'label-page': '页码',
+        'label-page-size': '每页数量',
+        'label-response': '响应'
       }
     };
     
