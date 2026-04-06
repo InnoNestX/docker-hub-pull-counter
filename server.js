@@ -13,37 +13,22 @@ const DOCKER_HUB_API = 'https://hub.docker.com/v2';
 // In-memory stats (resets on cold start)
 let stats = {
   totalCalls: 0,
-  lastReset: new Date().toISOString(),
-  byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 },
-  byUser: {},
-  dailyStats: {}
+  byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 }
 };
 
-// Track API call
-function trackCall(endpoint, username = null) {
+// Track API call (no user/daily tracking for privacy)
+function trackCall(endpoint) {
   stats.totalCalls++;
   if (stats.byEndpoint[endpoint] !== undefined) {
     stats.byEndpoint[endpoint]++;
   }
-  if (username) {
-    if (!stats.byUser[username]) stats.byUser[username] = 0;
-    stats.byUser[username]++;
-  }
-  const today = new Date().toISOString().split('T')[0];
-  if (!stats.dailyStats[today]) stats.dailyStats[today] = 0;
-  stats.dailyStats[today]++;
 }
 
-// Get public stats
+// Get public stats (no user/daily tracking for privacy)
 function getPublicStats() {
   return {
     totalCalls: stats.totalCalls,
     byEndpoint: stats.byEndpoint,
-    topUsers: Object.entries(stats.byUser)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([user, count]) => ({ user, count })),
-    dailyStats: stats.dailyStats,
     lastUpdated: new Date().toISOString()
   };
 }
@@ -90,7 +75,7 @@ app.get('/api/user/stats', async (c) => {
   const fields = c.req.query('fields')?.split(',') || ['name', 'pull_count', 'star_count'];
   if (!username) return c.json({ error: 'username parameter required' }, 400);
   
-  trackCall('user/stats', username);
+  trackCall('user/stats');
   
   try {
     const authToken = await getAuthToken();
