@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docker Hub API Gateway</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #e4e4e4;
+    }
+    header {
+      background: rgba(0,0,0,0.3);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #3a4a6b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 1.5em; font-weight: bold; color: #00d9ff; }
+    .lang-switch button {
+      background: transparent;
+      border: 1px solid #3a4a6b;
+      color: #e4e4e4;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .lang-switch button.active { background: #00d9ff; color: #1a1a2e; }
+    
+    .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+    
+    .hero { text-align: center; padding: 60px 20px; margin-bottom: 40px; }
+    .hero h1 { font-size: 3em; margin-bottom: 15px; color: #00d9ff; }
+    .hero p { color: #8892b0; font-size: 1.2em; max-width: 600px; margin: 0 auto; }
+    
+    .api-section {
+      background: #1e2a4a;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    .api-header {
+      padding: 20px 30px;
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid #3a4a6b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .api-method {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.9em;
+      margin-right: 15px;
+    }
+    .method-get { background: #00d9ff22; color: #00d9ff; }
+    .api-path { font-family: 'Courier New', monospace; font-size: 1em; word-break: break-all; }
+    .api-body { padding: 30px; }
+    .api-desc { color: #8892b0; margin-bottom: 20px; }
+    
+    .param-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em; }
+    .param-table th, .param-table td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #3a4a6b;
+    }
+    .param-table th { color: #8892b0; font-weight: normal; width: 25%; }
+    .param-name { font-family: monospace; color: #00d9ff; }
+    .param-required { color: #ff6b6b; font-size: 0.8em; margin-left: 5px; }
+    
+    .try-it {
+      background: #0f1623;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .try-it h4 { color: #00d9ff; margin-bottom: 15px; }
+    .param-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .param-input-group { display: flex; flex-direction: column; gap: 5px; }
+    .param-input-group label { font-size: 0.85em; color: #8892b0; }
+    .param-input {
+      background: #1a1a2e;
+      border: 1px solid #3a4a6b;
+      color: #e4e4e4;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+    .param-input:focus { outline: none; border-color: #00d9ff; }
+    .try-btn {
+      background: #00d9ff;
+      color: #1a1a2e;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .try-btn:hover { opacity: 0.9; }
+    .try-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .response {
+      background: #0a0f1a;
+      border: 1px solid #3a4a6b;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      max-height: 500px;
+      overflow: auto;
+    }
+    .response pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      white-space: pre-wrap;
+      color: #98c379;
+      word-break: break-all;
+    }
+    .response.error pre { color: #ff6b6b; }
+    
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+    }
+    .quick-card {
+      background: #1e2a4a;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #3a4a6b;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .quick-card:hover { transform: translateY(-3px); border-color: #00d9ff; }
+    .quick-card h3 { color: #00d9ff; margin-bottom: 8px; font-size: 1em; }
+    .quick-card p { color: #8892b0; font-size: 0.85em; }
+    .quick-card code { 
+      background: #0f1623; 
+      padding: 6px 10px; 
+      border-radius: 4px; 
+      font-size: 0.8em;
+      display: block;
+      margin-top: 10px;
+      color: #00d9ff;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: #8892b0;
+      border-top: 1px solid #3a4a6b;
+      margin-top: 60px;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid #3a4a6b;
+      border-top-color: #00d9ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      margin-left: 8px;
+    }
+    .badge-opt { background: #3a4a6b; color: #e4e4e4; }
+    .badge-req { background: #ff6b6b22; color: #ff6b6b; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🐳 Docker Hub API Gateway</div>
+    <div class="lang-switch">
+      <button onclick="switchLang('en')" id="btn-en" class="active">English</button>
+      <button onclick="switchLang('zh')" id="btn-zh">中文</button>
+    </div>
+  </header>
+  
+  <div class="container">
+    <div class="hero">
+      <h1 data-i18n="title">Docker Hub API Gateway</h1>
+      <p data-i18n="subtitle">Unified API gateway for Docker Hub with interactive documentation and real-time testing</p>
+    </div>
+    
+    <div class="quick-links">
+      <div class="quick-card" onclick="scrollToId('user-stats')">
+        <h3>📊 User Statistics</h3>
+        <p data-i18n="quick-stats">Get total pull counts for a user</p>
+        <code>GET /api/user/stats</code>
+      </div>
+      <div class="quick-card" onclick="scrollToId('repo-details')">
+        <h3>📦 Repository Details</h3>
+        <p data-i18n="quick-repo">Get repository information</p>
+        <code>GET /api/repo/details</code>
+      </div>
+      <div class="quick-card" onclick="scrollToId('repo-tags')">
+        <h3>🏷️ Repository Tags</h3>
+        <p data-i18n="quick-tags">List image tags</p>
+        <code>GET /api/repo/tags</code>
+      </div>
+      <div class="quick-card" onclick="scrollToId('search')">
+        <h3>🔍 Search</h3>
+        <p data-i18n="quick-search">Search Docker Hub repositories</p>
+        <code>GET /api/search</code>
+      </div>
+    </div>
+    
+    <div style="margin-top: 50px;"></div>
+    
+    <!-- User Stats API -->
+    <div class="api-section" id="user-stats">
+      <div class="api-header">
+        <div>
+          <span class="api-method method-get">GET</span>
+          <span class="api-path">/api/user/stats</span>
+        </div>
+      </div>
+      <div class="api-body">
+        <p class="api-desc" data-i18n="desc-user-stats">Get total pull counts and statistics for a Docker Hub user</p>
+        
+        <table class="param-table">
+          <tr><th>username <span class="badge badge-req" data-i18n="required">Required</span></th><td>string</td><td data-i18n="param-username">Docker Hub username</td></tr>
+          <tr><th>fields <span class="badge badge-opt" data-i18n="optional">Optional</span></th><td>string</td><td data-i18n="param-fields">Comma-separated fields to return (e.g., name,pull_count,star_count)</td></tr>
+        </table>
+        
+        <div class="try-it">
+          <h4 data-i18n="try-it">Try it out</h4>
+          <div class="param-inputs">
+            <div class="param-input-group">
+              <label>username *</label>
+              <input class="param-input" id="stats-username" placeholder="xuxuclassmate">
+            </div>
+            <div class="param-input-group">
+              <label>fields</label>
+              <input class="param-input" id="stats-fields" placeholder="name,pull_count,star_count">
+            </div>
+          </div>
+          <button class="try-btn" onclick="testUserStats()" id="stats-btn"><span data-i18n="send">Send Request</span></button>
+          <div id="stats-response" class="response hidden"><pre></pre></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Repository Details API -->
+    <div class="api-section" id="repo-details">
+      <div class="api-header">
+        <div>
+          <span class="api-method method-get">GET</span>
+          <span class="api-path">/api/repo/details</span>
+        </div>
+      </div>
+      <div class="api-body">
+        <p class="api-desc" data-i18n="desc-repo-details">Get detailed information about a specific repository</p>
+        
+        <table class="param-table">
+          <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td data-i18n="param-namespace">Docker Hub namespace (username or org)</td></tr>
+          <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td data-i18n="param-repo">Repository name</td></tr>
+        </table>
+        
+        <div class="try-it">
+          <h4>Try it out</h4>
+          <div class="param-inputs">
+            <div class="param-input-group">
+              <label>namespace *</label>
+              <input class="param-input" id="repo-namespace" placeholder="xuxuclassmate">
+            </div>
+            <div class="param-input-group">
+              <label>repo *</label>
+              <input class="param-input" id="repo-name" placeholder="my-image">
+            </div>
+          </div>
+          <button class="try-btn" onclick="testRepoDetails()" id="repo-btn">Send Request</button>
+          <div id="repo-response" class="response hidden"><pre></pre></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Repository Tags API -->
+    <div class="api-section" id="repo-tags">
+      <div class="api-header">
+        <div>
+          <span class="api-method method-get">GET</span>
+          <span class="api-path">/api/repo/tags</span>
+        </div>
+      </div>
+      <div class="api-body">
+        <p class="api-desc" data-i18n="desc-repo-tags">List all tags for a specific repository</p>
+        
+        <table class="param-table">
+          <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub namespace</td></tr>
+          <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td>Repository name</td></tr>
+          <tr><th>limit <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Maximum tags to return (default: 100, max: 100)</td></tr>
+        </table>
+        
+        <div class="try-it">
+          <h4>Try it out</h4>
+          <div class="param-inputs">
+            <div class="param-input-group">
+              <label>namespace *</label>
+              <input class="param-input" id="tags-namespace" placeholder="library">
+            </div>
+            <div class="param-input-group">
+              <label>repo *</label>
+              <input class="param-input" id="tags-repo" placeholder="nginx">
+            </div>
+            <div class="param-input-group">
+              <label>limit</label>
+              <input class="param-input" id="tags-limit" type="number" value="10" max="100">
+            </div>
+          </div>
+          <button class="try-btn" onclick="testRepoTags()" id="tags-btn">Send Request</button>
+          <div id="tags-response" class="response hidden"><pre></pre></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Search API -->
+    <div class="api-section" id="search">
+      <div class="api-header">
+        <div>
+          <span class="api-method method-get">GET</span>
+          <span class="api-path">/api/search</span>
+        </div>
+      </div>
+      <div class="api-body">
+        <p class="api-desc">Search Docker Hub repositories</p>
+        
+        <table class="param-table">
+          <tr><th>q <span class="badge badge-req">Required</span></th><td>string</td><td>Search query</td></tr>
+          <tr><th>page <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Page number (default: 1)</td></tr>
+          <tr><th>page_size <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Results per page (default: 25)</td></tr>
+        </table>
+        
+        <div class="try-it">
+          <h4>Try it out</h4>
+          <div class="param-inputs">
+            <div class="param-input-group">
+              <label>q *</label>
+              <input class="param-input" id="search-q" placeholder="nginx">
+            </div>
+            <div class="param-input-group">
+              <label>page</label>
+              <input class="param-input" id="search-page" type="number" value="1">
+            </div>
+            <div class="param-input-group">
+              <label>page_size</label>
+              <input class="param-input" id="search-pagesize" type="number" value="10" max="100">
+            </div>
+          </div>
+          <button class="try-btn" onclick="testSearch()" id="search-btn">Send Request</button>
+          <div id="search-response" class="response hidden"><pre></pre></div>
+        </div>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Docker Hub API Gateway | <a href="https://github.com/XuXuClassMate/docker-hub-pull-counter" target="_blank" style="color: #00d9ff;">GitHub</a></p>
+      <p style="margin-top: 10px; font-size: 0.85em;">Powered by Docker Hub API</p>
+    </footer>
+  </div>
+  
+  <script>
+    const translations = {
+      en: {
+        title: 'Docker Hub API Gateway',
+        subtitle: 'Unified API gateway for Docker Hub with interactive documentation and real-time testing',
+        'quick-stats': 'Get total pull counts for a user',
+        'quick-repo': 'Get repository information',
+        'quick-tags': 'List image tags',
+        'quick-search': 'Search Docker Hub repositories',
+        'desc-user-stats': 'Get total pull counts and statistics for a Docker Hub user',
+        'desc-repo-details': 'Get detailed information about a specific repository',
+        'desc-repo-tags': 'List all tags for a specific repository',
+        'param-username': 'Docker Hub username',
+        'param-fields': 'Comma-separated fields to return (e.g., name,pull_count,star_count)',
+        'param-namespace': 'Docker Hub namespace (username or org)',
+        'param-repo': 'Repository name',
+        'try-it': 'Try it out',
+        'send': 'Send Request',
+        'required': 'Required',
+        'optional': 'Optional'
+      },
+      zh: {
+        title: 'Docker Hub API 网关',
+        subtitle: '统一的 Docker Hub API 网关，提供交互式文档和实时测试',
+        'quick-stats': '获取用户总拉取次数',
+        'quick-repo': '获取仓库信息',
+        'quick-tags': '列出镜像标签',
+        'quick-search': '搜索 Docker Hub 仓库',
+        'desc-user-stats': '获取 Docker Hub 用户的总拉取次数和统计信息',
+        'desc-repo-details': '获取特定仓库的详细信息',
+        'desc-repo-tags': '列出特定仓库的所有标签',
+        'param-username': 'Docker Hub 用户名',
+        'param-fields': '逗号分隔的返回字段（如：name,pull_count,star_count）',
+        'param-namespace': 'Docker Hub 命名空间（用户名或组织）',
+        'param-repo': '仓库名称',
+        'try-it': '试一试',
+        'send': '发送请求',
+        'required': '必填',
+        'optional': '可选'
+      }
+    };
+    
+    let currentLang = 'en';
+    
+    function switchLang(lang) {
+      currentLang = lang;
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+      });
+    }
+    
+    function scrollToId(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function showResponse(containerId, data, isError = false) {
+      const container = document.getElementById(containerId);
+      container.classList.remove('hidden');
+      container.className = 'response' + (isError ? ' error' : '');
+      container.querySelector('pre').textContent = JSON.stringify(data, null, 2);
+    }
+    
+    async function apiRequest(endpoint, params, btnId, responseId) {
+      const btn = document.getElementById(btnId);
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = originalText + ' <span class="loading"></span>';
+      
+      try {
+        const query = new URLSearchParams(params).toString();
+        const response = await fetch(`/api${endpoint}?${query}`);
+        const data = await response.json();
+        showResponse(responseId, data, !data.success);
+      } catch (error) {
+        showResponse(responseId, { error: error.message }, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+    
+    function testUserStats() {
+      const username = document.getElementById('stats-username').value;
+      const fields = document.getElementById('stats-fields').value;
+      if (!username) { alert('Username is required'); return; }
+      apiRequest('/user/stats', { username, fields: fields || undefined }, 'stats-btn', 'stats-response');
+    }
+    
+    function testRepoDetails() {
+      const namespace = document.getElementById('repo-namespace').value;
+      const repo = document.getElementById('repo-name').value;
+      if (!namespace || !repo) { alert('Namespace and repo are required'); return; }
+      apiRequest('/repo/details', { namespace, repo }, 'repo-btn', 'repo-response');
+    }
+    
+    function testRepoTags() {
+      const namespace = document.getElementById('tags-namespace').value;
+      const repo = document.getElementById('tags-repo').value;
+      const limit = document.getElementById('tags-limit').value;
+      if (!namespace || !repo) { alert('Namespace and repo are required'); return; }
+      apiRequest('/repo/tags', { namespace, repo, limit }, 'tags-btn', 'tags-response');
+    }
+    
+    function testSearch() {
+      const q = document.getElementById('search-q').value;
+      const page = document.getElementById('search-page').value;
+      const pageSize = document.getElementById('search-pagesize').value;
+      if (!q) { alert('Search query is required'); return; }
+      apiRequest('/search', { q, page, page_size: pageSize }, 'search-btn', 'search-response');
+    }
+    
+    // Auto-load from URL params
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const username = params.get('username');
+      if (username) {
+        document.getElementById('stats-username').value = username;
+        setTimeout(() => testUserStats(), 500);
+      }
+    });
+  </script>
+</body>
+</html>

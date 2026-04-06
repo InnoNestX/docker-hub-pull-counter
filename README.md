@@ -1,81 +1,127 @@
-# Docker Hub Pull Counter
+# Docker Hub API Gateway
 
-一个免费的 Web 服务，用于查询 Docker Hub 用户名下所有公共仓库的总 Pull 次数。
+[![GitHub stars](https://img.shields.io/github/stars/XuXuClassMate/docker-hub-pull-counter?style=flat-square)](https://github.com/XuXuClassMate/docker-hub-pull-counter)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+
+> Unified API gateway for Docker Hub with interactive documentation and real-time testing
 
 ![XuXuClassMate's GitHub stats](https://github-readme-stats.vercel.app/api?username=XuXuClassMate&show_icons=true&theme=vue&show=prs_merged,prs_merged_percentage)
 
-## 🌐 在线使用
+## ✨ Features
 
-部署后访问：`https://your-domain.com?username=xuxuclassmate`
+- 📊 **User Statistics** - Get total pull counts across all repositories
+- 📦 **Repository Details** - Fetch detailed repository information
+- 🏷️ **Tag Listing** - List all image tags for a repository
+- 🔍 **Search** - Search Docker Hub repositories
+- 🌐 **Bilingual** - English & Chinese support
+- 🧪 **Interactive Testing** - Try APIs directly in the documentation
+- ⚡ **Fast** - Built with Hono.js for optimal performance
 
-## 🚀 快速部署
+## 🚀 Quick Start
 
-### 方案 1：Vercel（推荐）
+### Deploy to Vercel
 
 ```bash
-# 安装 Vercel CLI
 npm i -g vercel
-
-# 部署
-cd docker-hub-pull-counter
 vercel --prod
 ```
 
-### 方案 2：Railway
-
-1.  Fork 此仓库到 GitHub
-2.  在 Railway 创建新项目，连接 GitHub 仓库
-3.  自动部署
-
-### 方案 3：Render
-
-1.  创建新的 Web Service
-2.  连接 GitHub 仓库
-3.  Build Command: `npm install`
-4.  Start Command: `npm start`
-
-## 📖 API 使用
-
-### 查询用户总 Pull 数
-
-```bash
-GET /api/stats?username={username}
-```
-
-**响应示例：**
-```json
-{
-  "username": "xuxuclassmate",
-  "repositoryCount": 5,
-  "totalPulls": 1234567,
-  "repositories": [
-    {
-      "name": "image1",
-      "pullCount": 1000000,
-      "starCount": 500
-    }
-  ]
-}
-```
-
-### 前端页面
-
-访问 `/` 并输入用户名查询。
-
-## 🛠 本地开发
+### Local Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-访问 http://localhost:3000
+Visit http://localhost:3000
 
-## ⚠️ 限制
+## 📖 API Endpoints
 
-- Docker Hub 未认证 API 限制：约 100-200 请求/小时
-- 如需更高配额，可配置 `DOCKER_USERNAME` 和 `DOCKER_PASSWORD` 环境变量获取 Token
+### GET /api/user/stats
+
+Get total pull counts for a Docker Hub user.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| username | string | ✅ | Docker Hub username |
+| fields | string | ❌ | Comma-separated fields to return |
+
+**Example:**
+```bash
+curl "http://localhost:3000/api/user/stats?username=xuxuclassmate"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "username": "xuxuclassmate",
+  "repositoryCount": 5,
+  "totalPulls": 123456,
+  "totalStars": 789,
+  "repositories": [...],
+  "timestamp": "2026-04-06T10:00:00.000Z"
+}
+```
+
+### GET /api/repo/details
+
+Get detailed information about a repository.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| namespace | string | ✅ | Docker Hub namespace |
+| repo | string | ✅ | Repository name |
+
+### GET /api/repo/tags
+
+List all tags for a repository.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| namespace | string | ✅ | Docker Hub namespace |
+| repo | string | ✅ | Repository name |
+| limit | integer | ❌ | Max tags to return (default: 100) |
+
+### GET /api/search
+
+Search Docker Hub repositories.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| q | string | ✅ | Search query |
+| page | integer | ❌ | Page number (default: 1) |
+| page_size | integer | ❌ | Results per page (default: 25) |
+
+## 🌍 Interactive Documentation
+
+Visit the deployed URL to access the interactive API documentation with:
+- Live testing interface
+- Parameter customization
+- Real-time response display
+- Language switcher (EN/中文)
+
+## ⚠️ Rate Limiting
+
+- Unauthenticated: ~100-200 requests/hour
+- Authenticated: Higher limits (configure `DOCKER_USERNAME` and `DOCKER_PASSWORD`)
+
+## 🔐 Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| DOCKER_USERNAME | Docker Hub username (optional) |
+| DOCKER_PASSWORD | Docker Hub password (optional) |
 
 ## 📄 License
 
 MIT
+
+---
+
+## 👤 Author
+
+**XuXuClassMate**
+
+- GitHub: [@XuXuClassMate](https://github.com/XuXuClassMate)
+- Docker Hub: [xuxuclassmate](https://hub.docker.com/u/xuxuclassmate)
