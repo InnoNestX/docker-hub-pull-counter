@@ -2,6 +2,8 @@
 
 一个免费的 Web 服务，用于查询 Docker Hub 用户名下所有公共仓库的总 Pull 次数。
 
+![XuXuClassMate's GitHub stats](https://github-readme-stats.vercel.app/api?username=XuXuClassMate&show_icons=true&theme=vue&show=prs_merged,prs_merged_percentage)
+
 ## 🌐 在线使用
 
 部署后访问：`https://your-domain.com?username=xuxuclassmate`
