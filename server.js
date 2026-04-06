@@ -229,9 +229,8 @@ app.get('/api/search', async (c) => {
   }
 });
 
-// API: Stats (public)
+// API: Stats (public) - don't track this call to avoid inflating stats
 app.get('/api/stats', async (c) => {
-  await trackCall('health');
   return c.json(await getStats());
 });
 
