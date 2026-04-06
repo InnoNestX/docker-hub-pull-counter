@@ -1,27 +1,28 @@
 # 🚀 部署指南
 
+## 项目状态
+
+- ✅ 代码已推送到 GitHub
+- ✅ gh CLI 已配置
+- 🔲 等待部署到 Vercel
+
+---
+
 ## 方案 1：Vercel（最简单，推荐）
 
 ### 步骤：
 
-1. **安装 Vercel CLI**
-   ```bash
-   npm install -g vercel
-   ```
+1. **访问 Vercel**
+   - 打开 https://vercel.com/new
+   - 点击 "Import Git Repository"
+   - 选择 `docker-hub-pull-counter`
 
-2. **登录 Vercel**
-   ```bash
-   vercel login
-   ```
+2. **部署**
+   - 点击 "Deploy"
+   - 等待自动构建
 
-3. **部署**
-   ```bash
-   cd docker-hub-pull-counter
-   vercel --prod
-   ```
-
-4. **获取域名**
-   部署完成后会显示类似 `https://docker-hub-pull-counter.vercel.app` 的域名
+3. **获取域名**
+   - 部署完成后获得类似 `https://docker-hub-pull-counter.vercel.app` 的域名
 
 ### 可选：配置 Docker Hub 认证（提高 API 限额）
 
@@ -29,28 +30,21 @@
 - `DOCKER_USERNAME` - 你的 Docker Hub 用户名
 - `DOCKER_PASSWORD` - 你的 Docker Hub 密码
 
-```bash
-vercel env add DOCKER_USERNAME
-vercel env add DOCKER_PASSWORD
-```
-
 ---
 
 ## 方案 2：Railway
 
 ### 步骤：
 
-1. 将此项目推送到 GitHub
+1. 访问 https://railway.app
 
-2. 访问 https://railway.app
+2. 创建新项目 → "Deploy from GitHub repo"
 
-3. 创建新项目 → "Deploy from GitHub repo"
+3. 选择 `XuXuClassMate/docker-hub-pull-counter`
 
-4. 选择你的仓库
+4. Railway 会自动检测 Node.js 并部署
 
-5. Railway 会自动检测 Node.js 并部署
-
-6. 获取生成的域名（类似 `https://xxx-production.up.railway.app`）
+5. 获取生成的域名（类似 `https://xxx-production.up.railway.app`）
 
 ### 配置环境变量：
 
@@ -110,23 +104,6 @@ vercel env add DOCKER_PASSWORD
 ---
 
 ## 方案 5：Docker 部署（任意 VPS）
-
-### 创建 Dockerfile
-
-```dockerfile
-FROM node:20-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install --production
-
-COPY . .
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
 
 ### 运行
 
