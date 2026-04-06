@@ -34,19 +34,27 @@
       margin-left: 10px;
     }
     .lang-switch button.active { background: #00d9ff; color: #1a1a2e; }
-    
     .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
-    
     .hero { text-align: center; padding: 60px 20px; margin-bottom: 40px; }
     .hero h1 { font-size: 3em; margin-bottom: 15px; color: #00d9ff; }
     .hero p { color: #8892b0; font-size: 1.2em; max-width: 600px; margin: 0 auto; }
     
-    .api-section {
-      background: #1e2a4a;
+    /* Stats Banner */
+    .stats-banner {
+      background: linear-gradient(135deg, #00d9ff22 0%, #0099cc22 100%);
+      border: 1px solid #00d9ff44;
       border-radius: 15px;
-      margin-bottom: 30px;
-      overflow: hidden;
+      padding: 25px;
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
     }
+    .stat-box { text-align: center; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+    .stat-value { font-size: 2em; font-weight: bold; color: #00d9ff; }
+    .stat-label { color: #8892b0; margin-top: 5px; font-size: 0.85em; }
+    
+    .api-section { background: #1e2a4a; border-radius: 15px; margin-bottom: 30px; overflow: hidden; }
     .api-header {
       padding: 20px 30px;
       background: rgba(0,0,0,0.2);
@@ -57,136 +65,45 @@
       flex-wrap: wrap;
       gap: 15px;
     }
-    .api-method {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 0.9em;
-      margin-right: 15px;
-    }
+    .api-method { display: inline-block; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9em; margin-right: 15px; }
     .method-get { background: #00d9ff22; color: #00d9ff; }
     .api-path { font-family: 'Courier New', monospace; font-size: 1em; word-break: break-all; }
     .api-body { padding: 30px; }
     .api-desc { color: #8892b0; margin-bottom: 20px; }
-    
     .param-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em; }
-    .param-table th, .param-table td {
-      text-align: left;
-      padding: 12px;
-      border-bottom: 1px solid #3a4a6b;
-    }
+    .param-table th, .param-table td { text-align: left; padding: 12px; border-bottom: 1px solid #3a4a6b; }
     .param-table th { color: #8892b0; font-weight: normal; width: 25%; }
     .param-name { font-family: monospace; color: #00d9ff; }
-    .param-required { color: #ff6b6b; font-size: 0.8em; margin-left: 5px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.75em; margin-left: 8px; }
+    .badge-req { background: #ff6b6b22; color: #ff6b6b; }
+    .badge-opt { background: #3a4a6b; color: #e4e4e4; }
     
-    .try-it {
-      background: #0f1623;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
+    .try-it { background: #0f1623; padding: 20px; border-radius: 10px; margin-top: 20px; }
     .try-it h4 { color: #00d9ff; margin-bottom: 15px; }
     .param-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
     .param-input-group { display: flex; flex-direction: column; gap: 5px; }
     .param-input-group label { font-size: 0.85em; color: #8892b0; }
-    .param-input {
-      background: #1a1a2e;
-      border: 1px solid #3a4a6b;
-      color: #e4e4e4;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 1em;
-    }
+    .param-input { background: #1a1a2e; border: 1px solid #3a4a6b; color: #e4e4e4; padding: 12px; border-radius: 6px; font-size: 1em; }
     .param-input:focus { outline: none; border-color: #00d9ff; }
-    .try-btn {
-      background: #00d9ff;
-      color: #1a1a2e;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1em;
-    }
+    .try-btn { background: #00d9ff; color: #1a1a2e; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1em; }
     .try-btn:hover { opacity: 0.9; }
     .try-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    
-    .response {
-      background: #0a0f1a;
-      border: 1px solid #3a4a6b;
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 20px;
-      max-height: 500px;
-      overflow: auto;
-    }
-    .response pre {
-      font-family: 'Courier New', monospace;
-      font-size: 0.9em;
-      white-space: pre-wrap;
-      color: #98c379;
-      word-break: break-all;
-    }
+    .response { background: #0a0f1a; border: 1px solid #3a4a6b; border-radius: 10px; padding: 20px; margin-top: 20px; max-height: 500px; overflow: auto; }
+    .response pre { font-family: 'Courier New', monospace; font-size: 0.9em; white-space: pre-wrap; color: #98c379; word-break: break-all; }
     .response.error pre { color: #ff6b6b; }
+    .hidden { display: none; }
     
-    .quick-links {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-top: 40px;
-    }
-    .quick-card {
-      background: #1e2a4a;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #3a4a6b;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-    }
+    .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
+    .quick-card { background: #1e2a4a; padding: 20px; border-radius: 12px; border: 1px solid #3a4a6b; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
     .quick-card:hover { transform: translateY(-3px); border-color: #00d9ff; }
     .quick-card h3 { color: #00d9ff; margin-bottom: 8px; font-size: 1em; }
     .quick-card p { color: #8892b0; font-size: 0.85em; }
-    .quick-card code { 
-      background: #0f1623; 
-      padding: 6px 10px; 
-      border-radius: 4px; 
-      font-size: 0.8em;
-      display: block;
-      margin-top: 10px;
-      color: #00d9ff;
-    }
+    .quick-card code { background: #0f1623; padding: 6px 10px; border-radius: 4px; font-size: 0.8em; display: block; margin-top: 10px; color: #00d9ff; }
     
-    footer {
-      text-align: center;
-      padding: 40px;
-      color: #8892b0;
-      border-top: 1px solid #3a4a6b;
-      margin-top: 60px;
-    }
-    
-    .loading {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 3px solid #3a4a6b;
-      border-top-color: #00d9ff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      vertical-align: middle;
-      margin-left: 10px;
-    }
+    footer { text-align: center; padding: 40px; color: #8892b0; border-top: 1px solid #3a4a6b; margin-top: 60px; }
+    .loading { display: inline-block; width: 18px; height: 18px; border: 3px solid #3a4a6b; border-top-color: #00d9ff; border-radius: 50%; animation: spin 1s linear infinite; vertical-align: middle; margin-left: 10px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.75em;
-      margin-left: 8px;
-    }
-    .badge-opt { background: #3a4a6b; color: #e4e4e4; }
-    .badge-req { background: #ff6b6b22; color: #ff6b6b; }
+    .endpoint-call-count { font-size: 0.85em; color: #00d9ff; margin-left: 10px; }
   </style>
 </head>
 <body>
@@ -204,25 +121,45 @@
       <p data-i18n="subtitle">Unified API gateway for Docker Hub with interactive documentation and real-time testing</p>
     </div>
     
+    <!-- Stats Banner -->
+    <div class="stats-banner" id="statsBanner">
+      <div class="stat-box">
+        <div class="stat-value" id="totalCalls">-</div>
+        <div class="stat-label">Total API Calls</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="todayCalls">-</div>
+        <div class="stat-label">Today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="topEndpoint">-</div>
+        <div class="stat-label">Top Endpoint</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-value" id="topUser">-</div>
+        <div class="stat-label">Top User</div>
+      </div>
+    </div>
+    
     <div class="quick-links">
       <div class="quick-card" onclick="scrollToId('user-stats')">
         <h3>📊 User Statistics</h3>
-        <p data-i18n="quick-stats">Get total pull counts for a user</p>
+        <p>Get total pull counts for a user</p>
         <code>GET /api/user/stats</code>
       </div>
       <div class="quick-card" onclick="scrollToId('repo-details')">
         <h3>📦 Repository Details</h3>
-        <p data-i18n="quick-repo">Get repository information</p>
+        <p>Get repository information</p>
         <code>GET /api/repo/details</code>
       </div>
       <div class="quick-card" onclick="scrollToId('repo-tags')">
         <h3>🏷️ Repository Tags</h3>
-        <p data-i18n="quick-tags">List image tags</p>
+        <p>List image tags</p>
         <code>GET /api/repo/tags</code>
       </div>
       <div class="quick-card" onclick="scrollToId('search')">
         <h3>🔍 Search</h3>
-        <p data-i18n="quick-search">Search Docker Hub repositories</p>
+        <p>Search Docker Hub repositories</p>
         <code>GET /api/search</code>
       </div>
     </div>
@@ -235,29 +172,22 @@
         <div>
           <span class="api-method method-get">GET</span>
           <span class="api-path">/api/user/stats</span>
+          <span class="endpoint-call-count" id="count-user-stats">📈 0 calls</span>
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc" data-i18n="desc-user-stats">Get total pull counts and statistics for a Docker Hub user</p>
-        
+        <p class="api-desc">Get total pull counts and statistics for a Docker Hub user</p>
         <table class="param-table">
-          <tr><th>username <span class="badge badge-req" data-i18n="required">Required</span></th><td>string</td><td data-i18n="param-username">Docker Hub username</td></tr>
-          <tr><th>fields <span class="badge badge-opt" data-i18n="optional">Optional</span></th><td>string</td><td data-i18n="param-fields">Comma-separated fields to return (e.g., name,pull_count,star_count)</td></tr>
+          <tr><th>username <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub username</td></tr>
+          <tr><th>fields <span class="badge badge-opt">Optional</span></th><td>string</td><td>Comma-separated fields to return</td></tr>
         </table>
-        
         <div class="try-it">
-          <h4 data-i18n="try-it">Try it out</h4>
+          <h4>Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group">
-              <label>username *</label>
-              <input class="param-input" id="stats-username" placeholder="xuxuclassmate">
-            </div>
-            <div class="param-input-group">
-              <label>fields</label>
-              <input class="param-input" id="stats-fields" placeholder="name,pull_count,star_count">
-            </div>
+            <div class="param-input-group"><label>username *</label><input class="param-input" id="stats-username" placeholder="xuxuclassmate"></div>
+            <div class="param-input-group"><label>fields</label><input class="param-input" id="stats-fields" placeholder="name,pull_count,star_count"></div>
           </div>
-          <button class="try-btn" onclick="testUserStats()" id="stats-btn"><span data-i18n="send">Send Request</span></button>
+          <button class="try-btn" onclick="testUserStats()" id="stats-btn">Send Request</button>
           <div id="stats-response" class="response hidden"><pre></pre></div>
         </div>
       </div>
@@ -269,27 +199,20 @@
         <div>
           <span class="api-method method-get">GET</span>
           <span class="api-path">/api/repo/details</span>
+          <span class="endpoint-call-count" id="count-repo-details">📈 0 calls</span>
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc" data-i18n="desc-repo-details">Get detailed information about a specific repository</p>
-        
+        <p class="api-desc">Get detailed information about a specific repository</p>
         <table class="param-table">
-          <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td data-i18n="param-namespace">Docker Hub namespace (username or org)</td></tr>
-          <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td data-i18n="param-repo">Repository name</td></tr>
+          <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub namespace</td></tr>
+          <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td>Repository name</td></tr>
         </table>
-        
         <div class="try-it">
           <h4>Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group">
-              <label>namespace *</label>
-              <input class="param-input" id="repo-namespace" placeholder="xuxuclassmate">
-            </div>
-            <div class="param-input-group">
-              <label>repo *</label>
-              <input class="param-input" id="repo-name" placeholder="my-image">
-            </div>
+            <div class="param-input-group"><label>namespace *</label><input class="param-input" id="repo-namespace" placeholder="xuxuclassmate"></div>
+            <div class="param-input-group"><label>repo *</label><input class="param-input" id="repo-name" placeholder="my-image"></div>
           </div>
           <button class="try-btn" onclick="testRepoDetails()" id="repo-btn">Send Request</button>
           <div id="repo-response" class="response hidden"><pre></pre></div>
@@ -303,32 +226,22 @@
         <div>
           <span class="api-method method-get">GET</span>
           <span class="api-path">/api/repo/tags</span>
+          <span class="endpoint-call-count" id="count-repo-tags">📈 0 calls</span>
         </div>
       </div>
       <div class="api-body">
-        <p class="api-desc" data-i18n="desc-repo-tags">List all tags for a specific repository</p>
-        
+        <p class="api-desc">List all tags for a specific repository</p>
         <table class="param-table">
           <tr><th>namespace <span class="badge badge-req">Required</span></th><td>string</td><td>Docker Hub namespace</td></tr>
           <tr><th>repo <span class="badge badge-req">Required</span></th><td>string</td><td>Repository name</td></tr>
-          <tr><th>limit <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Maximum tags to return (default: 100, max: 100)</td></tr>
+          <tr><th>limit <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Maximum tags (default: 100)</td></tr>
         </table>
-        
         <div class="try-it">
           <h4>Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group">
-              <label>namespace *</label>
-              <input class="param-input" id="tags-namespace" placeholder="library">
-            </div>
-            <div class="param-input-group">
-              <label>repo *</label>
-              <input class="param-input" id="tags-repo" placeholder="nginx">
-            </div>
-            <div class="param-input-group">
-              <label>limit</label>
-              <input class="param-input" id="tags-limit" type="number" value="10" max="100">
-            </div>
+            <div class="param-input-group"><label>namespace *</label><input class="param-input" id="tags-namespace" placeholder="library"></div>
+            <div class="param-input-group"><label>repo *</label><input class="param-input" id="tags-repo" placeholder="nginx"></div>
+            <div class="param-input-group"><label>limit</label><input class="param-input" id="tags-limit" type="number" value="10" max="100"></div>
           </div>
           <button class="try-btn" onclick="testRepoTags()" id="tags-btn">Send Request</button>
           <div id="tags-response" class="response hidden"><pre></pre></div>
@@ -342,32 +255,22 @@
         <div>
           <span class="api-method method-get">GET</span>
           <span class="api-path">/api/search</span>
+          <span class="endpoint-call-count" id="count-search">📈 0 calls</span>
         </div>
       </div>
       <div class="api-body">
         <p class="api-desc">Search Docker Hub repositories</p>
-        
         <table class="param-table">
           <tr><th>q <span class="badge badge-req">Required</span></th><td>string</td><td>Search query</td></tr>
           <tr><th>page <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Page number (default: 1)</td></tr>
           <tr><th>page_size <span class="badge badge-opt">Optional</span></th><td>integer</td><td>Results per page (default: 25)</td></tr>
         </table>
-        
         <div class="try-it">
           <h4>Try it out</h4>
           <div class="param-inputs">
-            <div class="param-input-group">
-              <label>q *</label>
-              <input class="param-input" id="search-q" placeholder="nginx">
-            </div>
-            <div class="param-input-group">
-              <label>page</label>
-              <input class="param-input" id="search-page" type="number" value="1">
-            </div>
-            <div class="param-input-group">
-              <label>page_size</label>
-              <input class="param-input" id="search-pagesize" type="number" value="10" max="100">
-            </div>
+            <div class="param-input-group"><label>q *</label><input class="param-input" id="search-q" placeholder="nginx"></div>
+            <div class="param-input-group"><label>page</label><input class="param-input" id="search-page" type="number" value="1"></div>
+            <div class="param-input-group"><label>page_size</label><input class="param-input" id="search-pagesize" type="number" value="10" max="100"></div>
           </div>
           <button class="try-btn" onclick="testSearch()" id="search-btn">Send Request</button>
           <div id="search-response" class="response hidden"><pre></pre></div>
@@ -376,7 +279,7 @@
     </div>
     
     <footer>
-      <p>Docker Hub API Gateway | <a href="https://github.com/XuXuClassMate/docker-hub-pull-counter" target="_blank" style="color: #00d9ff;">GitHub</a></p>
+      <p>🐳 Docker Hub API Gateway | <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" style="color: #00d9ff;">GitHub</a></p>
       <p style="margin-top: 10px; font-size: 0.85em;">Powered by Docker Hub API</p>
     </footer>
   </div>
@@ -386,17 +289,9 @@
       en: {
         title: 'Docker Hub API Gateway',
         subtitle: 'Unified API gateway for Docker Hub with interactive documentation and real-time testing',
-        'quick-stats': 'Get total pull counts for a user',
-        'quick-repo': 'Get repository information',
-        'quick-tags': 'List image tags',
-        'quick-search': 'Search Docker Hub repositories',
         'desc-user-stats': 'Get total pull counts and statistics for a Docker Hub user',
         'desc-repo-details': 'Get detailed information about a specific repository',
         'desc-repo-tags': 'List all tags for a specific repository',
-        'param-username': 'Docker Hub username',
-        'param-fields': 'Comma-separated fields to return (e.g., name,pull_count,star_count)',
-        'param-namespace': 'Docker Hub namespace (username or org)',
-        'param-repo': 'Repository name',
         'try-it': 'Try it out',
         'send': 'Send Request',
         'required': 'Required',
@@ -405,17 +300,9 @@
       zh: {
         title: 'Docker Hub API 网关',
         subtitle: '统一的 Docker Hub API 网关，提供交互式文档和实时测试',
-        'quick-stats': '获取用户总拉取次数',
-        'quick-repo': '获取仓库信息',
-        'quick-tags': '列出镜像标签',
-        'quick-search': '搜索 Docker Hub 仓库',
         'desc-user-stats': '获取 Docker Hub 用户的总拉取次数和统计信息',
         'desc-repo-details': '获取特定仓库的详细信息',
         'desc-repo-tags': '列出特定仓库的所有标签',
-        'param-username': 'Docker Hub 用户名',
-        'param-fields': '逗号分隔的返回字段（如：name,pull_count,star_count）',
-        'param-namespace': 'Docker Hub 命名空间（用户名或组织）',
-        'param-repo': '仓库名称',
         'try-it': '试一试',
         'send': '发送请求',
         'required': '必填',
@@ -495,8 +382,46 @@
       apiRequest('/search', { q, page, page_size: pageSize }, 'search-btn', 'search-response');
     }
     
-    // Auto-load from URL params
+    // Load and update stats
+    async function loadStats() {
+      try {
+        const response = await fetch('/api/stats');
+        const stats = await response.json();
+        
+        // Update banner
+        document.getElementById('totalCalls').textContent = stats.totalCalls.toLocaleString();
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('todayCalls').textContent = (stats.dailyStats[today] || 0).toLocaleString();
+        
+        // Top endpoint
+        const topEp = Object.entries(stats.byEndpoint).sort((a, b) => b[1] - a[1])[0];
+        if (topEp) {
+          document.getElementById('topEndpoint').textContent = topEp[0].split('/')[1] || '-';
+        }
+        
+        // Top user
+        if (stats.topUsers && stats.topUsers.length > 0) {
+          document.getElementById('topUser').textContent = stats.topUsers[0].user.substring(0, 12) + (stats.topUsers[0].user.length > 12 ? '...' : '');
+        } else {
+          document.getElementById('topUser').textContent = '-';
+        }
+        
+        // Update endpoint call counts
+        for (const [endpoint, count] of Object.entries(stats.byEndpoint)) {
+          const el = document.getElementById(`count-${endpoint}`);
+          if (el) el.textContent = `📈 ${count.toLocaleString()} calls`;
+        }
+      } catch (e) {
+        console.error('Failed to load stats:', e);
+      }
+    }
+    
+    // Auto-load stats on page load and refresh every 10 seconds
     window.addEventListener('DOMContentLoaded', () => {
+      loadStats();
+      setInterval(loadStats, 10000);
+      
+      // Auto-test from URL params
       const params = new URLSearchParams(window.location.search);
       const username = params.get('username');
       if (username) {

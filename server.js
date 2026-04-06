@@ -1,6 +1,8 @@
 const { Hono } = require('hono');
 const { cors } = require('hono/cors');
 const { serveStatic } = require('hono/serve-static');
+const fs = require('fs');
+const path = require('path');
 
 const app = new Hono();
 app.use('/api/*', cors());
@@ -10,6 +12,74 @@ app.use('/*', serveStatic({ root: './public' }));
 app.use('/public/*', serveStatic({ root: './' }));
 
 const DOCKER_HUB_API = 'https://hub.docker.com/v2';
+const STATS_FILE = path.join(__dirname, 'stats.json');
+
+// Load stats
+function loadStats() {
+  try {
+    if (fs.existsSync(STATS_FILE)) {
+      return JSON.parse(fs.readFileSync(STATS_FILE, 'utf8'));
+    }
+  } catch (e) {
+    console.error('Failed to load stats:', e);
+  }
+  return {
+    totalCalls: 0,
+    lastReset: new Date().toISOString(),
+    byEndpoint: { 'user/stats': 0, 'repo/details': 0, 'repo/tags': 0, 'search': 0, 'health': 0 },
+    byUser: {},
+    dailyStats: {}
+  };
+}
+
+// Save stats
+function saveStats(stats) {
+  try {
+    fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Failed to save stats:', e);
+  }
+}
+
+// Track API call
+function trackCall(endpoint, username = null) {
+  const stats = loadStats();
+  stats.totalCalls++;
+  
+  // Track by endpoint
+  if (stats.byEndpoint[endpoint] !== undefined) {
+    stats.byEndpoint[endpoint]++;
+  }
+  
+  // Track by username (for user stats)
+  if (username) {
+    if (!stats.byUser[username]) stats.byUser[username] = 0;
+    stats.byUser[username]++;
+  }
+  
+  // Track daily stats
+  const today = new Date().toISOString().split('T')[0];
+  if (!stats.dailyStats[today]) stats.dailyStats[today] = 0;
+  stats.dailyStats[today]++;
+  
+  saveStats(stats);
+  return stats;
+}
+
+// Get public stats (without sensitive data)
+function getPublicStats() {
+  const stats = loadStats();
+  return {
+    totalCalls: stats.totalCalls,
+    byEndpoint: stats.byEndpoint,
+    topUsers: Object.entries(stats.byUser)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([user, count]) => ({ user, count })),
+    dailyStats: stats.dailyStats,
+    lastUpdated: new Date().toISOString()
+  };
+}
 
 async function fetchDockerHub(endpoint, authToken = null) {
   const headers = { 'User-Agent': 'docker-hub-api-gateway/1.0', 'Accept': 'application/json' };
@@ -47,6 +117,9 @@ app.get('/api/user/stats', async (c) => {
   const username = c.req.query('username');
   const fields = c.req.query('fields')?.split(',') || ['name', 'pull_count', 'star_count'];
   if (!username) return c.json({ error: 'username parameter required' }, 400);
+  
+  // Track call
+  trackCall('user/stats', username);
   
   try {
     const authToken = await getAuthToken();
@@ -92,6 +165,8 @@ app.get('/api/repo/details', async (c) => {
   const repo = c.req.query('repo');
   if (!namespace || !repo) return c.json({ error: 'namespace and repo parameters required' }, 400);
   
+  trackCall('repo/details');
+  
   try {
     const data = await fetchDockerHub(`/repositories/${namespace}/${repo}`);
     return c.json({ success: true, data, timestamp: new Date().toISOString() });
@@ -106,6 +181,8 @@ app.get('/api/repo/tags', async (c) => {
   const repo = c.req.query('repo');
   const limit = parseInt(c.req.query('limit') || '100');
   if (!namespace || !repo) return c.json({ error: 'namespace and repo parameters required' }, 400);
+  
+  trackCall('repo/tags');
   
   try {
     const data = await fetchDockerHub(`/repositories/${namespace}/${repo}/tags/?page_size=${Math.min(limit, 100)}`);
@@ -127,6 +204,8 @@ app.get('/api/search', async (c) => {
   const pageSize = parseInt(c.req.query('page_size') || '25');
   if (!query) return c.json({ error: 'q (search query) parameter required' }, 400);
   
+  trackCall('search');
+  
   try {
     const data = await fetchDockerHub(`/repositories/search?q=${encodeURIComponent(query)}&page=${page}&page_size=${pageSize}`);
     return c.json({
@@ -140,6 +219,16 @@ app.get('/api/search', async (c) => {
   }
 });
 
-app.get('/api/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }));
+// API: Stats (public)
+app.get('/api/stats', (c) => {
+  trackCall('health');
+  return c.json(getPublicStats());
+});
+
+// API: Health Check
+app.get('/api/health', (c) => {
+  trackCall('health');
+  return c.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 export default app;
