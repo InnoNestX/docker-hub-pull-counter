@@ -13,8 +13,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "public/$1"
+      "dest": "server.js"
     }
-  ],
-  "outputDirectory": "public"
+  ]
 }
