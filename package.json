@@ -1,0 +1,14 @@
+{
+  "name": "docker-hub-pull-counter",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "hono dev server.js",
+    "build": "echo 'No build step required'",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.28.0",
+    "@vercel/speed-insights": "^2.0.0",
+    "hono": "^4.0.0"
+  }
+}

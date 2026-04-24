@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 API Documentation
+    url: https://github.com/InnoNestX/docker-hub-pull-counter#readme
+    about: Check the README for API usage documentation
+  - name: 💬 General Questions
+    url: https://github.com/InnoNestX/docker-hub-pull-counter/discussions
+    about: Please ask questions in GitHub Discussions
+  - name: 🐛 Docker Hub API Status
+    url: https://www.dockerstatus.com/
+    about: Check Docker Hub service status
