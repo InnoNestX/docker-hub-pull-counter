@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Hub API - API Tester</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--surface:#111;--border:#222;--text:#fff;--text-dim:#888;--accent:#3b82f6;--success:#22c55e;--error:#ef4444;--warning:#f59e0b;--code-bg:#1a1a1a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);z-index:100}
+.header-inner{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;letter-spacing:-0.5px}.logo span{color:var(--accent)}
+.header-links{display:flex;gap:24px;align-items:center}
+.header-link{color:var(--text-dim);text-decoration:none;font-size:0.875rem;transition:color 0.2s;display:flex;align-items:center;gap:6px}
+.header-link:hover{color:var(--text)}
+.header-link.active{color:var(--accent)}
+.lang-switch{display:flex;gap:8px;align-items:center}
+.menu-toggle{display:none;background:transparent;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:8px}
+.lang-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.875rem;transition:all 0.2s}
+.lang-btn:hover{border-color:var(--text-dim);color:var(--text)}
+.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.page-title{padding:48px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.page-title h1{font-size:2rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
+.page-title p{color:var(--text-dim);font-size:1rem}
+.tester-grid{display:grid;grid-template-columns:380px 1fr;gap:32px;padding-bottom:64px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.panel-title{font-size:0.875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim)}
+.panel-body{padding:20px}
+.form-group{margin-bottom:20px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:0.75rem;font-weight:500;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.form-label .required{color:var(--error);margin-left:4px}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.875rem;transition:border-color 0.2s}
+.form-input:focus{outline:none;border-color:var(--accent)}
+.form-input::placeholder{color:var(--text-dim);opacity:0.6}
+.form-input:disabled{opacity:0.5;cursor:not-allowed}
+.form-select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:0.875rem;transition:border-color 0.2s;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.form-select:focus{outline:none;border-color:var(--accent)}
+.endpoint-selector{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.method-badge{font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:600;padding:6px 12px;border-radius:6px;background:rgba(34,197,94,0.15);color:var(--success)}
+.url-preview{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-dim);word-break:break-all;min-height:52px;display:flex;align-items:center}
+.url-preview .base{color:var(--accent)}
+.url-preview .path{color:var(--text)}
+.url-preview .params{color:var(--text-dim)}
+.btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:500;cursor:pointer;font-size:0.875rem;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{opacity:0.9}
+.btn:active{transform:scale(0.98)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.btn-primary{background:var(--accent)}
+.btn-success{background:var(--success)}
+.btn-block{width:100%}
+.btn-sm{padding:8px 16px;font-size:0.8rem}
+.response-panel{min-height:400px;display:flex;flex-direction:column}
+.response-panel .panel-body{flex:1;display:flex;flex-direction:column}
+.response-meta{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.response-stat{display:flex;align-items:center;gap:6px;font-size:0.8rem}
+.response-stat .label{color:var(--text-dim)}
+.response-stat .value{font-family:'JetBrains Mono',monospace;font-weight:500}
+.response-stat .value.success{color:var(--success)}
+.response-stat .value.error{color:var(--error)}
+.response-stat .value.warning{color:var(--warning)}
+.response-content{flex:1;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:300px;max-height:500px}
+.response-content pre{margin:0;padding:16px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:0.8rem;line-height:1.7;height:100%}
+.response-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;color:var(--text-dim);text-align:center;padding:40px}
+.response-placeholder .icon{font-size:3rem;margin-bottom:16px;opacity:0.5}
+.response-placeholder p{font-size:0.9rem}
+.response-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.response-tab{padding:10px 20px;font-size:0.8rem;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.response-tab:hover{color:var(--text)}
+.response-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+.params-help{margin-top:16px;padding:12px 16px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:8px;font-size:0.8rem;color:var(--text-dim)}
+.params-help code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:16px;z-index:99}
+.mobile-menu.active{display:block}
+.mobile-nav-item{display:block;padding:12px 16px;margin:4px 0;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.9rem;transition:all 0.2s}
+.mobile-nav-item:hover{background:var(--bg);color:var(--text)}
+.mobile-nav-item.active{background:var(--bg);color:var(--accent)}
+@media(max-width:1024px){.tester-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.menu-toggle{display:block}.header-links{display:none}.container{padding:0 16px}
+  .page-title{padding:32px 0 24px}
+  .page-title h1{font-size:1.5rem}
+  .tester-grid{gap:24px}
+  .panel-body{padding:16px}
+  .endpoint-selector{flex-direction:column;align-items:stretch}
+  .form-select{background-position:right 12px center}
+  .response-tabs{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+<header><div class="container header-inner">
+  <div class="logo"><span>Docker</span>Hub API</div>
+  <div class="header-links">
+    <a href="index.html" class="header-link">
+      <span>📖</span> <span data-i18n="nav-docs">Documentation</span>
+    </a>
+    <a href="api-tester.html" class="header-link active">
+      <span>🧪</span> <span data-i18n="nav-tester">API Tester</span>
+    </a>
+  </div>
+  <div class="lang-switch">
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('zh')">中文</button>
+  </div>
+</div></header>
+<nav class="mobile-menu">
+  <a class="mobile-nav-item" href="index.html" data-i18n="nav-docs">Documentation</a>
+  <a class="mobile-nav-item active" href="api-tester.html" data-i18n="nav-tester">API Tester</a>
+</nav>
+<main class="container">
+<div class="page-title">
+  <h1 data-i18n="page-title">API Tester</h1>
+  <p data-i18n="page-desc">Test Docker Hub API endpoints interactively</p>
+</div>
+<div class="tester-grid">
+<div class="config-panel">
+<div class="panel">
+<div class="panel-header">
+  <span class="panel-title" data-i18n="config-title">Configuration</span>
+</div>
+<div class="panel-body">
+<div class="endpoint-selector">
+  <span class="method-badge">GET</span>
+  <select id="endpoint-select" class="form-select" onchange="onEndpointChange()">
+    <option value="user-stats">/api/user/stats</option>
+    <option value="docker-stats">/api/docker-stats</option>
+    <option value="repo-details">/api/repo/details</option>
+    <option value="repo-tags">/api/repo/tags</option>
+    <option value="search">/api/search</option>
+  </select>
+</div>
+<div id="params-container"></div>
+<div class="form-group">
+  <label class="form-label" data-i18n="url-preview-label">Request URL</label>
+  <div class="url-preview" id="url-preview">
+    <span class="base">docker-hub-pull-counter.vercel.app</span><span class="path" id="url-path"></span><span class="params" id="url-params"></span>
+  </div>
+</div>
+<button class="btn btn-success btn-block" id="send-btn" onclick="sendRequest()">
+  <span data-i18n="btn-send">Send Request</span>
+</button>
+</div>
+</div>
+</div>
+<div class="response-panel">
+<div class="panel">
+<div class="panel-header">
+  <span class="panel-title" data-i18n="response-title">Response</span>
+  <span id="response-time" class="response-stat" style="display:none">
+    <span class="label" data-i18n="time-label">Time:</span>
+    <span class="value" id="response-time-value"></span>
+  </span>
+</div>
+<div class="panel-body">
+<div class="response-meta" id="response-meta" style="display:none">
+  <div class="response-stat">
+    <span class="label" data-i18n="status-label">Status:</span>
+    <span class="value" id="response-status"></span>
+  </div>
+  <div class="response-stat">
+    <span class="label" data-i18n="size-label">Size:</span>
+    <span class="value" id="response-size"></span>
+  </div>
+</div>
+<div class="response-tabs" id="response-tabs" style="display:none">
+  <div class="response-tab active" data-tab="body" onclick="switchTab('body')" data-i18n="tab-body">Body</div>
+  <div class="response-tab" data-tab="headers" onclick="switchTab('headers')" data-i18n="tab-headers">Headers</div>
+</div>
+<div class="response-content" id="response-body">
+  <pre id="response-pre"></pre>
+</div>
+<div class="response-placeholder" id="response-placeholder">
+  <div class="icon">📡</div>
+  <p data-i18n="placeholder-text">Enter parameters and click "Send Request" to see the response</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+const BASE_URL='docker-hub-pull-counter.vercel.app';
+let lang='en';
+let currentTab='body';
+let lastResponse=null;
+
+const endpoints={
+  'user-stats':{
+    path:'/api/user/stats',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'fields',label:'Fields',type:'text',required:false,placeholder:'name,pull_count,star_count',desc_en:'Comma-separated fields to return',desc_zh:'逗号分隔的返回字段'}
+    ]
+  },
+  'docker-stats':{
+    path:'/api/docker-stats',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'}
+    ]
+  },
+  'repo-details':{
+    path:'/api/repo/details',
+    params:[
+      {name:'namespace',label:'Namespace',type:'text',required:true,placeholder:'library',desc_en:'Repository namespace/owner',desc_zh:'仓库所有者/组织'},
+      {name:'repo',label:'Repository',type:'text',required:true,placeholder:'nginx',desc_en:'Repository name',desc_zh:'仓库名称'}
+    ]
+  },
+  'repo-tags':{
+    path:'/api/repo/tags',
+    params:[
+      {name:'namespace',label:'Namespace',type:'text',required:true,placeholder:'library',desc_en:'Repository namespace/owner',desc_zh:'仓库所有者/组织'},
+      {name:'repo',label:'Repository',type:'text',required:true,placeholder:'nginx',desc_en:'Repository name',desc_zh:'仓库名称'},
+      {name:'limit',label:'Limit',type:'number',required:false,placeholder:'100',desc_en:'Max tags to return',desc_zh:'返回的最大标签数'}
+    ]
+  },
+  'search':{
+    path:'/api/search',
+    params:[
+      {name:'q',label:'Query',type:'text',required:true,placeholder:'nginx',desc_en:'Search query',desc_zh:'搜索关键词'},
+      {name:'page',label:'Page',type:'number',required:false,placeholder:'1',desc_en:'Page number',desc_zh:'页码'},
+      {name:'page_size',label:'Page Size',type:'number',required:false,placeholder:'25',desc_en:'Results per page',desc_zh:'每页结果数'}
+    ]
+  }
+};
+
+const translations={
+  en:{
+    'nav-docs':'Documentation',
+    'nav-tester':'API Tester',
+    'page-title':'API Tester',
+    'page-desc':'Test Docker Hub API endpoints interactively',
+    'config-title':'Configuration',
+    'url-preview-label':'Request URL',
+    'btn-send':'Send Request',
+    'response-title':'Response',
+    'time-label':'Time:',
+    'status-label':'Status:',
+    'size-label':'Size:',
+    'tab-body':'Body',
+    'tab-headers':'Headers',
+    'placeholder-text':'Enter parameters and click "Send Request" to see the response',
+    'param-username':'Username',
+    'param-fields':'Fields',
+    'param-namespace':'Namespace',
+    'param-repo':'Repository',
+    'param-limit':'Limit',
+    'param-q':'Query',
+    'param-page':'Page',
+    'param-page_size':'Page Size',
+    'sending':'Sending...',
+    'error-fetch':'Failed to fetch response',
+    'hint-optional':'(optional)'
+  },
+  zh:{
+    'nav-docs':'文档',
+    'nav-tester':'API 测试',
+    'page-title':'API 测试',
+    'page-desc':'交互式测试 Docker Hub API 接口',
+    'config-title':'配置',
+    'url-preview-label':'请求 URL',
+    'btn-send':'发送请求',
+    'response-title':'响应',
+    'time-label':'耗时:',
+    'status-label':'状态:',
+    'size-label':'大小:',
+    'tab-body':'响应体',
+    'tab-headers':'响应头',
+    'placeholder-text':'输入参数并点击"发送请求"查看响应',
+    'param-username':'用户名',
+    'param-fields':'字段',
+    'param-namespace':'命名空间',
+    'param-repo':'仓库',
+    'param-limit':'数量限制',
+    'param-q':'搜索词',
+    'param-page':'页码',
+    'param-page_size':'每页数量',
+    'sending':'发送中...',
+    'error-fetch':'获取响应失败',
+    'hint-optional':'(可选)'
+  }
+};
+
+function t(key){return translations[lang][key]||key;}
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',(l==='en'&&i===0)||(l==='zh'&&i===1)));
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.dataset.i18n;
+    if(translations[lang][k])el.textContent=translations[lang][k];
+  });
+  renderParams();
+  updateUrlPreview();
+}
+
+function toggleMenu(){
+  document.querySelector('.mobile-menu').classList.toggle('active');
+}
+
+function onEndpointChange(){
+  renderParams();
+  updateUrlPreview();
+}
+
+function renderParams(){
+  const select=document.getElementById('endpoint-select');
+  const endpoint=endpoints[select.value];
+  const container=document.getElementById('params-container');
+  const descKey=lang==='zh'?'desc_zh':'desc_en';
+  
+  container.innerHTML=endpoint.params.map(p=>`
+    <div class="form-group">
+      <label class="form-label">
+        ${t('param-'+p.name)}${p.required?'<span class="required">*</span>':' <span style="opacity:0.6;font-weight:400;text-transform:none">'+t('hint-optional')+'</span>'}
+      </label>
+      <input type="${p.type}" id="param-${p.name}" class="form-input" 
+        placeholder="${p.placeholder}" 
+        oninput="updateUrlPreview()"
+        ${p.required?'':'data-optional="true"'}>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px">${p[descKey]}</div>
+    </div>
+  `).join('');
+}
+
+function updateUrlPreview(){
+  const select=document.getElementById('endpoint-select');
+  const endpoint=endpoints[select.value];
+  const pathEl=document.getElementById('url-path');
+  const paramsEl=document.getElementById('url-params');
+  
+  pathEl.textContent=endpoint.path;
+  
+  const params=new URLSearchParams();
+  endpoint.params.forEach(p=>{
+    const input=document.getElementById('param-'+p.name);
+    if(input&&input.value.trim()){
+      params.set(p.name,input.value.trim());
+    }
+  });
+  
+  const qs=params.toString();
+  paramsEl.textContent=qs?'?'+qs:'';
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.response-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.response-tab[data-tab="${tab}"]`).classList.add('active');
+  renderResponse();
+}
+
+function renderResponse(){
+  if(!lastResponse)return;
+  
+  const pre=document.getElementById('response-pre');
+  if(currentTab==='body'){
+    pre.textContent=JSON.stringify(lastResponse.body,null,2);
+  }else{
+    const headers={};
+    lastResponse.headers.forEach((v,k)=>headers[k]=v);
+    pre.textContent=JSON.stringify(headers,null,2);
+  }
+}
+
+async function sendRequest(){
+  const select=document.getElementById('endpoint-select');
+  const endpoint=endpoints[select.value];
+  const btn=document.getElementById('send-btn');
+  
+  // Validate required params
+  let hasRequired=true;
+  endpoint.params.forEach(p=>{
+    if(p.required){
+      const input=document.getElementById('param-'+p.name);
+      if(!input||!input.value.trim()){
+        hasRequired=false;
+        input.style.borderColor='var(--error)';
+      }else{
+        input.style.borderColor='';
+      }
+    }
+  });
+  
+  if(!hasRequired){
+    return;
+  }
+  
+  // Build URL
+  const params=new URLSearchParams();
+  endpoint.params.forEach(p=>{
+    const input=document.getElementById('param-'+p.name);
+    if(input&&input.value.trim()){
+      params.set(p.name,input.value.trim());
+    }
+  });
+  
+  const url='https://'+BASE_URL+endpoint.path+'?'+params.toString();
+  
+  // Show loading
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> <span data-i18n="sending">'+t('sending')+'</span>';
+  document.getElementById('response-placeholder').style.display='none';
+  document.getElementById('response-tabs').style.display='none';
+  document.getElementById('response-meta').style.display='none';
+  document.getElementById('response-time').style.display='none';
+  document.getElementById('response-body').classList.add('hidden');
+  document.getElementById('response-pre').textContent='';
+  
+  const startTime=performance.now();
+  
+  try{
+    const response=await fetch(url);
+    const endTime=performance.now();
+    const duration=Math.round(endTime-startTime);
+    const text=await response.text();
+    const size=new Blob([text]).size;
+    
+    let body;
+    try{
+      body=JSON.parse(text);
+    }catch{
+      body=text;
+    }
+    
+    lastResponse={
+      status:response.status,
+      statusText:response.statusText,
+      headers:response.headers,
+      body:body,
+      duration:duration,
+      size:size
+    };
+    
+    // Update UI
+    document.getElementById('response-meta').style.display='flex';
+    document.getElementById('response-time').style.display='flex';
+    document.getElementById('response-tabs').style.display='flex';
+    document.getElementById('response-body').classList.remove('hidden');
+    
+    const statusEl=document.getElementById('response-status');
+    statusEl.textContent=response.status+' '+response.statusText;
+    statusEl.className='value '+(response.ok?'success':'error');
+    
+    document.getElementById('response-time-value').textContent=duration+'ms';
+    document.getElementById('response-size').textContent=formatSize(size);
+    
+    currentTab='body';
+    document.querySelectorAll('.response-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelector('.response-tab[data-tab="body"]').classList.add('active');
+    renderResponse();
+    
+  }catch(error){
+    lastResponse={
+      status:0,
+      statusText:t('error-fetch'),
+      body:{error:error.message}
+    };
+    
+    document.getElementById('response-meta').style.display='flex';
+    document.getElementById('response-tabs').style.display='flex';
+    document.getElementById('response-body').classList.remove('hidden');
+    
+    const statusEl=document.getElementById('response-status');
+    statusEl.textContent=t('error-fetch');
+    statusEl.className='value error';
+    
+    currentTab='body';
+    document.querySelectorAll('.response-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelector('.response-tab[data-tab="body"]').classList.add('active');
+    renderResponse();
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<span data-i18n="btn-send">'+t('btn-send')+'</span>';
+  }
+}
+
+function formatSize(bytes){
+  if(bytes<1024)return bytes+' B';
+  if(bytes<1024*1024)return(bytes/1024).toFixed(1)+' KB';
+  return(bytes/(1024*1024)).toFixed(2)+' MB';
+}
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+  renderParams();
+  updateUrlPreview();
+});
+</script>
+</body>
+</html>
