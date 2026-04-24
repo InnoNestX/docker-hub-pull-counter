@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Hub API - Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--surface:#111;--border:#222;--text:#fff;--text-dim:#888;--accent:#3b82f6;--success:#22c55e;--code-bg:#1a1a1a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1400px;margin:0 auto;padding:0 24px}
+header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);z-index:100}
+.header-inner{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.25rem;font-weight:700;letter-spacing:-0.5px}.logo span{color:var(--accent)}
+.lang-switch{display:flex;gap:8px;align-items:center}
+.menu-toggle{display:none;background:transparent;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:8px}
+.lang-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.875rem;transition:all 0.2s}
+.lang-btn:hover{border-color:var(--text-dim);color:var(--text)}
+.lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.hero{padding:80px 0 60px;border-bottom:1px solid var(--border)}
+.hero h1{font-size:2.5rem;font-weight:700;letter-spacing:-1px;margin-bottom:16px;line-height:1.2}
+.hero p{font-size:1.125rem;color:var(--text-dim);max-width:600px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.stat-value{font-size:2rem;font-weight:700;color:var(--accent);margin-bottom:8px;font-family:'JetBrains Mono',monospace}
+.stat-label{font-size:0.875rem;color:var(--text-dim)}
+.main{display:grid;grid-template-columns:280px 1fr;gap:48px;padding:48px 0}
+.sidebar{position:sticky;top:80px;height:fit-content}
+.nav-section{margin-bottom:32px}
+.nav-title{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px}
+.nav-item{display:block;padding:8px 12px;margin:4px -12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.875rem;transition:all 0.2s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:var(--surface);color:var(--accent)}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:16px;z-index:99;max-height:400px;overflow-y:auto}
+.mobile-menu.active{display:block}
+.mobile-nav-item{display:block;padding:12px 16px;margin:4px 0;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.9rem;transition:all 0.2s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
+.mobile-nav-item:hover{background:var(--bg);color:var(--text)}
+.mobile-nav-item.active{background:var(--bg);color:var(--accent)}
+.content{min-width:0}
+.endpoint{margin-bottom:48px}
+.endpoint-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.method{font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:600;padding:4px 10px;border-radius:6px;text-transform:uppercase}
+.method.get{background:rgba(34,197,94,0.15);color:var(--success)}
+.path{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--text)}
+.endpoint h2{font-size:1.5rem;font-weight:600;margin-bottom:12px}
+.endpoint p{color:var(--text-dim);margin-bottom:20px}
+.params{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px}
+.param-row{display:grid;grid-template-columns:150px 1fr 120px;border-bottom:1px solid var(--border);padding:16px;align-items:start}
+.param-row:last-child{border-bottom:none}
+.param-name{font-family:'JetBrains Mono',monospace;font-size:0.875rem;font-weight:500}
+.param-desc{color:var(--text-dim);font-size:0.875rem}
+.param-type{font-size:0.75rem;color:var(--text-dim);text-align:right}
+.try-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-top:24px}
+.try-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.try-header h3{font-size:1rem;font-weight:600}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:0.75rem;font-weight:500;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.input-row{display:flex;gap:12px;align-items:center}
+.input-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.875rem;transition:border-color 0.2s}
+.input-row input:focus{outline:none;border-color:var(--accent)}
+.btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:500;cursor:pointer;font-size:0.875rem;transition:all 0.2s}
+.btn:hover{opacity:0.9}
+.btn-copy{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:8px 12px;border-radius:6px;cursor:pointer;font-size:0.75rem;transition:all 0.2s}
+.btn-copy:hover{border-color:var(--text);color:var(--text)}
+.url-box{margin-bottom:16px;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.url-text{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-dim);word-break:break-all;flex:1}
+.response-box{margin-top:20px;background:var(--code-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.response-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface)}
+.response-title{font-size:0.75rem;font-weight:500;color:var(--text-dim);text-transform:uppercase}
+.response-content{padding:16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.8rem;line-height:1.7;max-height:400px;overflow-y:auto}
+.svg-preview-frame{display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at top,#1e3a8a 0%,#111827 55%,#0a0a0a 100%);border-radius:12px;padding:20px;overflow:auto}
+.svg-preview-frame img{display:block;width:100%;max-width:420px;height:auto}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:500;margin-left:8px}
+.badge.req{background:rgba(239,68,68,0.15);color:#ef4444}
+.badge.opt{background:rgba(59,130,246,0.15);color:var(--accent)}
+.hidden{display:none}
+.loading{opacity:0.5;pointer-events:none}
+@media(max-width:1024px){.main{grid-template-columns:1fr}.sidebar{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){.menu-toggle{display:block}
+  .container{padding:0 16px}
+  .hero{padding:48px 0 32px}
+  .hero h1{font-size:1.75rem}
+  .hero p{font-size:1rem}
+  .stats{grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px}
+  .stat-card{padding:16px}
+  .stat-value{font-size:1.5rem}
+  .stat-label{font-size:0.8rem}
+  .main{padding:32px 0}
+  .endpoint{margin-bottom:32px}
+  .endpoint h2{font-size:1.25rem}
+  .param-row{grid-template-columns:1fr;gap:8px}
+  .param-type{text-align:left}
+  .try-section{padding:16px}
+  .input-row{flex-direction:column;align-items:stretch}
+  .url-box{flex-direction:column;align-items:stretch}
+  .btn{width:100%;text-align:center}
+  .footer-content{grid-template-columns:1fr;gap:24px}
+  .site-footer{padding:32px 16px 16px}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.5rem}
+  .hero p{font-size:0.9rem}
+  .stats{grid-template-columns:1fr}
+  .stat-value{font-size:1.25rem}
+  .lang-switch{gap:4px}
+  .lang-btn{padding:4px 8px;font-size:0.8rem}
+  .method{font-size:0.7rem;padding:3px 8px}
+  .path{font-size:0.9rem}
+  .input-row input{font-size:0.8rem;padding:10px}
+  .btn{padding:10px 16px;font-size:0.8rem}
+  .response-content{font-size:0.75rem;max-height:300px}
+}
+.site-footer{background:var(--card-bg);border-top:1px solid var(--border);padding:48px 24px 24px;margin-top:64px}
+.footer-content{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-bottom:32px}
+.footer-section h4{color:var(--text-primary);font-size:0.9rem;font-weight:600;margin-bottom:8px}
+.footer-section p{color:var(--text-dim);font-size:0.8rem;margin-bottom:16px}
+.footer-links{display:flex;flex-direction:column;gap:8px}
+.footer-links a{color:var(--text-dim);text-decoration:none;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:color 0.2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-links .icon{font-size:1rem}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:0.8rem}
+@media(max-width:640px){.footer-content{grid-template-columns:1fr}}
+</style>
+<!-- Vercel Speed Insights -->
+<script src="/_vercel/speed-insights/script.js" defer></script>
+</head>
+<body>
+<header><div class="container header-inner"><div class="logo"><span>Docker</span>Hub API</div><div class="lang-switch"><button class="menu-toggle" onclick="toggleMenu()">☰</button><button class="lang-btn active" onclick="setLang('en')">EN</button><button class="lang-btn" onclick="setLang('zh')">中文</button></div></div></header>
+<nav class="mobile-menu">
+<button class="mobile-nav-item active" onclick="scrollToEndpoint('user-stats', event)" data-i18n="nav-user-stats">User Statistics</button>
+<button class="mobile-nav-item" onclick="scrollToEndpoint('docker-stats-card', event)" data-i18n="nav-docker-stats">Docker Stats Card</button>
+<button class="mobile-nav-item" onclick="scrollToEndpoint('repo-details', event)" data-i18n="nav-repo-details">Repository Details</button>
+<button class="mobile-nav-item" onclick="scrollToEndpoint('repo-tags', event)" data-i18n="nav-repo-tags">Repository Tags</button>
+<button class="mobile-nav-item" onclick="scrollToEndpoint('search', event)" data-i18n="nav-search">Search</button>
+</nav>
+<main>
+<section class="hero"><div class="container"><h1 data-i18n="hero-title">Access Docker Hub data with a simple REST API</h1><p data-i18n="hero-desc">Pull counts, repository details, tags, search, and embeddable SVG cards — all available through our unified gateway.</p>
+<div class="stats"><div class="stat-card"><div class="stat-value" id="totalCalls">0</div><div class="stat-label" data-i18n="stat-total">Total API Calls</div></div><div class="stat-card"><div class="stat-value" id="userStatsCalls">0</div><div class="stat-label" data-i18n="stat-user">User Stats</div></div><div class="stat-card"><div class="stat-value" id="repoDetailsCalls">0</div><div class="stat-label" data-i18n="stat-repo">Repo Details</div></div><div class="stat-card"><div class="stat-value" id="repoTagsCalls">0</div><div class="stat-label" data-i18n="stat-tags">Repo Tags</div></div></div>
+</div></section>
+<div class="container main">
+<aside class="sidebar"><nav class="nav-section"><div class="nav-title" data-i18n="nav-endpoints">Endpoints</div>
+<button class="nav-item active" onclick="scrollToEndpoint('user-stats', event)" data-i18n="nav-user-stats">User Statistics</button>
+<button class="nav-item" onclick="scrollToEndpoint('docker-stats-card', event)" data-i18n="nav-docker-stats">Docker Stats Card</button>
+<button class="nav-item" onclick="scrollToEndpoint('repo-details', event)" data-i18n="nav-repo-details">Repository Details</button>
+<button class="nav-item" onclick="scrollToEndpoint('repo-tags', event)" data-i18n="nav-repo-tags">Repository Tags</button>
+<button class="nav-item" onclick="scrollToEndpoint('search', event)" data-i18n="nav-search">Search</button>
+</nav></aside>
+<div class="content">
+<div class="endpoint" id="user-stats">
+<div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/user/stats</span></div>
+<h2 data-i18n="ep-user-title">User Statistics</h2>
+<p data-i18n="ep-user-desc">Retrieve total pull counts and repository statistics for a Docker Hub user.</p>
+<div class="params"><div class="param-row"><div class="param-name">username<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div><div class="param-type">string</div></div><div class="param-row"><div class="param-name">fields<span class="badge opt">Optional</span></div><div class="param-desc" data-i18n="param-fields-desc">Comma-separated fields to return</div><div class="param-type">string</div></div></div>
+<div class="try-section"><div class="try-header"><h3 data-i18n="try-title">Try it</h3></div>
+<div class="input-group"><label data-i18n="param-username">Username</label><div class="input-row"><input type="text" id="user-username" placeholder="xuxuclassmate" oninput="updateUserUrl()"></div></div>
+<div class="input-group"><label data-i18n="param-fields">Fields</label><div class="input-row"><input type="text" id="user-fields" placeholder="name,pull_count,star_count" value="name,pull_count,star_count" oninput="updateUserUrl()"></div></div>
+<div class="url-box" id="user-url-box"><span class="url-text" id="user-url"></span><button class="btn-copy" onclick="copyUserUrl()" data-i18n="btn-copy">Copy</button></div>
+<div class="input-row"><button class="btn" id="btn-user" onclick="tryUserStats()" data-i18n="btn-send">Send</button></div>
+<div class="response-box hidden" id="user-response"><div class="response-header"><span class="response-title">Response</span></div><div class="response-content"><pre></pre></div></div>
+</div></div>
+
+<div class="endpoint" id="docker-stats-card">
+<div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/docker-stats</span></div>
+<h2 data-i18n="ep-card-title">Docker Stats Card</h2>
+<p data-i18n="ep-card-desc">Returns an SVG card for Docker Hub stats using the same internal user statistics pipeline as the JSON endpoint.</p>
+<div class="params"><div class="param-row"><div class="param-name">username<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div><div class="param-type">string</div></div></div>
+<div class="response-box"><div class="response-header"><span class="response-title" data-i18n="example-embed-title">Embed Example</span></div><div class="response-content"><pre id="docker-stats-embed">&lt;img src="/api/docker-stats?username=xuxuclassmate"/&gt;</pre></div></div>
+<div class="response-box"><div class="response-header"><span class="response-title" data-i18n="preview-title">Preview</span></div><div class="response-content svg-preview-frame"><img src="/api/docker-stats?username=xuxuclassmate" alt="Docker Hub stats card example"></div></div>
+<div class="try-section"><div class="try-header"><h3 data-i18n="try-title">Try it</h3></div>
+<div class="input-group"><label data-i18n="param-username">Username</label><div class="input-row"><input type="text" id="docker-stats-username" placeholder="xuxuclassmate" value="xuxuclassmate" oninput="updateDockerStatsUrl()"></div></div>
+<div class="url-box" id="docker-stats-url-box"><span class="url-text" id="docker-stats-url"></span><button class="btn-copy" onclick="copyDockerStatsUrl()" data-i18n="btn-copy">Copy</button></div>
+<div class="input-row"><button class="btn" id="btn-docker-stats" onclick="tryDockerStats()" data-i18n="btn-preview">Preview Card</button></div>
+<div class="response-box" id="docker-stats-preview"><div class="response-header"><span class="response-title" data-i18n="preview-title">Preview</span></div><div class="response-content svg-preview-frame"><img id="docker-stats-image" src="/api/docker-stats?username=xuxuclassmate" alt="Docker Hub stats card preview"></div></div>
+</div></div>
+
+<div class="endpoint" id="repo-details">
+<div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/repo/details</span></div>
+<h2 data-i18n="ep-repo-title">Repository Details</h2>
+<p data-i18n="ep-repo-desc">Get detailed information about a specific repository.</p>
+<div class="params"><div class="param-row"><div class="param-name">namespace<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-namespace-desc">Repository namespace/owner</div><div class="param-type">string</div></div><div class="param-row"><div class="param-name">repo<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-repo-desc">Repository name</div><div class="param-type">string</div></div></div>
+<div class="try-section"><div class="try-header"><h3 data-i18n="try-title">Try it</h3></div>
+<div class="input-group"><label data-i18n="param-namespace">Namespace</label><div class="input-row"><input type="text" id="repo-namespace" placeholder="library" oninput="updateRepoUrl()"></div></div>
+<div class="input-group"><label data-i18n="param-repo">Repository</label><div class="input-row"><input type="text" id="repo-name" placeholder="nginx" oninput="updateRepoUrl()"></div></div>
+<div class="url-box" id="repo-url-box"><span class="url-text" id="repo-url"></span><button class="btn-copy" onclick="copyRepoUrl()" data-i18n="btn-copy">Copy</button></div>
+<div class="input-row"><button class="btn" id="btn-repo" onclick="tryRepoDetails()" data-i18n="btn-send">Send</button></div>
+<div class="response-box hidden" id="repo-response"><div class="response-header"><span class="response-title">Response</span></div><div class="response-content"><pre></pre></div></div>
+</div></div>
+
+<div class="endpoint" id="repo-tags">
+<div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/repo/tags</span></div>
+<h2 data-i18n="ep-tags-title">Repository Tags</h2>
+<p data-i18n="ep-tags-desc">List all available tags for a repository.</p>
+<div class="params"><div class="param-row"><div class="param-name">namespace<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-namespace-desc">Repository namespace/owner</div><div class="param-type">string</div></div><div class="param-row"><div class="param-name">repo<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-repo-desc">Repository name</div><div class="param-type">string</div></div><div class="param-row"><div class="param-name">limit<span class="badge opt">Optional</span></div><div class="param-desc" data-i18n="param-limit-desc">Maximum tags to return</div><div class="param-type">integer</div></div></div>
+<div class="try-section"><div class="try-header"><h3 data-i18n="try-title">Try it</h3></div>
+<div class="input-group"><label data-i18n="param-namespace">Namespace</label><div class="input-row"><input type="text" id="tags-namespace" placeholder="library" oninput="updateTagsUrl()"></div></div>
+<div class="input-group"><label data-i18n="param-repo">Repository</label><div class="input-row"><input type="text" id="tags-repo" placeholder="nginx" oninput="updateTagsUrl()"></div></div>
+<div class="input-group"><label data-i18n="param-limit">Limit</label><div class="input-row"><input type="number" id="tags-limit" placeholder="100" value="100" oninput="updateTagsUrl()"></div></div>
+<div class="url-box" id="tags-url-box"><span class="url-text" id="tags-url"></span><button class="btn-copy" onclick="copyTagsUrl()" data-i18n="btn-copy">Copy</button></div>
+<div class="input-row"><button class="btn" id="btn-tags" onclick="tryRepoTags()" data-i18n="btn-send">Send</button></div>
+<div class="response-box hidden" id="tags-response"><div class="response-header"><span class="response-title">Response</span></div><div class="response-content"><pre></pre></div></div>
+</div></div>
+
+<div class="endpoint" id="search">
+<div class="endpoint-header"><span class="method get">GET</span><span class="path">/api/search</span></div>
+<h2 data-i18n="ep-search-title">Search</h2>
+<p data-i18n="ep-search-desc">Search Docker Hub repositories by keyword.</p>
+<div class="params"><div class="param-row"><div class="param-name">q<span class="badge req">Required</span></div><div class="param-desc" data-i18n="param-q-desc">Search query</div><div class="param-type">string</div></div><div class="param-row"><div class="param-name">page<span class="badge opt">Optional</span></div><div class="param-desc" data-i18n="param-page-desc">Page number</div><div class="param-type">integer</div></div><div class="param-row"><div class="param-name">page_size<span class="badge opt">Optional</span></div><div class="param-desc" data-i18n="param-pagesize-desc">Results per page</div><div class="param-type">integer</div></div></div>
+<div class="try-section"><div class="try-header"><h3 data-i18n="try-title">Try it</h3></div>
+<div class="input-group"><label data-i18n="param-q">Search Query</label><div class="input-row"><input type="text" id="search-q" placeholder="nginx" oninput="updateSearchUrl()"></div></div>
+<div class="input-group"><label data-i18n="param-page">Page</label><div class="input-row"><input type="number" id="search-page" placeholder="1" value="1" oninput="updateSearchUrl()"></div></div>
+<div class="input-group"><label data-i18n="param-pagesize">Page Size</label><div class="input-row"><input type="number" id="search-pagesize" placeholder="25" value="25" oninput="updateSearchUrl()"></div></div>
+<div class="url-box" id="search-url-box"><span class="url-text" id="search-url"></span><button class="btn-copy" onclick="copySearchUrl()" data-i18n="btn-copy">Copy</button></div>
+<div class="input-row"><button class="btn" id="btn-search" onclick="trySearch()" data-i18n="btn-send">Send</button></div>
+<div class="response-box hidden" id="search-response"><div class="response-header"><span class="response-title">Response</span></div><div class="response-content"><pre></pre></div></div>
+</div></div>
+</div></div></main>
+<script>
+let lang='en';
+const t={
+  en:{
+    'hero-title':'Access Docker Hub data with a simple REST API',
+    'hero-desc':'Pull counts, repository details, tags, search, and embeddable SVG cards — all available through our unified gateway.',
+    'stat-total':'Total API Calls',
+    'stat-user':'User Stats',
+    'stat-repo':'Repo Details',
+    'stat-tags':'Repo Tags',
+    'nav-endpoints':'Endpoints',
+    'nav-user-stats':'User Statistics',
+    'nav-docker-stats':'Docker Stats Card',
+    'nav-repo-details':'Repository Details',
+    'nav-repo-tags':'Repository Tags',
+    'nav-search':'Search',
+    'ep-user-title':'User Statistics',
+    'ep-user-desc':'Retrieve total pull counts and repository statistics for a Docker Hub user.',
+    'ep-card-title':'Docker Stats Card',
+    'ep-card-desc':'Returns an SVG card for Docker Hub stats using the same internal user statistics pipeline as the JSON endpoint.',
+    'ep-repo-title':'Repository Details',
+    'ep-repo-desc':'Get detailed information about a specific repository.',
+    'ep-tags-title':'Repository Tags',
+    'ep-tags-desc':'List all available tags for a repository.',
+    'ep-search-title':'Search',
+    'ep-search-desc':'Search Docker Hub repositories by keyword.',
+    'param-username':'Username',
+    'param-username-desc':'Docker Hub username',
+    'param-fields':'Fields',
+    'param-fields-desc':'Comma-separated fields to return',
+    'param-namespace':'Namespace',
+    'param-namespace-desc':'Repository namespace/owner',
+    'param-repo':'Repository',
+    'param-repo-desc':'Repository name',
+    'param-limit':'Limit',
+    'param-limit-desc':'Maximum tags to return',
+    'param-q':'Search Query',
+    'param-q-desc':'Search query',
+    'param-page':'Page',
+    'param-page-desc':'Page number',
+    'param-pagesize':'Page Size',
+    'param-pagesize-desc':'Results per page',
+    'try-title':'Try it',
+    'example-embed-title':'Embed Example',
+    'preview-title':'Preview',
+    'btn-send':'Send',
+    'btn-preview':'Preview Card',
+    'btn-copy':'Copy',
+    'loading':'Loading...',
+    'copied':'Copied!',
+    'footer-contribute':'Contribute',
+    'footer-contribute-desc':'Found a bug or want to contribute?',
+    'footer-report-bug':'Report Bug',
+    'footer-submit-pr':'Submit PR',
+    'footer-star-repo':'Star Repo',
+    'footer-support':'Support',
+    'footer-support-desc':'Enjoy the API? Support the project!',
+    'footer-sponsor':'Sponsor',
+    'footer-coffee':'Buy Me a Coffee',
+    'footer-discussions':'Discussions',
+    'footer-made-with':'Made with',
+    'footer-for-community':'for the community'
+  },
+  zh:{
+    'hero-title':'通过简洁的 REST API 访问 Docker Hub 数据',
+    'hero-desc':'拉取次数、仓库详情、标签、搜索以及可嵌入的 SVG 卡片，全部通过统一网关提供。',
+    'stat-total':'总 API 调用',
+    'stat-user':'用户统计',
+    'stat-repo':'仓库详情',
+    'stat-tags':'仓库标签',
+    'nav-endpoints':'接口列表',
+    'nav-user-stats':'用户统计',
+    'nav-docker-stats':'Docker 统计卡',
+    'nav-repo-details':'仓库详情',
+    'nav-repo-tags':'仓库标签',
+    'nav-search':'搜索',
+    'ep-user-title':'用户统计',
+    'ep-user-desc':'获取 Docker Hub 用户的总拉取次数和仓库统计信息。',
+    'ep-card-title':'Docker 统计卡',
+    'ep-card-desc':'返回 Docker Hub 统计信息的 SVG 卡片，复用与 JSON 接口相同的内部统计逻辑。',
+    'ep-repo-title':'仓库详情',
+    'ep-repo-desc':'获取特定仓库的详细信息。',
+    'ep-tags-title':'仓库标签',
+    'ep-tags-desc':'列出仓库的所有可用标签。',
+    'ep-search-title':'搜索',
+    'ep-search-desc':'通过关键词搜索 Docker Hub 仓库。',
+    'param-username':'用户名',
+    'param-username-desc':'Docker Hub 用户名',
+    'param-fields':'字段',
+    'param-fields-desc':'逗号分隔的返回字段',
+    'param-namespace':'命名空间',
+    'param-namespace-desc':'仓库所有者/组织',
+    'param-repo':'仓库',
+    'param-repo-desc':'仓库名称',
+    'param-limit':'数量限制',
+    'param-limit-desc':'返回的最大标签数',
+    'param-q':'搜索关键词',
+    'param-q-desc':'搜索查询词',
+    'param-page':'页码',
+    'param-page-desc':'页码',
+    'param-pagesize':'每页数量',
+    'param-pagesize-desc':'每页结果数',
+    'try-title':'试一试',
+    'example-embed-title':'嵌入示例',
+    'preview-title':'预览',
+    'btn-send':'发送',
+    'btn-preview':'预览卡片',
+    'btn-copy':'复制',
+    'loading':'加载中...',
+    'copied':'已复制！',
+    'footer-contribute':'贡献',
+    'footer-contribute-desc':'发现 Bug 或想贡献代码？',
+    'footer-report-bug':'报告 Bug',
+    'footer-submit-pr':'提交 PR',
+    'footer-star-repo':'Star 仓库',
+    'footer-support':'支持',
+    'footer-support-desc':'喜欢这个 API？支持项目！',
+    'footer-sponsor':'赞助',
+    'footer-coffee':'请我喝咖啡',
+    'footer-discussions':'讨论区',
+    'footer-made-with':'用',
+    'footer-for-community':'为社区制作'
+  }
+};
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',(l==='en'&&i===0)||(l==='zh'&&i===1)));
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.dataset.i18n;
+    if(t[lang][k])el.textContent=t[lang][k];
+  });
+  updateUserUrl();
+  updateDockerStatsUrl();
+  updateRepoUrl();
+  updateTagsUrl();
+  updateSearchUrl();
+}
+
+function toggleMenu(){
+  document.querySelector('.mobile-menu').classList.toggle('active');
+}
+
+function scrollToEndpoint(id,event){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.nav-item,.mobile-nav-item').forEach(n=>n.classList.remove('active'));
+  if(event&&event.currentTarget)event.currentTarget.classList.add('active');
+  document.querySelector('.mobile-menu').classList.remove('active');
+}
+
+function showResponse(id,data){
+  const box=document.getElementById(id);
+  const pre=box.querySelector('pre');
+  pre.textContent=JSON.stringify(data,null,2);
+  box.classList.remove('hidden');
+}
+
+function buildUrl(base,params){
+  const qs=new URLSearchParams(params).toString();
+  return 'https://docker-hub-pull-counter.vercel.app'+base+(qs?('?'+qs):'');
+}
+
+function buildRelativeUrl(base,params){
+  const qs=new URLSearchParams(params).toString();
+  return base+(qs?('?'+qs):'');
+}
+
+function updateUserUrl(){
+  const u=document.getElementById('user-username').value;
+  const f=document.getElementById('user-fields').value;
+  const params={};
+  if(u)params.username=u;
+  if(f)params.fields=f;
+  document.getElementById('user-url').textContent=buildUrl('/api/user/stats',params);
+}
+
+function updateDockerStatsUrl(){
+  const u=document.getElementById('docker-stats-username').value||'xuxuclassmate';
+  const params={username:u};
+  document.getElementById('docker-stats-url').textContent=buildUrl('/api/docker-stats',params);
+  document.getElementById('docker-stats-embed').textContent=`&lt;img src="/api/docker-stats?username=${encodeURIComponent(u)}"/&gt;`;
+}
+
+function updateRepoUrl(){
+  const n=document.getElementById('repo-namespace').value;
+  const r=document.getElementById('repo-name').value;
+  const params={};
+  if(n)params.namespace=n;
+  if(r)params.repo=r;
+  document.getElementById('repo-url').textContent=buildUrl('/api/repo/details',params);
+}
+
+function updateTagsUrl(){
+  const n=document.getElementById('tags-namespace').value;
+  const r=document.getElementById('tags-repo').value;
+  const l=document.getElementById('tags-limit').value;
+  const params={};
+  if(n)params.namespace=n;
+  if(r)params.repo=r;
+  if(l&&l!=='100')params.limit=l;
+  document.getElementById('tags-url').textContent=buildUrl('/api/repo/tags',params);
+}
+
+function updateSearchUrl(){
+  const q=document.getElementById('search-q').value;
+  const p=document.getElementById('search-page').value;
+  const ps=document.getElementById('search-pagesize').value;
+  const params={};
+  if(q)params.q=q;
+  if(p&&p!=='1')params.page=p;
+  if(ps&&ps!=='25')params.page_size=ps;
+  document.getElementById('search-url').textContent=buildUrl('/api/search',params);
+}
+
+function copyUserUrl(){navigator.clipboard.writeText(document.getElementById('user-url').textContent).then(()=>alert(t[lang]['copied']));}
+function copyDockerStatsUrl(){navigator.clipboard.writeText(document.getElementById('docker-stats-url').textContent).then(()=>alert(t[lang]['copied']));}
+function copyRepoUrl(){navigator.clipboard.writeText(document.getElementById('repo-url').textContent).then(()=>alert(t[lang]['copied']));}
+function copyTagsUrl(){navigator.clipboard.writeText(document.getElementById('tags-url').textContent).then(()=>alert(t[lang]['copied']));}
+function copySearchUrl(){navigator.clipboard.writeText(document.getElementById('search-url').textContent).then(()=>alert(t[lang]['copied']));}
+
+async function tryUserStats(){
+  const u=document.getElementById('user-username').value;
+  const f=document.getElementById('user-fields').value;
+  if(!u)return;
+  const btn=document.getElementById('btn-user');
+  const params=new URLSearchParams({username:u});
+  if(f)params.set('fields',f);
+  btn.classList.add('loading');
+  btn.textContent=t[lang]['loading'];
+  try{
+    const r=await fetch('/api/user/stats?'+params.toString());
+    const d=await r.json();
+    showResponse('user-response',d);
+  }catch(e){
+    showResponse('user-response',{error:e.message});
+  }finally{
+    btn.classList.remove('loading');
+    btn.textContent=t[lang]['btn-send'];
+  }
+}
+
+function tryDockerStats(){
+  const u=document.getElementById('docker-stats-username').value;
+  if(!u)return;
+  const btn=document.getElementById('btn-docker-stats');
+  const image=document.getElementById('docker-stats-image');
+  btn.classList.add('loading');
+  btn.textContent=t[lang]['loading'];
+  image.onload=()=>{
+    btn.classList.remove('loading');
+    btn.textContent=t[lang]['btn-preview'];
+  };
+  image.onerror=()=>{
+    btn.classList.remove('loading');
+    btn.textContent=t[lang]['btn-preview'];
+  };
+  image.src=buildRelativeUrl('/api/docker-stats',{username:u,t:Date.now()});
+}
+
+async function tryRepoDetails(){
+  const n=document.getElementById('repo-namespace').value;
+  const r=document.getElementById('repo-name').value;
+  if(!n||!r)return;
+  const btn=document.getElementById('btn-repo');
+  btn.classList.add('loading');
+  btn.textContent=t[lang]['loading'];
+  try{
+    const res=await fetch('/api/repo/details?namespace='+encodeURIComponent(n)+'&repo='+encodeURIComponent(r));
+    const d=await res.json();
+    showResponse('repo-response',d);
+  }catch(e){
+    showResponse('repo-response',{error:e.message});
+  }finally{
+    btn.classList.remove('loading');
+    btn.textContent=t[lang]['btn-send'];
+  }
+}
+
+async function tryRepoTags(){
+  const n=document.getElementById('tags-namespace').value;
+  const r=document.getElementById('tags-repo').value;
+  const l=document.getElementById('tags-limit').value;
+  if(!n||!r)return;
+  const btn=document.getElementById('btn-tags');
+  btn.classList.add('loading');
+  btn.textContent=t[lang]['loading'];
+  try{
+    const res=await fetch('/api/repo/tags?namespace='+encodeURIComponent(n)+'&repo='+encodeURIComponent(r)+'&limit='+(l||100));
+    const d=await res.json();
+    showResponse('tags-response',d);
+  }catch(e){
+    showResponse('tags-response',{error:e.message});
+  }finally{
+    btn.classList.remove('loading');
+    btn.textContent=t[lang]['btn-send'];
+  }
+}
+
+async function trySearch(){
+  const q=document.getElementById('search-q').value;
+  const p=document.getElementById('search-page').value;
+  const ps=document.getElementById('search-pagesize').value;
+  if(!q)return;
+  const btn=document.getElementById('btn-search');
+  btn.classList.add('loading');
+  btn.textContent=t[lang]['loading'];
+  try{
+    const res=await fetch('/api/search?q='+encodeURIComponent(q)+'&page='+(p||1)+'&page_size='+(ps||25));
+    const d=await res.json();
+    showResponse('search-response',d);
+  }catch(e){
+    showResponse('search-response',{error:e.message});
+  }finally{
+    btn.classList.remove('loading');
+    btn.textContent=t[lang]['btn-send'];
+  }
+}
+
+let statsCache=null,statsTime=0;
+async function loadStats(){
+  const now=Date.now();
+  if(statsCache&&(now-statsTime)<30000)return;
+  try{
+    const r=await fetch('/api/stats');
+    const s=await r.json();
+    statsCache=s;
+    statsTime=now;
+    document.getElementById('totalCalls').textContent=(s.totalCalls||0).toLocaleString();
+    document.getElementById('userStatsCalls').textContent=(s.byEndpoint['user/stats']||0).toLocaleString();
+    document.getElementById('repoDetailsCalls').textContent=(s.byEndpoint['repo/details']||0).toLocaleString();
+    document.getElementById('repoTagsCalls').textContent=(s.byEndpoint['repo/tags']||0).toLocaleString();
+  }catch(e){
+    console.error('Stats load error:',e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  loadStats();
+  setInterval(loadStats,10000);
+  updateUserUrl();
+  updateDockerStatsUrl();
+  updateRepoUrl();
+  updateTagsUrl();
+  updateSearchUrl();
+});
+</script>
+<footer class="site-footer">
+<div class="footer-content">
+<div class="footer-section">
+<h4 data-i18n="footer-contribute">Contribute</h4>
+<p data-i18n="footer-contribute-desc">Found a bug or want to contribute?</p>
+<div class="footer-links">
+<a href="https://github.com/InnoNestX/docker-hub-pull-counter/issues" target="_blank" rel="noopener">
+<span class="icon">🐛</span> <span data-i18n="footer-report-bug">Report Bug</span>
+</a>
+<a href="https://github.com/InnoNestX/docker-hub-pull-counter/pulls" target="_blank" rel="noopener">
+<span class="icon">🔧</span> <span data-i18n="footer-submit-pr">Submit PR</span>
+</a>
+<a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">
+<span class="icon">⭐</span> <span data-i18n="footer-star-repo">Star Repo</span>
+</a>
+</div>
+</div>
+<div class="footer-section">
+<h4 data-i18n="footer-support">Support</h4>
+<p data-i18n="footer-support-desc">Enjoy the API? Support the project!</p>
+<div class="footer-links">
+<a href="https://github.com/sponsors/InnoNestX" target="_blank" rel="noopener">
+<span class="icon">💖</span> <span data-i18n="footer-sponsor">Sponsor</span>
+</a>
+<a href="https://www.buymeacoffee.com/xuxuclassmate" target="_blank" rel="noopener">
+<span class="icon">☕</span> <span data-i18n="footer-coffee">Buy Me a Coffee</span>
+</a>
+<a href="https://github.com/InnoNestX/docker-hub-pull-counter/discussions" target="_blank" rel="noopener">
+<span class="icon">💬</span> <span data-i18n="footer-discussions">Discussions</span>
+</a>
+</div>
+</div>
+</div>
+<div class="footer-bottom">
+<p>© 2026 InnoNestX. <span data-i18n="footer-made-with">Made with</span> ❤️ <span data-i18n="footer-for-community">for the community</span>.</p>
+</div>
+</footer>
+</body>
+</html>

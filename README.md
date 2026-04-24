@@ -1,0 +1,180 @@
+# Docker Hub API Gateway
+
+[![GitHub stars](https://img.shields.io/github/stars/InnoNestX/docker-hub-pull-counter)](https://github.com/InnoNestX/docker-hub-pull-counter)
+[![License](https://img.shields.io/github/license/InnoNestX/docker-hub-pull-counter)](https://github.com/InnoNestX/docker-hub-pull-counter/blob/main/LICENSE)
+[![Total API Calls](https://img.shields.io/endpoint?url=https://docker-hub-pull-counter.vercel.app/api/stats)](https://docker-hub-pull-counter.vercel.app/api/stats)
+
+🐛 [Report Bug](https://github.com/InnoNestX/docker-hub-pull-counter/issues) · 🔧 [Submit PR](https://github.com/InnoNestX/docker-hub-pull-counter/pulls) · ⭐ [Star Repo](https://github.com/InnoNestX/docker-hub-pull-counter) · 💖 [Sponsor](https://github.com/sponsors/InnoNestX) · 💬 [Discussions](https://github.com/InnoNestX/docker-hub-pull-counter/discussions)
+
+## ✨ Features
+
+📊 **User Statistics** - Get total pull counts across all repositories
+🖼️ **Docker Stats Card** - Embed Docker Hub stats as an SVG card
+📦 **Repository Details** - Fetch detailed repository information
+🏷️ **Tag Listing** - List all image tags for a repository
+🔍 **Search** - Search Docker Hub repositories
+🌐 **Bilingual** - English & Chinese support
+🧪 **Interactive Testing** - Try APIs directly in the documentation
+⚡ **Fast** - Built with Hono.js plus in-memory and Redis-backed caching
+
+## 🚀 Quick Start
+
+### Deploy to Vercel
+
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+### Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+Visit http://localhost:3000
+
+## 📖 API Endpoints
+
+### GET /api/user/stats
+
+Get total pull counts for a Docker Hub user.
+
+| Parameter | Type   | Required | Description                      |
+|-----------|--------|----------|----------------------------------|
+| username  | string | ✅       | Docker Hub username              |
+| fields    | string | ❌       | Comma-separated fields to return |
+
+Example:
+
+```bash
+curl "http://localhost:3000/api/user/stats?username=xuxuclassmate"
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "username": "xuxuclassmate",
+  "repositoryCount": 5,
+  "totalPulls": 123456,
+  "totalStars": 789,
+  "repositories": [...],
+  "timestamp": "2026-04-06T10:00:00.000Z"
+}
+```
+
+### GET /api/docker-stats
+
+Returns an SVG card for Docker Hub stats.
+
+| Parameter | Type   | Required | Description          |
+|-----------|--------|----------|----------------------|
+| username  | string | ✅       | Docker Hub username  |
+
+Example:
+
+```html
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate" alt="Docker Hub Stats Card" />
+```
+
+### GET /api/repo/details
+
+Get detailed information about a repository.
+
+| Parameter | Type   | Required | Description          |
+|-----------|--------|----------|----------------------|
+| namespace | string | ✅       | Docker Hub namespace |
+| repo      | string | ✅       | Repository name      |
+
+### GET /api/repo/tags
+
+List all tags for a repository.
+
+| Parameter | Type    | Required | Description                    |
+|-----------|---------|----------|--------------------------------|
+| namespace | string  | ✅       | Docker Hub namespace           |
+| repo      | string  | ✅       | Repository name                |
+| limit     | integer | ❌       | Max tags to return (default: 100) |
+
+### GET /api/search
+
+Search Docker Hub repositories.
+
+| Parameter | Type    | Required | Description                    |
+|-----------|---------|----------|--------------------------------|
+| q         | string  | ✅       | Search query                   |
+| page      | integer | ❌       | Page number (default: 1)       |
+| page_size | integer | ❌       | Results per page (default: 25)|
+
+## Docker Hub Stats Card
+
+Embed a live SVG card anywhere that supports an image tag. The card reuses the internal cached stats pipeline, so it does not need to call the public JSON endpoint first.
+
+```html
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate" alt="Docker Hub Stats Card" />
+```
+
+The card includes:
+- Total Pulls
+- Repository Count
+- Total Stars
+
+## ⚡ Performance & Caching
+
+User statistics are loaded through a shared data layer designed for reuse by future endpoints such as badges or org stats.
+
+- In-memory cache is the first read layer with a default TTL of 5 minutes
+- Redis stores the latest user snapshot so cold starts can skip Docker Hub fetches
+- `/api/internal/refresh-stats` is available for scheduled refreshes from Vercel Pro cron jobs or any external scheduler
+- On cache miss, the service falls back to Redis, then to Docker Hub as the final source of truth
+
+> **Note:** If you deploy on Vercel Hobby, built-in cron jobs are limited to once per day. For 5-10 minute refresh intervals, use an external scheduler or upgrade the project to Vercel Pro.
+
+## 🌍 Interactive Documentation
+
+Visit the deployed URL to access the interactive API documentation with:
+
+- Live testing interface
+- Parameter customization
+- SVG card preview
+- Real-time response display
+- Language switcher (EN/中文)
+
+## ⚠️ Rate Limiting
+
+- Unauthenticated: ~100-200 requests/hour
+- Authenticated: Higher limits (configure DOCKER_USERNAME and DOCKER_PASSWORD)
+
+## 🔐 Environment Variables
+
+| Variable                  | Description                                                        |
+|---------------------------|--------------------------------------------------------------------|
+| DOCKER_USERNAME           | Docker Hub username for authenticated Docker Hub requests (optional)|
+| DOCKER_PASSWORD           | Docker Hub password for authenticated Docker Hub requests (optional)|
+| UPSTASH_REDIS_REST_URL   | Upstash Redis REST URL for usage stats and cached user snapshots  |
+| UPSTASH_REDIS_REST_TOKEN | Upstash Redis REST token                                           |
+| CRON_SECRET               | Optional secret used to protect the scheduled refresh endpoint     |
+| USER_STATS_CACHE_TTL_MS  | Optional in-memory cache TTL in milliseconds (default: 300000)     |
+
+## 📄 License
+
+MIT
+
+## 💖 Support
+
+If this project helps you, consider supporting us:
+
+- 🌟 [GitHub Sponsors](https://github.com/sponsors/InnoNestX) - Become a sponsor
+- ☕ [Buy Me a Coffee](https://buymeacoffee.com/xuxuclassmate) - One-time support
+- ⭐ [Star this repo](https://github.com/InnoNestX/docker-hub-pull-counter) - It's free and means a lot!
+
+## 👤 Author
+
+**XuXuClassMate**
+
+- GitHub: [@XuXuClassMate](https://github.com/XuXuClassMate)
+- Docker Hub: [xuxuclassmate](https://hub.docker.com/u/xuxuclassmate)
+- Organization: [InnoNestX](https://github.com/InnoNestX)

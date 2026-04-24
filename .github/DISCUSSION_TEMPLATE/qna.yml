@@ -1,0 +1,30 @@
+title: "Q&A"
+about: Ask questions and get answers
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? Search existing discussions first, then ask here!
+  - type: input
+    id: endpoint
+    attributes:
+      label: Related Endpoint (if applicable)
+      description: Which API endpoint is your question about?
+      placeholder: "/api/user/stats"
+    validations:
+      required: false
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What do you want to know?
+      placeholder: "How do I...?"
+    validations:
+      required: true
+  - type: textarea
+    id: attempts
+    attributes:
+      label: What Have You Tried?
+      description: Describe any attempts to solve this yourself
+    validations:
+      required: false

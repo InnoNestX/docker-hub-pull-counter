@@ -1,0 +1,22 @@
+title: "General Discussion"
+about: General discussions about the project
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Welcome to the discussion! Please keep conversations respectful and on-topic.
+  - type: textarea
+    id: topic
+    attributes:
+      label: Discussion Topic
+      description: What would you like to discuss?
+      placeholder: "I'd like to discuss..."
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Provide more context or details
+    validations:
+      required: false
