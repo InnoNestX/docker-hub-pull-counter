@@ -13,9 +13,13 @@
 📦 **Repository Details** - Fetch detailed repository information
 🏷️ **Tag Listing** - List all image tags for a repository
 🔍 **Search** - Search Docker Hub repositories
+📋 **Batch Stats** - Get stats for multiple users in one request
+🏆 **Popular Repos** - Discover popular Docker Hub repositories
+📄 **OpenAPI Spec** - Full OpenAPI specification endpoint
 🌐 **Bilingual** - English & Chinese support
 🧪 **Interactive Testing** - Try APIs directly in the documentation
 ⚡ **Fast** - Built with Hono.js plus in-memory and Redis-backed caching
+📊 **Rate Limiting** - Built-in rate limit headers for API protection
 
 ## 🚀 Quick Start
 
@@ -108,6 +112,58 @@ Search Docker Hub repositories.
 | q         | string  | ✅       | Search query                   |
 | page      | integer | ❌       | Page number (default: 1)       |
 | page_size | integer | ❌       | Results per page (default: 25)|
+
+### GET /api/batch/stats
+
+Get statistics for multiple Docker Hub users in a single request.
+
+| Parameter  | Type   | Required | Description                           |
+|------------|--------|----------|---------------------------------------|
+| usernames  | string | ✅       | Comma-separated list of usernames (max 10) |
+
+Example:
+
+```bash
+curl "http://localhost:3000/api/batch/stats?usernames=node,python,golang"
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "total": 3,
+  "successful": 3,
+  "failed": 0,
+  "results": [...],
+  "timestamp": "2026-04-06T10:00:00.000Z"
+}
+```
+
+### GET /api/popular/repos
+
+Get popular Docker Hub repositories.
+
+| Parameter | Type    | Required | Description                        |
+|-----------|---------|----------|------------------------------------|
+| page      | integer | ❌       | Page number (default: 1)           |
+| page_size | integer | ❌       | Results per page (default: 25, max: 100) |
+
+Example:
+
+```bash
+curl "http://localhost:3000/api/popular/repos?page=1&page_size=10"
+```
+
+### GET /api/openapi.json
+
+Get the OpenAPI specification for this API in JSON format.
+
+Example:
+
+```bash
+curl "http://localhost:3000/api/openapi.json"
+```
 
 ## Docker Hub Stats Card
 
