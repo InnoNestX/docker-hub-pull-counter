@@ -204,6 +204,36 @@ Example:
 curl "http://localhost:3000/api/openapi.json"
 ```
 
+### GET /api/internal/refresh-stats
+
+Force-refresh cached stats for all known usernames. This endpoint is designed for scheduled refreshes from Vercel Pro cron jobs or any external scheduler (e.g., GitHub Actions, cron services).
+
+If `CRON_SECRET` environment variable is set, requests must include `Authorization: Bearer <CRON_SECRET>` header.
+
+**Note:** If deploying on Vercel Hobby, built-in cron jobs are limited to once per day. For 5-10 minute refresh intervals, use an external scheduler or upgrade to Vercel Pro.
+
+Example:
+
+```bash
+# Without secret (if CRON_SECRET is not set)
+curl "https://docker-hub-pull-counter.vercel.app/api/internal/refresh-stats"
+
+# With secret
+curl -H "Authorization: Bearer my-secret" "https://docker-hub-pull-counter.vercel.app/api/internal/refresh-stats"
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "total": 1,
+  "refreshed": ["xuxuclassmate"],
+  "failed": [],
+  "timestamp": "2026-04-24T11:14:28.109Z"
+}
+```
+
 ## Docker Hub Stats Card
 
 Embed a live SVG card anywhere that supports an image tag. The card reuses the internal cached stats pipeline, so it does not need to call the public JSON endpoint first.
