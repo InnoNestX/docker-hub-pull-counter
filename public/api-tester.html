@@ -49,6 +49,39 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .page-title{padding:48px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px}
 .page-title h1{font-size:2rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
 .page-title p{color:var(--text-dim);font-size:1rem}
+.stats-section{background:linear-gradient(135deg,rgba(30,41,59,0.95),rgba(15,23,42,0.9));border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:32px;position:relative;overflow:hidden}
+.stats-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.5),transparent)}
+.stats-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.stats-title-group{display:flex;align-items:center;gap:12px}
+.stats-title{font-size:0.875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim)}
+.live-indicator{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--success)}
+.live-dot{width:8px;height:8px;background:var(--success);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.9)}}
+.countdown{font-size:0.75rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
+.stats-main{display:flex;gap:32px;flex-wrap:wrap}
+.stats-total{flex:1;min-width:200px}
+.stats-total-label{font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.stats-total-value{display:flex;align-items:baseline;gap:12px}
+.stats-total-number{font-size:3rem;font-weight:700;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent),#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stats-total-suffix{font-size:1rem;color:var(--text-dim)}
+.stats-chart{flex:2;min-width:300px}
+.chart-title{font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px}
+.chart-bars{display:flex;flex-direction:column;gap:10px}
+.chart-bar-row{display:flex;align-items:center;gap:12px}
+.chart-bar-label{flex:0 0 140px;font-size:0.8rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono',monospace}
+.chart-bar-container{flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:6px;overflow:hidden;position:relative}
+.chart-bar{height:100%;background:linear-gradient(90deg,var(--accent),rgba(59,130,246,0.6));border-radius:6px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);min-width:2px}
+.chart-bar-value{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:0.7rem;font-weight:600;color:var(--text);font-family:'JetBrains Mono',monospace}
+.stats-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)}
+.stats-updated{font-size:0.75rem;color:var(--text-dim)}
+.stats-refresh{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-dim);cursor:pointer;border:none;background:transparent;transition:color 0.2s}
+.stats-refresh:hover{color:var(--accent)}
+.stats-loading{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text-dim)}
+.stats-error{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;color:var(--error);text-align:center}
+.stats-error .icon{font-size:2rem;margin-bottom:12px}
+.stats-skeleton .stats-total-number{background:rgba(255,255,255,0.1);border-radius:8px;animation:shimmer 1.5s infinite}
+.stats-skeleton .chart-bar{background:rgba(255,255,255,0.1);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{opacity:0.5}50%{opacity:1}100%{opacity:0.5}}
 .tester-grid{display:grid;grid-template-columns:380px 1fr;gap:32px;padding-bottom:64px}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
@@ -169,6 +202,50 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 <div class="page-title">
   <h1 data-i18n="page-title">API Tester</h1>
   <p data-i18n="page-desc">Test Docker Hub API endpoints interactively</p>
+</div>
+<div class="stats-section" id="stats-section">
+  <div class="stats-loading" id="stats-loading">
+    <span class="spinner"></span> <span data-i18n="stats-loading">Loading stats...</span>
+  </div>
+  <div class="stats-error hidden" id="stats-error">
+    <div class="icon">⚠️</div>
+    <p data-i18n="stats-error">Failed to load stats</p>
+    <button class="stats-refresh" onclick="loadStats()">
+      <span>↻</span> <span data-i18n="stats-retry">Retry</span>
+    </button>
+  </div>
+  <div class="stats-content hidden" id="stats-content">
+    <div class="stats-header">
+      <div class="stats-title-group">
+        <span class="stats-title" data-i18n="stats-title">API Statistics</span>
+        <div class="live-indicator">
+          <div class="live-dot"></div>
+          <span data-i18n="stats-live">Live</span>
+        </div>
+      </div>
+      <div class="countdown" id="countdown">30s</div>
+    </div>
+    <div class="stats-main">
+      <div class="stats-total">
+        <div class="stats-total-label" data-i18n="stats-total-label">Total API Calls</div>
+        <div class="stats-total-value">
+          <span class="stats-total-number" id="total-calls">-</span>
+        </div>
+      </div>
+      <div class="stats-chart">
+        <div class="chart-title" data-i18n="stats-endpoints">Top Endpoints</div>
+        <div class="chart-bars" id="chart-bars"></div>
+      </div>
+    </div>
+    <div class="stats-footer">
+      <div class="stats-updated">
+        <span data-i18n="stats-last-updated">Last updated:</span> <span id="last-updated">-</span>
+      </div>
+      <button class="stats-refresh" onclick="loadStats()">
+        <span>↻</span> <span data-i18n="stats-refresh">Refresh</span>
+      </button>
+    </div>
+  </div>
 </div>
 <div class="tester-grid">
 <div class="config-panel">
@@ -347,7 +424,16 @@ const translations={
     'footer-coffee':'Buy Me a Coffee',
     'footer-discussions':'Discussions',
     'footer-made-with':'Made with',
-    'footer-for-community':'for the community'
+    'footer-for-community':'for the community',
+    'stats-title':'API Statistics',
+    'stats-total-label':'Total API Calls',
+    'stats-last-updated':'Last updated:',
+    'stats-live':'Live',
+    'stats-endpoints':'Top Endpoints',
+    'stats-refresh':'Refresh',
+    'stats-loading':'Loading stats...',
+    'stats-error':'Failed to load stats',
+    'stats-retry':'Retry'
   },
   zh:{
     'nav-docs':'文档',
@@ -386,7 +472,16 @@ const translations={
     'footer-coffee':'请我喝咖啡',
     'footer-discussions':'讨论区',
     'footer-made-with':'用',
-    'footer-for-community':'为社区制作'
+    'footer-for-community':'为社区制作',
+    'stats-title':'API 统计',
+    'stats-total-label':'总调用次数',
+    'stats-last-updated':'最后更新:',
+    'stats-live':'实时',
+    'stats-endpoints':'热门接口',
+    'stats-refresh':'刷新',
+    'stats-loading':'加载统计数据...',
+    'stats-error':'加载统计失败',
+    'stats-retry':'重试'
   }
 };
 
@@ -667,10 +762,77 @@ function formatSize(bytes){
   return(bytes/(1024*1024)).toFixed(2)+' MB';
 }
 
+// Stats loading
+let statsInterval=null;
+let countdownInterval=null;
+let secondsUntilRefresh=30;
+
+async function loadStats(){
+  const loadingEl=document.getElementById('stats-loading');
+  const errorEl=document.getElementById('stats-error');
+  const contentEl=document.getElementById('stats-content');
+
+  loadingEl.classList.remove('hidden');
+  errorEl.classList.add('hidden');
+  contentEl.classList.add('hidden');
+
+  try{
+    const resp=await fetch('/api/stats');
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+
+    loadingEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+    document.getElementById('total-calls').textContent=(data.totalCalls||0).toLocaleString();
+    document.getElementById('last-updated').textContent=data.lastUpdated?new Date(data.lastUpdated).toLocaleString():'-';
+
+    const chartBars=document.getElementById('chart-bars');
+    const endpoints=data.endpoints||[];
+    const top6=endpoints.slice(0,6);
+    const maxCalls=Math.max(...top6.map(e=>e.calls||0),1);
+
+    chartBars.innerHTML=top6.map(e=>`
+      <div class="chart-bar-row">
+        <div class="chart-bar-label">${e.endpoint||'-'}</div>
+        <div class="chart-bar-container">
+          <div class="chart-bar" style="width:${(e.calls/maxCalls*100).toFixed(1)}%"></div>
+          <span class="chart-bar-value">${(e.calls||0).toLocaleString()}</span>
+        </div>
+      </div>
+    `).join('');
+
+    secondsUntilRefresh=30;
+  }catch(err){
+    loadingEl.classList.add('hidden');
+    errorEl.classList.remove('hidden');
+  }
+}
+
+function startStatsRefresh(){
+  if(statsInterval)clearInterval(statsInterval);
+  if(countdownInterval)clearInterval(countdownInterval);
+
+  loadStats();
+
+  countdownInterval=setInterval(()=>{
+    secondsUntilRefresh--;
+    const cd=document.getElementById('countdown');
+    if(cd)cd.textContent=secondsUntilRefresh+'s';
+    if(secondsUntilRefresh<=0)secondsUntilRefresh=30;
+  },1000);
+
+  statsInterval=setInterval(()=>{
+    loadStats();
+    secondsUntilRefresh=30;
+  },30000);
+}
+
 // Init
 document.addEventListener('DOMContentLoaded',()=>{
   renderParams();
   updateUrlPreview();
+  startStatsRefresh();
 });
 </script>
 </body>
