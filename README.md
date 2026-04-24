@@ -74,14 +74,53 @@ Response:
 
 Returns an SVG card for Docker Hub stats.
 
-| Parameter | Type   | Required | Description          |
-|-----------|--------|----------|----------------------|
-| username  | string | ✅       | Docker Hub username  |
+| Parameter | Type   | Required | Description                      |
+|-----------|--------|----------|----------------------------------|
+| username  | string | ✅       | Docker Hub username              |
+| style     | string | ❌       | Card style: gradient, minimal, dark, light, github (default: gradient) |
 
 Example:
 
 ```html
 <img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate" alt="Docker Hub Stats Card" />
+```
+
+#### Available Card Styles
+
+| Style     | Description                          |
+|-----------|--------------------------------------|
+| gradient  | Blue gradient (default)              |
+| minimal   | Clean white minimal style            |
+| dark      | Pure black dark style               |
+| light     | Light blue sky style                 |
+| github    | GitHub-inspired dark style           |
+
+Example URLs for each style:
+
+```html
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&style=gradient" alt="Gradient Card" />
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&style=minimal" alt="Minimal Card" />
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&style=dark" alt="Dark Card" />
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&style=light" alt="Light Card" />
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&style=github" alt="GitHub Card" />
+```
+
+### GET /api/docker-stats/styles
+
+List all available card styles.
+
+```bash
+curl "https://docker-hub-pull-counter.vercel.app/api/docker-stats/styles"
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "styles": ["gradient", "minimal", "dark", "light", "github"],
+  "default": "gradient"
+}
 ```
 
 ### GET /api/repo/details
