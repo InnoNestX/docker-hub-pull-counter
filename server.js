@@ -657,7 +657,16 @@ app.get('/api/popular/repos', async (c) => {
 
 // API: Stats (public) - don't track this call to avoid inflating stats
 app.get('/api/stats', async (c) => {
-  return c.json(await getStats());
+  const stats = await getStats();
+  // Include shields.io-compatible format for badge endpoints
+  return c.json({
+    ...stats,
+    // shields.io endpoint badge format
+    schemaVersion: 1,
+    label: "total calls",
+    message: String(stats.totalCalls),
+    color: "blue"
+  });
 });
 
 // API: Background refresh for known usernames
