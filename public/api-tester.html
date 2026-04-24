@@ -21,7 +21,8 @@
 :root{--bg:#0a0a0a;--surface:#111;--border:#222;--text:#fff;--text-dim:#888;--accent:#3b82f6;--success:#22c55e;--error:#ef4444;--warning:#f59e0b;--code-bg:#1a1a1a}
 [data-theme="light"]{--bg:#ffffff;--surface:#f6f8fa;--border:#d0d7de;--text:#1f2328;--text-dim:#656d76;--accent:#0969da;--success:#1a7f37;--code-bg:#f6f8fa}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+html{overflow-x:hidden}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;max-width:100vw;overflow-x:hidden}
 .container{max-width:1200px;margin:0 auto;padding:0 24px}
 header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);z-index:100}
 .header-inner{display:flex;justify-content:space-between;align-items:center}
@@ -59,10 +60,15 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .form-select:focus{outline:none;border-color:var(--accent)}
 .endpoint-selector{display:flex;align-items:center;gap:12px;margin-bottom:24px}
 .method-badge{font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:600;padding:6px 12px;border-radius:6px;background:rgba(34,197,94,0.15);color:var(--success)}
-.url-preview{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-dim);word-break:break-all;min-height:52px;display:flex;align-items:center}
+.url-preview{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-dim);word-break:break-all;min-height:52px;display:flex;align-items:center;gap:8px;position:relative}
 .url-preview .base{color:var(--accent)}
 .url-preview .path{color:var(--text)}
 .url-preview .params{color:var(--text-dim)}
+.url-preview .copy-btn{flex-shrink:0;background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;cursor:pointer;color:var(--text-dim);font-size:0.75rem;transition:all 0.2s;display:flex;align-items:center;gap:4px;position:relative}
+.url-preview .copy-btn:hover{background:var(--surface);border-color:var(--accent);color:var(--accent)}
+.url-preview .copy-btn.copied{background:rgba(34,197,94,0.15);border-color:var(--success);color:var(--success)}
+.url-preview .copy-btn .tooltip{position:absolute;bottom:calc(100%+6px);right:0;background:var(--text);color:var(--bg);font-size:0.7rem;padding:4px 8px;border-radius:4px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.url-preview .copy-btn:hover .tooltip{opacity:1}
 .btn{background:var(--accent);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:500;cursor:pointer;font-size:0.875rem;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn:hover{opacity:0.9}
 .btn:active{transform:scale(0.98)}
@@ -99,6 +105,15 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .mobile-nav-item{display:block;padding:12px 16px;margin:4px 0;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.9rem;transition:all 0.2s}
 .mobile-nav-item:hover{background:var(--bg);color:var(--text)}
 .mobile-nav-item.active{background:var(--bg);color:var(--accent)}
+.site-footer{background:var(--surface);border-top:1px solid var(--border);padding:48px 24px 24px;margin-top:64px}
+.footer-content{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-bottom:32px}
+.footer-section h4{color:var(--text);font-size:0.9rem;font-weight:600;margin-bottom:8px}
+.footer-section p{color:var(--text-dim);font-size:0.8rem;margin-bottom:16px}
+.footer-links{display:flex;flex-direction:column;gap:8px}
+.footer-links a{color:var(--text-dim);text-decoration:none;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:color 0.2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-links .icon{font-size:1rem}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:0.8rem}
 @media(max-width:1024px){.tester-grid{grid-template-columns:1fr}}
 @media(max-width:768px){.menu-toggle{display:block}.header-links{display:none}.container{padding:0 16px}
   .page-title{padding:32px 0 24px}
@@ -108,6 +123,8 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
   .endpoint-selector{flex-direction:column;align-items:stretch}
   .form-select{background-position:right 12px center}
   .response-tabs{flex-wrap:wrap}
+  .footer-content{grid-template-columns:1fr;gap:24px}
+  .site-footer{padding:32px 16px 16px}
 }
 </style>
 </head>
@@ -127,9 +144,9 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
   </div>
   <div class="lang-switch">
     <div class="theme-switch">
-      <button class="theme-btn" data-theme="light" title="Light">☀️</button>
-      <button class="theme-btn" data-theme="dark" title="Dark">🌙</button>
-      <button class="theme-btn" data-theme="system" title="System">💻</button>
+      <button class="theme-btn" data-theme="light" title="Light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+      <button class="theme-btn" data-theme="dark" title="Dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      <button class="theme-btn" data-theme="system" title="System"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>
     </div>
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -167,6 +184,7 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
   <label class="form-label" data-i18n="url-preview-label">Request URL</label>
   <div class="url-preview" id="url-preview">
     <span class="base">docker-hub-pull-counter.vercel.app</span><span class="path" id="url-path"></span><span class="params" id="url-params"></span>
+    <button class="copy-btn" id="copy-url-btn" onclick="copyUrl()" title="Copy URL"><span>📋</span><span class="tooltip" id="copy-tooltip">Copy</span></button>
   </div>
 </div>
 <button class="btn btn-success btn-block" id="send-btn" onclick="sendRequest()">
@@ -211,15 +229,30 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 </div>
 </div>
 </main>
-<footer style="border-top:1px solid var(--border);padding:32px 0;margin-top:48px">
-  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
-    <div style="display:flex;gap:24px">
-      <a href="https://github.com/InnoNestX/docker-hub-pull-counter" style="color:var(--text-dim);text-decoration:none;font-size:0.875rem" data-i18n="footer-contribute">贡献</a>
-      <a href="https://innonest.cn/support" style="color:var(--text-dim);text-decoration:none;font-size:0.875rem" data-i18n="footer-support">支持</a>
-      <a href="https://innonest.cn" style="color:var(--text-dim);text-decoration:none;font-size:0.875rem" data-i18n="footer-home">首页</a>
-    </div>
-    <div style="color:var(--text-dim);font-size:0.875rem">© 2024 InnoNest. All rights reserved.</div>
+<footer class="site-footer">
+<div class="footer-content">
+<div class="footer-section">
+  <h4 data-i18n="footer-contribute">Contribute</h4>
+  <p data-i18n="footer-contribute-desc">Found a bug or want to contribute?</p>
+  <div class="footer-links">
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/issues" target="_blank"><span class="icon">🐛</span> <span data-i18n="footer-report-bug">Report Bug</span></a>
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/pulls" target="_blank"><span class="icon">🔧</span> <span data-i18n="footer-submit-pr">Submit PR</span></a>
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank"><span class="icon">⭐</span> <span data-i18n="footer-star-repo">Star Repo</span></a>
   </div>
+</div>
+<div class="footer-section">
+  <h4 data-i18n="footer-support">Support</h4>
+  <p data-i18n="footer-support-desc">Enjoy the API? Support the project!</p>
+  <div class="footer-links">
+    <a href="https://github.com/sponsors/InnoNestX" target="_blank"><span class="icon">💖</span> <span data-i18n="footer-sponsor">Sponsor</span></a>
+    <a href="https://www.buymeacoffee.com/innonest" target="_blank"><span class="icon">☕</span> <span data-i18n="footer-coffee">Buy Me a Coffee</span></a>
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/discussions" target="_blank"><span class="icon">💬</span> <span data-i18n="footer-discussions">Discussions</span></a>
+  </div>
+</div>
+</div>
+<div class="footer-bottom">
+  <p>© 2026 InnoNestX. <span data-i18n="footer-made-with">Made with</span> ❤️ <span data-i18n="footer-for-community">for the community</span>.</p>
+</div>
 </footer>
 <script>
 const BASE_URL='docker-hub-pull-counter.vercel.app';
@@ -294,8 +327,17 @@ const translations={
     'error-fetch':'Failed to fetch response',
     'hint-optional':'(optional)',
     'footer-contribute':'Contribute',
+    'footer-contribute-desc':'Found a bug or want to contribute?',
+    'footer-report-bug':'Report Bug',
+    'footer-submit-pr':'Submit PR',
+    'footer-star-repo':'Star Repo',
     'footer-support':'Support',
-    'footer-home':'Home'
+    'footer-support-desc':'Enjoy the API? Support the project!',
+    'footer-sponsor':'Sponsor',
+    'footer-coffee':'Buy Me a Coffee',
+    'footer-discussions':'Discussions',
+    'footer-made-with':'Made with',
+    'footer-for-community':'for the community'
   },
   zh:{
     'nav-docs':'文档',
@@ -324,8 +366,17 @@ const translations={
     'error-fetch':'获取响应失败',
     'hint-optional':'(可选)',
     'footer-contribute':'贡献',
+    'footer-contribute-desc':'发现 Bug 或想贡献代码？',
+    'footer-report-bug':'报告 Bug',
+    'footer-submit-pr':'提交 PR',
+    'footer-star-repo':'Star 仓库',
     'footer-support':'支持',
-    'footer-home':'首页'
+    'footer-support-desc':'喜欢这个 API？支持项目！',
+    'footer-sponsor':'赞助',
+    'footer-coffee':'请我喝咖啡',
+    'footer-discussions':'讨论区',
+    'footer-made-with':'用',
+    'footer-for-community':'为社区制作'
   }
 };
 
@@ -356,6 +407,24 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{
 function onEndpointChange(){
   renderParams();
   updateUrlPreview();
+}
+
+function copyUrl(){
+  const params=new URLSearchParams();
+  const select=document.getElementById('endpoint-select');
+  const endpoint=endpoints[select.value];
+  endpoint.params.forEach(p=>{
+    const input=document.getElementById('param-'+p.name);
+    if(input&&input.value.trim())params.set(p.name,input.value.trim());
+  });
+  const url='https://'+BASE_URL+endpoint.path+(params.toString()?'?'+params.toString():'');
+  navigator.clipboard.writeText(url).then(()=>{
+    const btn=document.getElementById('copy-url-btn');
+    const tooltip=document.getElementById('copy-tooltip');
+    btn.classList.add('copied');
+    tooltip.textContent='Copied!';
+    setTimeout(()=>{btn.classList.remove('copied');tooltip.textContent='Copy';},1500);
+  });
 }
 
 function renderParams(){
@@ -413,7 +482,7 @@ function renderResponse(){
     pre.textContent=JSON.stringify(lastResponse.body,null,2);
   }else{
     const headers={};
-    lastResponse.headers.forEach((v,k)=>headers[k]=v);
+    lastResponse.headers.forEach((k,v)=>headers[k]=v);
     pre.textContent=JSON.stringify(headers,null,2);
   }
 }
@@ -450,7 +519,7 @@ async function sendRequest(){
     }
   });
   
-  const url='https://'+BASE_URL+endpoint.path+'?'+params.toString();
+  const url='https://'+BASE_URL+endpoint.path+(params.toString()?'?'+params.toString():'');
   
   // Show loading
   btn.disabled=true;
@@ -509,10 +578,12 @@ async function sendRequest(){
     lastResponse={
       status:0,
       statusText:t('error-fetch'),
-      body:{error:error.message}
+      body:{error:error.message},
+      size:0
     };
     
     document.getElementById('response-meta').style.display='flex';
+    document.getElementById('response-time').style.display='flex';
     document.getElementById('response-tabs').style.display='flex';
     document.getElementById('response-body').classList.remove('hidden');
     
@@ -523,6 +594,9 @@ async function sendRequest(){
     currentTab='body';
     document.querySelectorAll('.response-tab').forEach(t=>t.classList.remove('active'));
     document.querySelector('.response-tab[data-tab="body"]').classList.add('active');
+    
+    document.getElementById('response-time-value').textContent='0ms';
+    document.getElementById('response-size').textContent='0 B';
     renderResponse();
   }finally{
     btn.disabled=false;
