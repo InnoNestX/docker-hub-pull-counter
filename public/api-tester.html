@@ -49,8 +49,8 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .page-title{padding:48px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px}
 .page-title h1{font-size:2rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
 .page-title p{color:var(--text-dim);font-size:1rem}
-.stats-section{background:linear-gradient(135deg,rgba(30,41,59,0.95),rgba(15,23,42,0.9));border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:24px;margin-bottom:32px;position:relative;overflow:hidden}
-.stats-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.5),transparent)}
+.stats-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:32px;position:relative;overflow:hidden}
+.stats-section::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
 .stats-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
 .stats-title-group{display:flex;align-items:center;gap:12px}
 .stats-title{font-size:0.875rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim)}
@@ -69,10 +69,10 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .chart-bars{display:flex;flex-direction:column;gap:10px}
 .chart-bar-row{display:flex;align-items:center;gap:12px}
 .chart-bar-label{flex:0 0 140px;font-size:0.8rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono',monospace}
-.chart-bar-container{flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:6px;overflow:hidden;position:relative}
-.chart-bar{height:100%;background:linear-gradient(90deg,var(--accent),rgba(59,130,246,0.6));border-radius:6px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);min-width:2px}
+.chart-bar-container{flex:1;height:24px;background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:6px;overflow:hidden;position:relative}
+.chart-bar{height:100%;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,transparent));border-radius:6px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);min-width:2px}
 .chart-bar-value{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:0.7rem;font-weight:600;color:var(--text);font-family:'JetBrains Mono',monospace}
-.stats-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)}
+.stats-footer{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
 .stats-updated{font-size:0.75rem;color:var(--text-dim)}
 .stats-refresh{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-dim);cursor:pointer;border:none;background:transparent;transition:color 0.2s}
 .stats-refresh:hover{color:var(--accent)}
@@ -788,16 +788,19 @@ async function loadStats(){
     document.getElementById('last-updated').textContent=data.lastUpdated?new Date(data.lastUpdated).toLocaleString():'-';
 
     const chartBars=document.getElementById('chart-bars');
-    const endpoints=data.endpoints||[];
-    const top6=endpoints.slice(0,6);
-    const maxCalls=Math.max(...top6.map(e=>e.calls||0),1);
+    const byEndpoint=data.byEndpoint||{};
+    const entries=Object.entries(byEndpoint)
+      .filter(([,count])=>count>0)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,6);
+    const maxCalls=Math.max(...entries.map(([,count])=>count),1);
 
-    chartBars.innerHTML=top6.map(e=>`
+    chartBars.innerHTML=entries.map(([endpoint,count])=>`
       <div class="chart-bar-row">
-        <div class="chart-bar-label">${e.endpoint||'-'}</div>
+        <div class="chart-bar-label">${endpoint||'-'}</div>
         <div class="chart-bar-container">
-          <div class="chart-bar" style="width:${(e.calls/maxCalls*100).toFixed(1)}%"></div>
-          <span class="chart-bar-value">${(e.calls||0).toLocaleString()}</span>
+          <div class="chart-bar" style="width:${(count/maxCalls*100).toFixed(1)}%"></div>
+          <span class="chart-bar-value">${count.toLocaleString()}</span>
         </div>
       </div>
     `).join('');
