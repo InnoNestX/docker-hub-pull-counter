@@ -6,8 +6,20 @@
 <title>Docker Hub API - API Tester</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+// 读取用户保存的主题偏好，默认为跟随系统
+(function(){
+  const saved=localStorage.getItem('theme')||'system';
+  if(saved==='system'){
+    document.documentElement.setAttribute('data-theme', window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+})();
+</script>
 <style>
 :root{--bg:#0a0a0a;--surface:#111;--border:#222;--text:#fff;--text-dim:#888;--accent:#3b82f6;--success:#22c55e;--error:#ef4444;--warning:#f59e0b;--code-bg:#1a1a1a}
+[data-theme="light"]{--bg:#ffffff;--surface:#f6f8fa;--border:#d0d7de;--text:#1f2328;--text-dim:#656d76;--accent:#0969da;--success:#1a7f37;--code-bg:#f6f8fa}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 .container{max-width:1200px;margin:0 auto;padding:0 24px}
@@ -23,6 +35,10 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .lang-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.875rem;transition:all 0.2s}
 .lang-btn:hover{border-color:var(--text-dim);color:var(--text)}
 .lang-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.theme-switch{display:flex;gap:4px;align-items:center}
+.theme-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:0.875rem;transition:all 0.2s}
+.theme-btn:hover{border-color:var(--text-dim);color:var(--text)}
+.theme-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 .page-title{padding:48px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px}
 .page-title h1{font-size:2rem;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
 .page-title p{color:var(--text-dim);font-size:1rem}
@@ -97,7 +113,10 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 </head>
 <body>
 <header><div class="container header-inner">
-  <div class="logo"><span>Docker</span>Hub API</div>
+  <a href="https://innonest.cn" class="logo" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+    <img src="https://avatars.githubusercontent.com/u/273979879?v=4" alt="InnoNest" style="width:32px;height:32px;border-radius:8px">
+    <span style="font-size:1.25rem;font-weight:700;letter-spacing:-0.5px">Docker<span>Hub</span></span>
+  </a>
   <div class="header-links">
     <a href="index.html" class="header-link">
       <span>📖</span> <span data-i18n="nav-docs">Documentation</span>
@@ -107,6 +126,11 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
     </a>
   </div>
   <div class="lang-switch">
+    <div class="theme-switch">
+      <button class="theme-btn" data-theme="light" title="Light">☀️</button>
+      <button class="theme-btn" data-theme="dark" title="Dark">🌙</button>
+      <button class="theme-btn" data-theme="system" title="System">💻</button>
+    </div>
     <button class="menu-toggle" onclick="toggleMenu()">☰</button>
     <button class="lang-btn active" onclick="setLang('en')">EN</button>
     <button class="lang-btn" onclick="setLang('zh')">中文</button>
@@ -187,6 +211,16 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 </div>
 </div>
 </main>
+<footer style="border-top:1px solid var(--border);padding:32px 0;margin-top:48px">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+    <div style="display:flex;gap:24px">
+      <a href="https://github.com/InnoNestX/docker-hub-pull-counter" style="color:var(--text-dim);text-decoration:none;font-size:0.875rem" data-i18n="footer-contribute">贡献</a>
+      <a href="https://innonest.cn/support" style="color:var(--text-dim);text-decoration:none;font-size:0.875rem" data-i18n="footer-support">支持</a>
+      <a href="https://innonest.cn" style="color:var(--text-dim);text-decoration:none;font-size:0.875rem" data-i18n="footer-home">首页</a>
+    </div>
+    <div style="color:var(--text-dim);font-size:0.875rem">© 2024 InnoNest. All rights reserved.</div>
+  </div>
+</footer>
 <script>
 const BASE_URL='docker-hub-pull-counter.vercel.app';
 let lang='en';
@@ -258,7 +292,10 @@ const translations={
     'param-page_size':'Page Size',
     'sending':'Sending...',
     'error-fetch':'Failed to fetch response',
-    'hint-optional':'(optional)'
+    'hint-optional':'(optional)',
+    'footer-contribute':'Contribute',
+    'footer-support':'Support',
+    'footer-home':'Home'
   },
   zh:{
     'nav-docs':'文档',
@@ -285,7 +322,10 @@ const translations={
     'param-page_size':'每页数量',
     'sending':'发送中...',
     'error-fetch':'获取响应失败',
-    'hint-optional':'(可选)'
+    'hint-optional':'(可选)',
+    'footer-contribute':'贡献',
+    'footer-support':'支持',
+    'footer-home':'首页'
   }
 };
 
@@ -305,6 +345,13 @@ function setLang(l){
 function toggleMenu(){
   document.querySelector('.mobile-menu').classList.toggle('active');
 }
+function setTheme(t){
+  localStorage.setItem('theme',t);
+  document.documentElement.setAttribute('data-theme',t==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):t);
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));
+}
+document.querySelectorAll('.theme-btn').forEach(b=>{b.classList.toggle('active',b.dataset.theme===(localStorage.getItem('theme')||'system'));b.onclick=()=>setTheme(b.dataset.theme);});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if((localStorage.getItem('theme')||'system')==='system')document.documentElement.setAttribute('data-theme',e.matches?'dark':'light');});
 
 function onEndpointChange(){
   renderParams();
