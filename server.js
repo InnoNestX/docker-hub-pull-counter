@@ -658,10 +658,17 @@ app.get('/api/popular/repos', async (c) => {
 // API: Stats (public) - don't track this call to avoid inflating stats
 app.get('/api/stats', async (c) => {
   const stats = await getStats();
-  // Include shields.io-compatible format for badge endpoints
   return c.json({
-    ...stats,
-    // shields.io endpoint badge format
+    totalCalls: stats.totalCalls,
+    byEndpoint: stats.byEndpoint,
+    lastUpdated: stats.lastUpdated
+  });
+});
+
+// API: Badge endpoint (shields.io-compatible) - returns ONLY shields.io fields
+app.get('/api/badge/total-calls', async (c) => {
+  const stats = await getStats();
+  return c.json({
     schemaVersion: 1,
     label: "total calls",
     message: String(stats.totalCalls),
