@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Docker Hub API - API Tester</title>
+<meta name="description" content="InnoNest Docker Hub Stats API - Free API to fetch Docker Hub repository stars, pull counts, and tag information. Interactive API tester included.">
+<meta name="theme-color" content="#0F172A">
+<meta property="og:title" content="Docker Hub Stats API Tester - InnoNest">
+<meta property="og:description" content="Free API to fetch Docker Hub repository stars, pull counts, and tags. Try it interactively.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><text y='.9em' font-size='80' x='10'>🐳</text></svg>">
+<title>Docker Hub Stats API Tester - InnoNest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>
@@ -86,8 +92,10 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .response-stat .value.success{color:var(--success)}
 .response-stat .value.error{color:var(--error)}
 .response-stat .value.warning{color:var(--warning)}
-.response-content{flex:1;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:300px;max-height:500px}
-.response-content pre{margin:0;padding:16px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:0.8rem;line-height:1.7;height:100%}
+.response-content{flex:1;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:300px;max-height:600px;display:flex;flex-direction:column}
+.response-content pre{margin:0;padding:16px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:0.8rem;line-height:1.7;height:100%;white-space:pre-wrap;word-break:break-word}
+.response-content .svg-render{margin:0;padding:16px;overflow:auto;height:100%;display:none}
+.response-content .svg-render.active{display:block}
 .response-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;color:var(--text-dim);text-align:center;padding:40px}
 .response-placeholder .icon{font-size:3rem;margin-bottom:16px;opacity:0.5}
 .response-placeholder p{font-size:0.9rem}
@@ -219,6 +227,7 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 </div>
 <div class="response-content" id="response-body">
   <pre id="response-pre"></pre>
+  <div class="svg-render" id="svg-render"></div>
 </div>
 <div class="response-placeholder" id="response-placeholder">
   <div class="icon">📡</div>
@@ -478,9 +487,25 @@ function renderResponse(){
   if(!lastResponse)return;
   
   const pre=document.getElementById('response-pre');
+  const svgRender=document.getElementById('svg-render');
+  
   if(currentTab==='body'){
-    pre.textContent=JSON.stringify(lastResponse.body,null,2);
+    if(lastResponse.isSvg){
+      pre.style.display='none';
+      svgRender.innerHTML=lastResponse.body;
+      svgRender.classList.add('active');
+    }else{
+      pre.style.display='block';
+      svgRender.classList.remove('active');
+      if(lastResponse.isRawText && typeof lastResponse.body==='string'){
+        pre.textContent=lastResponse.body;
+      }else{
+        pre.textContent=JSON.stringify(lastResponse.body,null,2);
+      }
+    }
   }else{
+    pre.style.display='block';
+    svgRender.classList.remove('active');
     const headers={};
     lastResponse.headers.forEach((k,v)=>headers[k]=v);
     pre.textContent=JSON.stringify(headers,null,2);
@@ -530,6 +555,8 @@ async function sendRequest(){
   document.getElementById('response-time').style.display='none';
   document.getElementById('response-body').classList.add('hidden');
   document.getElementById('response-pre').textContent='';
+  document.getElementById('svg-render').classList.remove('active');
+  document.getElementById('svg-render').innerHTML='';
   
   const startTime=performance.now();
   
@@ -537,14 +564,23 @@ async function sendRequest(){
     const response=await fetch(url);
     const endTime=performance.now();
     const duration=Math.round(endTime-startTime);
+    const ct=response.headers.get('content-type')||'';
+    const isSvg=ct.includes('svg')||ct.includes('image/svg');
     const text=await response.text();
     const size=new Blob([text]).size;
     
     let body;
-    try{
-      body=JSON.parse(text);
-    }catch{
+    let isRawText=false;
+    if(isSvg){
       body=text;
+      isRawText=true;
+    }else{
+      try{
+        body=JSON.parse(text);
+      }catch{
+        body=text;
+        isRawText=true;
+      }
     }
     
     lastResponse={
@@ -553,13 +589,15 @@ async function sendRequest(){
       headers:response.headers,
       body:body,
       duration:duration,
-      size:size
+      size:size,
+      isRawText:isRawText,
+      isSvg:isSvg
     };
     
     // Update UI
     document.getElementById('response-meta').style.display='flex';
     document.getElementById('response-time').style.display='flex';
-    document.getElementById('response-tabs').style.display='flex';
+    document.getElementById('response-tabs').style.display=isSvg?'none':'flex';
     document.getElementById('response-body').classList.remove('hidden');
     
     const statusEl=document.getElementById('response-status');
@@ -579,24 +617,27 @@ async function sendRequest(){
       status:0,
       statusText:t('error-fetch'),
       body:{error:error.message},
-      size:0
+      size:0,
+      isRawText:false,
+      isSvg:false
     };
     
     document.getElementById('response-meta').style.display='flex';
     document.getElementById('response-time').style.display='flex';
-    document.getElementById('response-tabs').style.display='flex';
+    document.getElementById('response-tabs').style.display='none';
     document.getElementById('response-body').classList.remove('hidden');
+    document.getElementById('svg-render').classList.remove('active');
     
     const statusEl=document.getElementById('response-status');
     statusEl.textContent=t('error-fetch');
     statusEl.className='value error';
     
+    document.getElementById('response-time-value').textContent='0ms';
+    document.getElementById('response-size').textContent='0 B';
+    
     currentTab='body';
     document.querySelectorAll('.response-tab').forEach(t=>t.classList.remove('active'));
     document.querySelector('.response-tab[data-tab="body"]').classList.add('active');
-    
-    document.getElementById('response-time-value').textContent='0ms';
-    document.getElementById('response-size').textContent='0 B';
     renderResponse();
   }finally{
     btn.disabled=false;
