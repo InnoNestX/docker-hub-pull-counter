@@ -280,7 +280,8 @@ const endpoints={
   'docker-stats':{
     path:'/api/docker-stats',
     params:[
-      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'}
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'style',label:'Style',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
     ]
   },
   'repo-details':{
@@ -441,19 +442,34 @@ function renderParams(){
   const endpoint=endpoints[select.value];
   const container=document.getElementById('params-container');
   const descKey=lang==='zh'?'desc_zh':'desc_en';
-  
-  container.innerHTML=endpoint.params.map(p=>`
+
+  container.innerHTML=endpoint.params.map(p=>{
+    if(p.type==='select'){
+      return `
     <div class="form-group">
       <label class="form-label">
         ${t('param-'+p.name)}${p.required?'<span class="required">*</span>':' <span style="opacity:0.6;font-weight:400;text-transform:none">'+t('hint-optional')+'</span>'}
       </label>
-      <input type="${p.type}" id="param-${p.name}" class="form-input" 
-        placeholder="${p.placeholder}" 
+      <select id="param-${p.name}" class="form-select" onchange="updateUrlPreview()" ${p.required?'':'data-optional="true"'}>
+        ${p.options.map(opt=>`<option value="${opt}">${opt}</option>`).join('')}
+      </select>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px">${p[descKey]}</div>
+    </div>
+  `;
+    }
+    return `
+    <div class="form-group">
+      <label class="form-label">
+        ${t('param-'+p.name)}${p.required?'<span class="required">*</span>':' <span style="opacity:0.6;font-weight:400;text-transform:none">'+t('hint-optional')+'</span>'}
+      </label>
+      <input type="${p.type}" id="param-${p.name}" class="form-input"
+        placeholder="${p.placeholder}"
         oninput="updateUrlPreview()"
         ${p.required?'':'data-optional="true"'}>
       <div style="font-size:0.75rem;color:var(--text-dim);margin-top:6px">${p[descKey]}</div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function updateUrlPreview(){

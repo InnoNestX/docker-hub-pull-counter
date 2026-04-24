@@ -1,8 +1,7 @@
 # Docker Hub API Gateway
 
-[![GitHub stars](https://img.shields.io/github/stars/InnoNestX/docker-hub-pull-counter)](https://github.com/InnoNestX/docker-hub-pull-counter)
+[![GitHub stars](https://img.shields.io/github/stars/InnoNestX/docker-hub-pull-counter?style=social)](https://github.com/InnoNestX/docker-hub-pull-counter)
 [![License](https://img.shields.io/github/license/InnoNestX/docker-hub-pull-counter)](https://github.com/InnoNestX/docker-hub-pull-counter/blob/main/LICENSE)
-[![Total API Calls](https://img.shields.io/endpoint?url=https://docker-hub-pull-counter.vercel.app/api/stats)](https://docker-hub-pull-counter.vercel.app/api/stats)
 
 🐛 [Report Bug](https://github.com/InnoNestX/docker-hub-pull-counter/issues) · 🔧 [Submit PR](https://github.com/InnoNestX/docker-hub-pull-counter/pulls) · ⭐ [Star Repo](https://github.com/InnoNestX/docker-hub-pull-counter) · 💖 [Sponsor](https://github.com/sponsors/InnoNestX) · 💬 [Discussions](https://github.com/InnoNestX/docker-hub-pull-counter/discussions)
 
