@@ -18,7 +18,7 @@
 📄 **OpenAPI Spec** - Full OpenAPI specification endpoint
 🌐 **Bilingual** - English & Chinese support
 🧪 **Interactive Testing** - Try APIs directly in the documentation
-⚡ **Fast** - Built with Hono.js plus in-memory and Redis-backed caching
+⚡ **Fast** - Built with Hono.js for lightweight API responses
 📊 **Rate Limiting** - Built-in rate limit headers for API protection
 
 ## 🚀 Quick Start
@@ -204,39 +204,9 @@ Example:
 curl "http://localhost:3000/api/openapi.json"
 ```
 
-### GET /api/internal/refresh-stats
-
-Force-refresh cached stats for all known usernames. This endpoint is designed for scheduled refreshes from Vercel Pro cron jobs or any external scheduler (e.g., GitHub Actions, cron services).
-
-If `CRON_SECRET` environment variable is set, requests must include `Authorization: Bearer <CRON_SECRET>` header.
-
-**Note:** If deploying on Vercel Hobby, built-in cron jobs are limited to once per day. For 5-10 minute refresh intervals, use an external scheduler or upgrade to Vercel Pro.
-
-Example:
-
-```bash
-# Without secret (if CRON_SECRET is not set)
-curl "https://docker-hub-pull-counter.vercel.app/api/internal/refresh-stats"
-
-# With secret
-curl -H "Authorization: Bearer my-secret" "https://docker-hub-pull-counter.vercel.app/api/internal/refresh-stats"
-```
-
-Response:
-
-```json
-{
-  "success": true,
-  "total": 1,
-  "refreshed": ["xuxuclassmate"],
-  "failed": [],
-  "timestamp": "2026-04-24T11:14:28.109Z"
-}
-```
-
 ## Docker Hub Stats Card
 
-Embed a live SVG card anywhere that supports an image tag. The card reuses the internal cached stats pipeline, so it does not need to call the public JSON endpoint first.
+Embed a live SVG card anywhere that supports an image tag. The card fetches fresh Docker Hub user statistics for each request, so it does not need to call the public JSON endpoint first.
 
 ```html
 <img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate" alt="Docker Hub Stats Card" />
@@ -247,16 +217,9 @@ The card includes:
 - Repository Count
 - Total Stars
 
-## ⚡ Performance & Caching
+## ⚡ Data Freshness
 
-User statistics are loaded through a shared data layer designed for reuse by future endpoints such as badges or org stats.
-
-- In-memory cache is the first read layer with a default TTL of 5 minutes
-- Redis stores the latest user snapshot so cold starts can skip Docker Hub fetches
-- `/api/internal/refresh-stats` is available for scheduled refreshes from Vercel Pro cron jobs or any external scheduler
-- On cache miss, the service falls back to Redis, then to Docker Hub as the final source of truth
-
-> **Note:** If you deploy on Vercel Hobby, built-in cron jobs are limited to once per day. For 5-10 minute refresh intervals, use an external scheduler or upgrade the project to Vercel Pro.
+`/api/user/stats` and `/api/docker-stats` fetch fresh Docker Hub user statistics on every request and return `Cache-Control: no-store` so `totalPulls` stays current.
 
 ## 🌍 Interactive Documentation
 
@@ -279,10 +242,8 @@ Visit the deployed URL to access the interactive API documentation with:
 |---------------------------|--------------------------------------------------------------------|
 | DOCKER_USERNAME           | Docker Hub username for authenticated Docker Hub requests (optional)|
 | DOCKER_PASSWORD           | Docker Hub password for authenticated Docker Hub requests (optional)|
-| UPSTASH_REDIS_REST_URL   | Upstash Redis REST URL for usage stats and cached user snapshots  |
+| UPSTASH_REDIS_REST_URL   | Upstash Redis REST URL for API usage stats                        |
 | UPSTASH_REDIS_REST_TOKEN | Upstash Redis REST token                                           |
-| CRON_SECRET               | Optional secret used to protect the scheduled refresh endpoint     |
-| USER_STATS_CACHE_TTL_MS  | Optional in-memory cache TTL in milliseconds (default: 300000)     |
 
 ## 📄 License
 

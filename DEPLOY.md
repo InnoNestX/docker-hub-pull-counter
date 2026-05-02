@@ -141,13 +141,11 @@ curl "https://your-domain.com/api/stats?username=xuxuclassmate"
 
 ### 建议
 
-- 添加缓存层（如 Redis）减少 API 调用
-- 对于热门用户名，缓存结果 5-10 分钟
+- 配置 Docker Hub 认证以提高 API 限额
 - 监控错误率，处理 429 错误
 
 ## 🎯 下一步优化
 
-- [ ] 添加缓存（Redis/内存缓存）
 - [ ] 添加访问统计
 - [ ] 支持组织（Organization）查询
 - [ ] 添加 Pull 趋势图表

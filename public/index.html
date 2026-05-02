@@ -217,7 +217,7 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
     <span class="path">/api/docker-stats</span>
   </div>
   <h2 data-i18n="ep-card-title">Docker Stats Card</h2>
-  <p data-i18n="ep-card-desc">Returns an SVG image card displaying Docker Hub statistics. Uses the same internal statistics pipeline as the JSON endpoint. Perfect for embedding in README files or documentation pages.</p>
+  <p data-i18n="ep-card-desc">Returns an SVG image card with fresh Docker Hub user statistics. Perfect for embedding in README files or documentation pages.</p>
   <div class="params">
     <div class="param-row">
       <div class="param-name">username<span class="badge req">Required</span></div>
@@ -432,7 +432,7 @@ const t={
     'ep-user-title':'User Statistics',
     'ep-user-desc':'Retrieve total pull counts and repository statistics for a Docker Hub user. This endpoint aggregates data across all public repositories belonging to the specified user.',
     'ep-card-title':'Docker Stats Card',
-    'ep-card-desc':'Returns an SVG image card displaying Docker Hub statistics. Uses the same internal statistics pipeline as the JSON endpoint. Perfect for embedding in README files or documentation pages.',
+    'ep-card-desc':'Returns an SVG image card with fresh Docker Hub user statistics. Perfect for embedding in README files or documentation pages.',
     'ep-repo-title':'Repository Details',
     'ep-repo-desc':'Get detailed information about a specific Docker Hub repository including description, star count, pull count, automated build status, and media types.',
     'ep-tags-title':'Repository Tags',
@@ -481,7 +481,7 @@ const t={
     'ep-user-title':'用户统计',
     'ep-user-desc':'获取 Docker Hub 用户的总拉取次数和仓库统计信息。该接口聚合指定用户所有公共仓库的数据。',
     'ep-card-title':'Docker 统计卡',
-    'ep-card-desc':'返回显示 Docker Hub 统计信息的 SVG 图片卡片。复用与 JSON 接口相同的内部统计逻辑。非常适合嵌入到 README 文件或文档页面中。',
+    'ep-card-desc':'返回实时获取的 Docker Hub 用户统计 SVG 图片卡片。非常适合嵌入到 README 文件或文档页面中。',
     'ep-repo-title':'仓库详情',
     'ep-repo-desc':'获取特定 Docker Hub 仓库的详细信息，包括描述、星标数、拉取数、自动构建状态和媒体类型。',
     'ep-tags-title':'仓库标签',

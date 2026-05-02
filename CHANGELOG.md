@@ -31,9 +31,14 @@ All notable changes to this project will be documented in this file.
 - **Improved Error Messages**: More descriptive error messages with hints
 - **Response Enhancement**: All API responses now include rate limit headers
 - **Stats Endpoint**: Now tracks calls to new endpoints (batch, popular, openapi)
+- **User Stats Freshness**: User statistics now fetch fresh Docker Hub data on each request instead of reading memory or Redis snapshots
 
 ### Fixed
 - Search endpoint now uses correct Docker Hub API parameter naming
+
+### Removed
+- Obsolete scheduled user-stat refresh endpoint
+- User statistics snapshot caching in memory and Redis
 
 ## [1.0.0] - 2025-04-13
 
@@ -45,8 +50,6 @@ All notable changes to this project will be documented in this file.
 - Search: `GET /api/search?q=X&page=X&page_size=X`
 - Public Stats: `GET /api/stats`
 - Health Check: `GET /api/health`
-- Internal Refresh: `GET /api/internal/refresh-stats`
-- In-memory caching with TTL
-- Upstash Redis integration for persistent caching
+- Upstash Redis integration for API usage stats
 - Bilingual support (English / Chinese)
 - Vercel deployment ready

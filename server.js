@@ -6,10 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const cache = require('./lib/cache');
 const {
-  DEFAULT_CACHE_TTL,
   buildUserStatsResponse,
-  getUserStats,
-  refreshKnownUserStats
+  getUserStats
 } = require('./lib/user-stats');
 const { createDockerStatsSvgWithStyle, getAvailableStyles } = require('./lib/svg-utils');
 
@@ -107,7 +105,6 @@ async function getStats() {
         'batch/stats': 0,
         'popular/repos': 0,
         'openapi': 0,
-        'internal/refresh-stats': 0,
         'health': 0
       },
       lastUpdated: new Date().toISOString(),
@@ -116,7 +113,7 @@ async function getStats() {
   }
   
   try {
-    const [totalCalls, userStats, dockerStats, repoDetails, repoTags, search, batchStats, popularRepos, openapi, refreshStats, health, lastUpdated] = await Promise.all([
+    const [totalCalls, userStats, dockerStats, repoDetails, repoTags, search, batchStats, popularRepos, openapi, health, lastUpdated] = await Promise.all([
       redis.get('stats:totalCalls') || 0,
       redis.get('stats:endpoint:user/stats') || 0,
       redis.get('stats:endpoint:docker-stats') || 0,
@@ -126,7 +123,6 @@ async function getStats() {
       redis.get('stats:endpoint:batch/stats') || 0,
       redis.get('stats:endpoint:popular/repos') || 0,
       redis.get('stats:endpoint:openapi') || 0,
-      redis.get('stats:endpoint:internal/refresh-stats') || 0,
       redis.get('stats:endpoint:health') || 0,
       redis.get('stats:lastUpdated') || new Date().toISOString()
     ]);
@@ -142,7 +138,6 @@ async function getStats() {
         'batch/stats': Number(batchStats),
         'popular/repos': Number(popularRepos),
         'openapi': Number(openapi),
-        'internal/refresh-stats': Number(refreshStats),
         'health': Number(health)
       },
       lastUpdated
@@ -160,7 +155,6 @@ async function getStats() {
         'batch/stats': 0,
         'popular/repos': 0,
         'openapi': 0,
-        'internal/refresh-stats': 0,
         'health': 0
       },
       lastUpdated: new Date().toISOString(),
@@ -228,15 +222,6 @@ async function getAuthToken() {
 
 // These functions are now in lib/svg-utils.js
 
-function isAuthorizedInternalRequest(c) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return true;
-  }
-
-  return c.req.header('authorization') === `Bearer ${secret}`;
-}
-
 // ==================== API ROUTES (必须先定义 API 路由) ====================
 
 // API: User Stats
@@ -248,9 +233,9 @@ app.get('/api/user/stats', async (c) => {
   await trackCall('user/stats');
   
   try {
+    c.header('Cache-Control', 'no-store, max-age=0');
+
     const { stats, source } = await getUserStats(username, {
-      redis,
-      ttl: DEFAULT_CACHE_TTL,
       dockerClient: {
         fetchDockerHub,
         getAuthToken
@@ -287,8 +272,6 @@ app.get('/api/docker-stats', async (c) => {
 
   try {
     const { stats } = await getUserStats(username, {
-      redis,
-      ttl: DEFAULT_CACHE_TTL,
       dockerClient: {
         fetchDockerHub,
         getAuthToken
@@ -297,7 +280,7 @@ app.get('/api/docker-stats', async (c) => {
 
     return c.body(createDockerStatsSvgWithStyle(style, stats), 200, {
       'Content-Type': 'image/svg+xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
+      'Cache-Control': 'no-store, max-age=0',
       ...getRateLimitHeaders(c)
     });
   } catch (error) {
@@ -596,8 +579,6 @@ app.get('/api/batch/stats', async (c) => {
     usernames.map(async (username) => {
       try {
         const { stats, source } = await getUserStats(username, {
-          redis,
-          ttl: DEFAULT_CACHE_TTL,
           dockerClient: { fetchDockerHub, getAuthToken }
         });
         results.push({
@@ -674,34 +655,6 @@ app.get('/api/badge/total-calls', async (c) => {
     message: String(stats.totalCalls),
     color: "blue"
   });
-});
-
-// API: Background refresh for known usernames
-app.get('/api/internal/refresh-stats', async (c) => {
-  if (!isAuthorizedInternalRequest(c)) {
-    return c.json({ success: false, error: 'Unauthorized' }, 401);
-  }
-
-  await trackCall('internal/refresh-stats');
-
-  try {
-    const result = await refreshKnownUserStats({
-      redis,
-      ttl: DEFAULT_CACHE_TTL,
-      dockerClient: {
-        fetchDockerHub,
-        getAuthToken
-      }
-    });
-
-    return c.json({
-      success: true,
-      ...result,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    return c.json({ success: false, error: error.message }, 500);
-  }
 });
 
 // API: Health Check
