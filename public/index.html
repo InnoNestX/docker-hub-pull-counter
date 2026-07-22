@@ -574,6 +574,16 @@ function toggleMenu(){
   document.querySelector('.mobile-menu').classList.toggle('active');
 }
 
+function setActiveNav(){
+  const hash=location.hash||'#user-stats';
+  document.querySelectorAll('.sidebar .nav-item').forEach(item=>{
+    item.classList.toggle('active',item.getAttribute('href')===hash);
+  });
+}
+
+window.addEventListener('hashchange',setActiveNav);
+setActiveNav();
+
 lang=localStorage.getItem('lang')==='zh'?'zh':'en';
 applyLang();
 updateThemeButton();
