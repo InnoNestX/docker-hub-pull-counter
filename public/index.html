@@ -3,9 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Signal Bridge — unified Docker Hub API docs and live request console.">
+<title>Docker Hub API Gateway — Pull Counts, Stats Cards &amp; Badges | Signal Bridge</title>
+<meta name="description" content="Free Docker Hub API gateway for pull counts, stars, repository tags, SVG stats cards, and Shields badges. Live console: https://docker-hub-pull-counter.vercel.app — docs on GitHub and OpenAPI.">
+<meta name="keywords" content="Docker Hub API, Docker Hub pull count, Docker Hub stats, Docker Hub badge, SVG stats card, docker pulls API, repository tags API, Shields.io docker, free Docker Hub proxy, Signal Bridge">
+<meta name="author" content="InnoNestX / XuXuClassMate">
+<meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#070b12">
-<title>Signal Bridge — Docker Hub API</title>
+<link rel="canonical" href="https://docker-hub-pull-counter.vercel.app/">
+<link rel="alternate" hreflang="en" href="https://docker-hub-pull-counter.vercel.app/">
+<link rel="alternate" hreflang="zh-CN" href="https://docker-hub-pull-counter.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Docker Hub API Gateway">
+<meta property="og:title" content="Docker Hub API Gateway — Pull Counts, Stats Cards &amp; Badges">
+<meta property="og:description" content="Free API for Docker Hub user/repo stats, SVG cards, growth history, and Shields badges. Try the live Signal Bridge console.">
+<meta property="og:url" content="https://docker-hub-pull-counter.vercel.app/">
+<meta property="og:image" content="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&amp;style=gradient">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Docker Hub API Gateway — Signal Bridge">
+<meta name="twitter:description" content="Free Docker Hub pull-count API, SVG cards, and badges. Live demo and docs included.">
+<meta name="twitter:image" content="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate&amp;style=gradient">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Docker Hub API Gateway",
+      "alternateName": "Signal Bridge",
+      "url": "https://docker-hub-pull-counter.vercel.app/",
+      "description": "Free Docker Hub API gateway for pull counts, stars, repository metadata, SVG stats cards, and Shields badges.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "creator": { "@type": "Organization", "name": "InnoNestX", "url": "https://github.com/InnoNestX" }
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "docker-hub-pull-counter",
+      "codeRepository": "https://github.com/InnoNestX/docker-hub-pull-counter",
+      "programmingLanguage": "JavaScript",
+      "runtimePlatform": "Node.js",
+      "license": "https://opensource.org/licenses/MIT"
+    }
+  ]
+}
+</script>
 <link rel="icon" href="https://avatars.githubusercontent.com/u/273979879?v=4" sizes="any" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -49,7 +91,7 @@ body::before{
 a{color:var(--cyan);text-decoration:none}
 button,input,select{font:inherit}
 .mono{font-family:'Share Tech Mono',monospace}
-.shell{position:relative;z-index:2;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.shell{position:relative;z-index:2;height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;overflow-y:auto}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
   padding:14px 20px;border-bottom:1px solid var(--line);backdrop-filter:blur(10px);
@@ -178,11 +220,41 @@ button,input,select{font:inherit}
   color:var(--dim);font-size:.75rem;flex-shrink:0;
 }
 .foot a{color:var(--dim)}.foot a:hover{color:var(--cyan)}
+.usage-deck{
+  flex-shrink:0;margin:0 14px;padding:10px 14px;border:1px solid var(--line);background:var(--panel);
+  display:grid;grid-template-columns:minmax(160px,220px) minmax(0,1fr) auto;gap:14px;align-items:center;
+  position:relative;
+}
+.usage-deck::before,.usage-deck::after{content:"";position:absolute;width:10px;height:10px;border-color:var(--amber);border-style:solid;pointer-events:none}
+.usage-deck::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.usage-deck::after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+.usage-total-label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.usage-total-value{font-family:'Share Tech Mono',monospace;font-size:1.85rem;font-weight:700;color:var(--cyan);line-height:1;letter-spacing:.02em}
+.usage-chart{min-width:0}
+.usage-chart-title{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.usage-bars{display:flex;flex-direction:column;gap:4px}
+.usage-bar-row{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;font-size:.72rem}
+.usage-bar-label{font-family:'Share Tech Mono',monospace;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.usage-bar-track{height:6px;background:rgba(61,231,201,.08);border:1px solid var(--line);position:relative}
+.usage-bar-fill{height:100%;background:linear-gradient(90deg,rgba(61,231,201,.35),var(--cyan));box-shadow:0 0 8px var(--glow)}
+.usage-bar-value{font-family:'Share Tech Mono',monospace;color:var(--text);text-align:right}
+.usage-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:.72rem;color:var(--dim);text-align:right}
+.usage-meta button{font-size:.72rem;padding:5px 10px;min-width:auto;height:auto}
+.usage-empty{color:var(--dim);font-size:.8rem;padding:6px 0}
+.seo-strip{
+  flex-shrink:0;border-top:1px solid var(--line);padding:12px 20px 8px;background:rgba(0,0,0,.12);
+}
+.seo-strip h1{font-size:.95rem;font-weight:600;margin-bottom:6px}
+.seo-strip p{font-size:.78rem;color:var(--dim);line-height:1.55;max-width:1100px;margin-bottom:8px}
+.seo-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.75rem}
+.seo-links a{color:var(--cyan)}
 .map-toggle{display:none}
 @media(max-width:1100px){
   .shell{height:auto;max-height:none;overflow:visible}
   .bridge{grid-template-columns:1fr;grid-template-rows:auto;overflow:visible;height:auto}
   .panel{height:auto}
+  .usage-deck{grid-template-columns:1fr;margin:0 10px}
+  .usage-meta{align-items:flex-start;text-align:left}
   .map-toggle{display:inline-flex}
   .signal-map{display:none;max-height:42vh}
   .signal-map.open{display:flex}
@@ -193,6 +265,7 @@ button,input,select{font:inherit}
 @media(max-width:640px){
   .topbar{padding:12px}.brand-sub{display:none}.bridge{padding:10px;gap:10px}
   .response-stage{max-height:50vh}
+  .usage-bar-row{grid-template-columns:90px 1fr 48px}
 }
 </style>
 </head>
@@ -214,6 +287,22 @@ button,input,select{font:inherit}
     <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
   </div>
 </header>
+
+<section class="usage-deck" id="usage-deck" aria-label="API usage statistics">
+  <div>
+    <div class="usage-total-label" data-i18n="stats-total-label">Total API Calls</div>
+    <div class="usage-total-value" id="total-calls">—</div>
+  </div>
+  <div class="usage-chart">
+    <div class="usage-chart-title" data-i18n="stats-endpoints">Top Endpoints</div>
+    <div class="usage-bars" id="usage-bars"><div class="usage-empty" data-i18n="stats-loading">Loading usage…</div></div>
+  </div>
+  <div class="usage-meta">
+    <div><span data-i18n="stats-updated">Updated</span>: <span id="stats-updated">—</span></div>
+    <div><span data-i18n="stats-refresh-in">Refresh in</span> <span id="stats-countdown">30s</span></div>
+    <button class="ghost-btn" type="button" onclick="loadStats(true)" data-i18n="stats-refresh">Refresh</button>
+  </div>
+</section>
 
 <main class="bridge">
   <aside class="panel signal-map" id="signal-map">
@@ -257,6 +346,24 @@ button,input,select{font:inherit}
     </div>
   </section>
 </main>
+
+<footer class="seo-strip">
+  <h1>Docker Hub API Gateway — free pull counts, stats cards, and badges</h1>
+  <p data-i18n="seo-blurb">
+    Query Docker Hub user and repository statistics without writing your own scraper. Live deployment:
+    https://docker-hub-pull-counter.vercel.app — use Signal Bridge to read endpoint docs and send requests,
+    or open the GitHub README and OpenAPI spec for full reference.
+  </p>
+  <div class="seo-links">
+    <a href="https://docker-hub-pull-counter.vercel.app/">Live demo</a>
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter#readme" target="_blank" rel="noopener">Full documentation (README)</a>
+    <a href="/api/openapi.json" target="_blank" rel="noopener">OpenAPI specification</a>
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">Source on GitHub</a>
+    <a href="/#signal=user-stats">User stats API</a>
+    <a href="/#signal=docker-stats">SVG stats card</a>
+    <a href="/#signal=badge-pulls">Shields pulls badge</a>
+  </div>
+</footer>
 
 <footer class="foot">
   <div>© 2026 InnoNestX · Signal Bridge</div>
@@ -473,7 +580,11 @@ const UI={
     'transmit':'Send','status-label':'Status','time-label':'Time','size-label':'Size',
     'tab-body':'Body','tab-headers':'Headers','placeholder':'Select an endpoint, set params, then send.',
     'optional':'(optional)','required':'required','example':'Example Response','params':'Parameters',
-    'sending':'Sending…','error-fetch':'Request failed'
+    'sending':'Sending…','error-fetch':'Request failed',
+    'stats-total-label':'Total API Calls','stats-endpoints':'Top Endpoints','stats-updated':'Updated',
+    'stats-refresh-in':'Refresh in','stats-refresh':'Refresh','stats-loading':'Loading usage…',
+    'stats-error':'Failed to load usage','stats-empty':'No usage data yet',
+    'seo-blurb':'Query Docker Hub user and repository statistics without writing your own scraper. Live deployment: https://docker-hub-pull-counter.vercel.app — use Signal Bridge to read endpoint docs and send requests, or open the GitHub README and OpenAPI spec for full reference.'
   },
   zh:{
     'link-live':'在线','map-toggle':'接口','map-title':'接口列表','brief-title':'说明',
@@ -481,7 +592,11 @@ const UI={
     'transmit':'发送','status-label':'状态','time-label':'耗时','size-label':'大小',
     'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择接口、填写参数，然后发送。',
     'optional':'(可选)','required':'必填','example':'示例响应','params':'参数',
-    'sending':'发送中…','error-fetch':'请求失败'
+    'sending':'发送中…','error-fetch':'请求失败',
+    'stats-total-label':'接口总调用次数','stats-endpoints':'热门接口','stats-updated':'更新于',
+    'stats-refresh-in':'刷新倒计时','stats-refresh':'刷新','stats-loading':'正在加载调用数据…',
+    'stats-error':'调用数据加载失败','stats-empty':'暂无调用数据',
+    'seo-blurb':'无需自建爬虫即可查询 Docker Hub 用户与仓库统计。在线地址：https://docker-hub-pull-counter.vercel.app — 可在 Signal Bridge 查看接口说明并发送请求，完整文档见 GitHub README 与 OpenAPI。'
   }
 };
 
@@ -511,6 +626,7 @@ function setLang(next){
   localStorage.setItem('lang',next);
   applyChrome();
   renderAll();
+  loadStats(false);
 }
 function toggleLang(){setLang(lang==='en'?'zh':'en');}
 function getTheme(){
@@ -569,6 +685,8 @@ function renderSignalMap(){
   });
   list.innerHTML=html;
   document.getElementById('signal-count').textContent=String(count).padStart(2,'0');
+  const active=list.querySelector('.signal-item.active');
+  if(active)active.scrollIntoView({block:'nearest',inline:'nearest'});
 }
 
 function renderBriefing(){
@@ -770,9 +888,64 @@ function bootFromHash(){
   if(match&&CATALOG[match[1]])currentSignal=match[1];
 }
 
+let statsSeconds=30;
+let statsTimer=null;
+
+async function loadStats(manual=false){
+  const bars=document.getElementById('usage-bars');
+  const totalEl=document.getElementById('total-calls');
+  if(manual&&bars)bars.innerHTML=`<div class="usage-empty">${t('stats-loading')}</div>`;
+  try{
+    const res=await fetch('/api/stats');
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const total=Number(data.totalCalls||0);
+    totalEl.textContent=total.toLocaleString(lang==='zh'?'zh-CN':'en-US');
+    const updated=data.lastUpdated?new Date(data.lastUpdated):null;
+    document.getElementById('stats-updated').textContent=updated
+      ?updated.toLocaleString(lang==='zh'?'zh-CN':'en-US')
+      :'—';
+    const by=data.byEndpoint||{};
+    const ranked=Object.keys(by)
+      .map(name=>({name,calls:Number(by[name]||0)}))
+      .filter(x=>x.calls>0)
+      .sort((a,b)=>b.calls-a.calls)
+      .slice(0,6);
+    if(!ranked.length){
+      bars.innerHTML=`<div class="usage-empty">${t('stats-empty')}</div>`;
+    }else{
+      const max=Math.max(...ranked.map(x=>x.calls),1);
+      bars.innerHTML=ranked.map(x=>`
+        <div class="usage-bar-row" title="/api/${x.name}">
+          <div class="usage-bar-label">/${x.name}</div>
+          <div class="usage-bar-track"><div class="usage-bar-fill" style="width:${(x.calls/max*100).toFixed(1)}%"></div></div>
+          <div class="usage-bar-value">${x.calls.toLocaleString(lang==='zh'?'zh-CN':'en-US')}</div>
+        </div>`).join('');
+    }
+    statsSeconds=30;
+  }catch(err){
+    totalEl.textContent='—';
+    bars.innerHTML=`<div class="usage-empty">${t('stats-error')}</div>`;
+  }
+}
+
+function tickStatsCountdown(){
+  const el=document.getElementById('stats-countdown');
+  if(!el)return;
+  el.textContent=statsSeconds+'s';
+  if(statsSeconds<=0){
+    loadStats(false);
+    return;
+  }
+  statsSeconds-=1;
+}
+
 lang=localStorage.getItem('lang')==='zh'?'zh':'en';
 bootFromHash();
 renderAll();
+loadStats(false);
+if(statsTimer)clearInterval(statsTimer);
+statsTimer=setInterval(tickStatsCountdown,1000);
 window.addEventListener('hashchange',()=>{
   const match=location.hash.match(/signal=([a-z0-9-]+)/i);
   if(match&&CATALOG[match[1]]&&match[1]!==currentSignal)setSignal(match[1],false);

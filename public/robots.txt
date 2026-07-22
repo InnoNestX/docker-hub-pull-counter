@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /api/openapi.json
+Allow: /api/stats
+Allow: /api/docker-stats
+Allow: /api/badge/
+Disallow: /api/internal/
+
+Sitemap: https://docker-hub-pull-counter.vercel.app/sitemap.xml

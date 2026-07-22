@@ -1,5 +1,8 @@
 # Docker Hub API Gateway
 
+**Live demo:** [https://docker-hub-pull-counter.vercel.app](https://docker-hub-pull-counter.vercel.app)  
+**Docs:** [GitHub README](https://github.com/InnoNestX/docker-hub-pull-counter#readme) · [OpenAPI](https://docker-hub-pull-counter.vercel.app/api/openapi.json)
+
 [![GitHub stars](https://img.shields.io/github/stars/InnoNestX/docker-hub-pull-counter?style=social)](https://github.com/InnoNestX/docker-hub-pull-counter)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Total API Calls](https://img.shields.io/endpoint?url=https://docker-hub-pull-counter.vercel.app/api/badge/total-calls)](https://github.com/InnoNestX/docker-hub-pull-counter)

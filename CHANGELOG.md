@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.1] - 2026-07-22
+
+### Added
+- Live API usage showcase on Signal Bridge (total calls + top endpoints)
+- SEO meta/Open Graph/JSON-LD, `robots.txt`, and `sitemap.xml`
+- Crawlable live-demo and documentation links on the console page
+
+### Changed
+- README highlights the public deployment URL and docs entry points
+
 ## [2.3.0] - 2026-07-22
 
 ### Added
