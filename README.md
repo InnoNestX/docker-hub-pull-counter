@@ -9,17 +9,20 @@
 ## ✨ Features
 
 📊 **User Statistics** - Get total pull counts across all repositories
-🖼️ **Docker Stats Card** - Embed Docker Hub stats as an SVG card
+🖼️ **Docker Stats Card** - Embed user or repository SVG cards
+🏷️ **Shields Badges** - Pulls / stars / repos badges for README
+⚔️ **Compare Users** - Rank 2–5 accounts by pulls and stars
+🧩 **Embed Helper** - One API call returns ready-to-paste Markdown
 📦 **Repository Details** - Fetch detailed repository information
 🏷️ **Tag Listing** - List all image tags for a repository
 🔍 **Search** - Search Docker Hub repositories
 📋 **Batch Stats** - Get stats for multiple users in one request
-🏆 **Popular Repos** - Discover popular Docker Hub repositories
+🏆 **Popular Repos** - Browse namespaces ordered by pull count
 📄 **OpenAPI Spec** - Full OpenAPI specification endpoint
 🌐 **Bilingual** - English & Chinese support
 🧪 **Interactive Testing** - Try APIs directly in the documentation
-⚡ **Fast** - Built with Hono.js for lightweight API responses
-📊 **Rate Limiting** - Built-in rate limit headers for API protection
+⚡ **Short Cache** - 2-minute cache with `?fresh=1` escape hatch
+🛡 **Enforced Rate Limits** - Redis-backed limits with HTTP 429
 
 ## 🚀 Quick Start
 
@@ -181,17 +184,42 @@ Response:
 
 ### GET /api/popular/repos
 
-Get popular Docker Hub repositories.
+List repositories for a namespace ordered by pull count (default namespace: `library`).
 
 | Parameter | Type    | Required | Description                        |
 |-----------|---------|----------|------------------------------------|
+| namespace | string  | ❌       | Namespace (default: library)       |
 | page      | integer | ❌       | Page number (default: 1)           |
 | page_size | integer | ❌       | Results per page (default: 25, max: 100) |
 
 Example:
 
 ```bash
-curl "http://localhost:3000/api/popular/repos?page=1&page_size=10"
+curl "http://localhost:3000/api/popular/repos?namespace=library&page=1&page_size=10"
+```
+
+### GET /api/compare
+
+Compare 2–5 Docker Hub users and rank them by total pulls.
+
+```bash
+curl "http://localhost:3000/api/compare?usernames=library,bitnami"
+```
+
+### GET /api/embed
+
+Return README-ready Markdown/HTML for badges and SVG cards.
+
+```bash
+curl "http://localhost:3000/api/embed?username=xuxuclassmate"
+```
+
+### Shields badges
+
+```md
+![Docker Pulls](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Fpulls%3Fusername%3Dxuxuclassmate)
+![Docker Stars](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Fstars%3Fusername%3Dxuxuclassmate)
+![Docker Repos](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Frepos%3Fusername%3Dxuxuclassmate)
 ```
 
 ### GET /api/openapi.json
@@ -206,20 +234,21 @@ curl "http://localhost:3000/api/openapi.json"
 
 ## Docker Hub Stats Card
 
-Embed a live SVG card anywhere that supports an image tag. The card fetches fresh Docker Hub user statistics for each request, so it does not need to call the public JSON endpoint first.
+Embed a live SVG card anywhere that supports an image tag.
 
 ```html
 <img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate" alt="Docker Hub Stats Card" />
 ```
 
-The card includes:
-- Total Pulls
-- Repository Count
-- Total Stars
+Repository card:
+
+```html
+<img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?namespace=library&repo=nginx" alt="nginx stats" />
+```
 
 ## ⚡ Data Freshness
 
-`/api/user/stats` and `/api/docker-stats` fetch fresh Docker Hub user statistics on every request and return `Cache-Control: no-store` so `totalPulls` stays current.
+User stats responses use a short in-memory cache (default 2 minutes) and return `Cache-Control: public, max-age=120`. Pass `?fresh=1` to bypass the cache.
 
 ## 🌍 Interactive Documentation
 
@@ -228,13 +257,16 @@ Visit the deployed URL to access the interactive API documentation with:
 - Live testing interface
 - Parameter customization
 - SVG card preview
+- Embed snippet generator
 - Real-time response display
 - Language switcher (EN/中文)
 
 ## ⚠️ Rate Limiting
 
-- Unauthenticated: ~100-200 requests/hour
-- Authenticated: Higher limits (configure DOCKER_USERNAME and DOCKER_PASSWORD)
+- Unauthenticated: 100 requests/hour per IP
+- With Docker Hub credentials configured: 200 requests/hour per IP
+- Exceeding the limit returns HTTP `429` with `Retry-After`
+- Counters use Upstash Redis when configured (recommended on Vercel)
 
 ## 🔐 Environment Variables
 
@@ -242,8 +274,10 @@ Visit the deployed URL to access the interactive API documentation with:
 |---------------------------|--------------------------------------------------------------------|
 | DOCKER_USERNAME           | Docker Hub username for authenticated Docker Hub requests (optional)|
 | DOCKER_PASSWORD           | Docker Hub password for authenticated Docker Hub requests (optional)|
-| UPSTASH_REDIS_REST_URL   | Upstash Redis REST URL for API usage stats                        |
+| UPSTASH_REDIS_REST_URL   | Upstash Redis REST URL for API usage stats and rate limits         |
 | UPSTASH_REDIS_REST_TOKEN | Upstash Redis REST token                                           |
+| USER_STATS_CACHE_TTL_MS  | Optional user-stats cache TTL in milliseconds (default: 120000)    |
+| PUBLIC_BASE_URL          | Public site URL used by `/api/embed` snippets                      |
 
 ## 📄 License
 

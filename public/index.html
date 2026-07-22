@@ -154,6 +154,10 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
   <a class="mobile-nav-item" href="#repo-details" data-i18n="nav-repo-details" onclick="toggleMenu()">Repository Details</a>
   <a class="mobile-nav-item" href="#repo-tags" data-i18n="nav-repo-tags" onclick="toggleMenu()">Repository Tags</a>
   <a class="mobile-nav-item" href="#search" data-i18n="nav-search" onclick="toggleMenu()">Search</a>
+  <a class="mobile-nav-item" href="#compare" data-i18n="nav-compare" onclick="toggleMenu()">Compare Users</a>
+  <a class="mobile-nav-item" href="#embed" data-i18n="nav-embed" onclick="toggleMenu()">Embed & Badges</a>
+  <a class="mobile-nav-item" href="#popular-repos" data-i18n="nav-popular" onclick="toggleMenu()">Popular Repos</a>
+  <a class="mobile-nav-item" href="#batch-stats" data-i18n="nav-batch" onclick="toggleMenu()">Batch Stats</a>
 </nav>
 <main>
 <section class="hero"><div class="container">
@@ -173,6 +177,10 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
   <a class="nav-item" href="#repo-details" data-i18n="nav-repo-details">Repository Details</a>
   <a class="nav-item" href="#repo-tags" data-i18n="nav-repo-tags">Repository Tags</a>
   <a class="nav-item" href="#search" data-i18n="nav-search">Search</a>
+  <a class="nav-item" href="#compare" data-i18n="nav-compare">Compare Users</a>
+  <a class="nav-item" href="#embed" data-i18n="nav-embed">Embed & Badges</a>
+  <a class="nav-item" href="#popular-repos" data-i18n="nav-popular">Popular Repos</a>
+  <a class="nav-item" href="#batch-stats" data-i18n="nav-batch">Batch Stats</a>
 </nav>
 <nav class="nav-section">
   <div class="nav-title" data-i18n="nav-base">Base URL</div>
@@ -379,6 +387,103 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
   </div>
 </div>
 
+<!-- Compare -->
+<div class="endpoint" id="compare">
+  <div class="endpoint-header">
+    <span class="method get">GET</span>
+    <span class="path">/api/compare</span>
+  </div>
+  <h2 data-i18n="ep-compare-title">Compare Users</h2>
+  <p data-i18n="ep-compare-desc">Compare 2–5 Docker Hub users by total pulls, stars, and repositories. Returns a ranked leaderboard with each user's top repos.</p>
+  <div class="params">
+    <div class="param-row">
+      <div class="param-name">usernames<span class="badge req">Required</span></div>
+      <div class="param-desc" data-i18n="param-usernames-desc">Comma-separated usernames (2–5)</div>
+      <div class="param-type">string</div>
+    </div>
+  </div>
+  <div class="example-response">
+    <div class="example-header"><span class="example-title" data-i18n="example-response">Example Response</span></div>
+    <div class="example-content"><pre>{
+  "success": true,
+  "winner": "library",
+  "rankedBy": "totalPulls",
+  "profiles": [
+    { "username": "library", "totalPulls": 999999999, "totalStars": 100000, "repositoryCount": 180 }
+  ]
+}</pre></div>
+  </div>
+</div>
+
+<!-- Embed & Badges -->
+<div class="endpoint" id="embed">
+  <div class="endpoint-header">
+    <span class="method get">GET</span>
+    <span class="path">/api/embed</span>
+  </div>
+  <h2 data-i18n="ep-embed-title">Embed & Badges</h2>
+  <p data-i18n="ep-embed-desc">Generate ready-to-paste Markdown/HTML for README badges and SVG cards. Also available as Shields.io endpoints: /api/badge/pulls, /api/badge/stars, /api/badge/repos.</p>
+  <div class="params">
+    <div class="param-row">
+      <div class="param-name">username<span class="badge req">Required</span></div>
+      <div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div>
+      <div class="param-type">string</div>
+    </div>
+  </div>
+  <div class="embed-example" style="margin-bottom:16px">![Docker Pulls](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Fpulls%3Fusername%3Dxuxuclassmate)</div>
+  <div class="params" style="padding:16px">
+    <div class="param-row" style="border:none;padding:0;grid-template-columns:1fr auto;gap:12px;align-items:center">
+      <input id="embed-username" class="form-input" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.875rem" placeholder="xuxuclassmate" value="xuxuclassmate">
+      <button type="button" onclick="generateEmbed()" style="background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-weight:500">Generate</button>
+    </div>
+    <pre id="embed-output" style="margin-top:16px;white-space:pre-wrap;word-break:break-word;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:0.8rem">Click Generate to create README snippets.</pre>
+  </div>
+</div>
+
+<!-- Popular Repos -->
+<div class="endpoint" id="popular-repos">
+  <div class="endpoint-header">
+    <span class="method get">GET</span>
+    <span class="path">/api/popular/repos</span>
+  </div>
+  <h2 data-i18n="ep-popular-title">Popular Repositories</h2>
+  <p data-i18n="ep-popular-desc">List repositories for a namespace ordered by pull count. Defaults to official library images.</p>
+  <div class="params">
+    <div class="param-row">
+      <div class="param-name">namespace<span class="badge opt">Optional</span></div>
+      <div class="param-desc" data-i18n="param-popular-namespace-desc">Namespace to browse (default: library)</div>
+      <div class="param-type">string</div>
+    </div>
+    <div class="param-row">
+      <div class="param-name">page<span class="badge opt">Optional</span></div>
+      <div class="param-desc" data-i18n="param-page-desc">Page number for pagination (default: 1)</div>
+      <div class="param-type">integer</div>
+    </div>
+    <div class="param-row">
+      <div class="param-name">page_size<span class="badge opt">Optional</span></div>
+      <div class="param-desc" data-i18n="param-pagesize-desc">Number of results per page (default: 25, max: 100)</div>
+      <div class="param-type">integer</div>
+    </div>
+  </div>
+</div>
+
+<!-- Batch Stats -->
+<div class="endpoint" id="batch-stats">
+  <div class="endpoint-header">
+    <span class="method get">GET</span>
+    <span class="path">/api/batch/stats</span>
+  </div>
+  <h2 data-i18n="ep-batch-title">Batch Stats</h2>
+  <p data-i18n="ep-batch-desc">Fetch statistics for up to 10 usernames in one request.</p>
+  <div class="params">
+    <div class="param-row">
+      <div class="param-name">usernames<span class="badge req">Required</span></div>
+      <div class="param-desc" data-i18n="param-batch-usernames-desc">Comma-separated usernames (max 10)</div>
+      <div class="param-type">string</div>
+    </div>
+  </div>
+</div>
+
 </div>
 </div>
 </main>
@@ -432,19 +537,31 @@ const t={
     'nav-repo-details':'Repository Details',
     'nav-repo-tags':'Repository Tags',
     'nav-search':'Search',
+    'nav-compare':'Compare Users',
+    'nav-embed':'Embed & Badges',
+    'nav-popular':'Popular Repos',
+    'nav-batch':'Batch Stats',
     'hero-title':'Access Docker Hub data with a simple REST API',
     'hero-desc':'Pull counts, repository details, tags, search, and embeddable SVG cards — all available through our unified gateway.',
     'hero-note':'Want to test the API? Use the API Tester to try requests interactively.',
     'ep-user-title':'User Statistics',
     'ep-user-desc':'Retrieve total pull counts and repository statistics for a Docker Hub user. This endpoint aggregates data across all public repositories belonging to the specified user.',
     'ep-card-title':'Docker Stats Card',
-    'ep-card-desc':'Returns an SVG image card with fresh Docker Hub user statistics. Perfect for embedding in README files or documentation pages.',
+    'ep-card-desc':'Returns an SVG image card with Docker Hub user statistics, or a repository card when namespace + repo are provided. Perfect for README embeds.',
     'ep-repo-title':'Repository Details',
     'ep-repo-desc':'Get detailed information about a specific Docker Hub repository including description, star count, pull count, automated build status, and media types.',
     'ep-tags-title':'Repository Tags',
     'ep-tags-desc':'List all available tags for a repository along with their digests, sizes, and last updated timestamps. Results are sorted by most recently updated.',
     'ep-search-title':'Search',
     'ep-search-desc':'Search Docker Hub repositories by keyword. Supports pagination and filtering by repository is_official flag. Results are ranked by relevance and popularity.',
+    'ep-compare-title':'Compare Users',
+    'ep-compare-desc':'Compare 2–5 Docker Hub users by total pulls, stars, and repositories. Returns a ranked leaderboard with each user\'s top repos.',
+    'ep-embed-title':'Embed & Badges',
+    'ep-embed-desc':'Generate ready-to-paste Markdown/HTML for README badges and SVG cards. Also available as Shields.io endpoints: /api/badge/pulls, /api/badge/stars, /api/badge/repos.',
+    'ep-popular-title':'Popular Repositories',
+    'ep-popular-desc':'List repositories for a namespace ordered by pull count. Defaults to official library images.',
+    'ep-batch-title':'Batch Stats',
+    'ep-batch-desc':'Fetch statistics for up to 10 usernames in one request.',
     'param-username-desc':'Docker Hub username',
     'param-fields-desc':'Comma-separated list of fields to return. Available: name, full_name, namespace, pull_count, star_count, repo_count, last_updated',
     'param-namespace-desc':'Repository namespace or user/organization name',
@@ -453,6 +570,9 @@ const t={
     'param-q-desc':'Search query string',
     'param-page-desc':'Page number for pagination (default: 1)',
     'param-pagesize-desc':'Number of results per page (default: 25, max: 100)',
+    'param-usernames-desc':'Comma-separated usernames (2–5)',
+    'param-popular-namespace-desc':'Namespace to browse (default: library)',
+    'param-batch-usernames-desc':'Comma-separated usernames (max 10)',
     'example-response':'Example Response',
     'example-embed-title':'Embed Code',
     'footer-contribute':'Contribute',
@@ -481,19 +601,31 @@ const t={
     'nav-repo-details':'仓库详情',
     'nav-repo-tags':'仓库标签',
     'nav-search':'搜索',
+    'nav-compare':'用户对比',
+    'nav-embed':'嵌入与徽章',
+    'nav-popular':'热门仓库',
+    'nav-batch':'批量统计',
     'hero-title':'通过简洁的 REST API 访问 Docker Hub 数据',
     'hero-desc':'拉取次数、仓库详情、标签、搜索以及可嵌入的 SVG 卡片，全部通过统一网关提供。',
     'hero-note':'想要测试 API？使用 API 测试工具进行交互式请求测试。',
     'ep-user-title':'用户统计',
     'ep-user-desc':'获取 Docker Hub 用户的总拉取次数和仓库统计信息。该接口聚合指定用户所有公共仓库的数据。',
     'ep-card-title':'Docker 统计卡',
-    'ep-card-desc':'返回实时获取的 Docker Hub 用户统计 SVG 图片卡片。非常适合嵌入到 README 文件或文档页面中。',
+    'ep-card-desc':'返回用户统计 SVG 卡片；传入 namespace + repo 时可生成单仓库卡片，适合 README 嵌入。',
     'ep-repo-title':'仓库详情',
     'ep-repo-desc':'获取特定 Docker Hub 仓库的详细信息，包括描述、星标数、拉取数、自动构建状态和媒体类型。',
     'ep-tags-title':'仓库标签',
     'ep-tags-desc':'列出仓库的所有可用标签及其摘要、大小和最后更新时间。结果按最近更新时间排序。',
     'ep-search-title':'搜索',
     'ep-search-desc':'通过关键词搜索 Docker Hub 仓库。支持分页和按官方仓库筛选。结果按相关性和热度排名。',
+    'ep-compare-title':'用户对比',
+    'ep-compare-desc':'对比 2–5 个 Docker Hub 用户的拉取量、星标和仓库数，返回排行榜及各自热门仓库。',
+    'ep-embed-title':'嵌入与徽章',
+    'ep-embed-desc':'生成可直接粘贴到 README 的 Markdown/HTML 徽章与卡片。也可使用 Shields.io 端点：/api/badge/pulls、/api/badge/stars、/api/badge/repos。',
+    'ep-popular-title':'热门仓库',
+    'ep-popular-desc':'按拉取量排序列出命名空间下的仓库，默认官方 library 镜像。',
+    'ep-batch-title':'批量统计',
+    'ep-batch-desc':'一次请求获取最多 10 个用户的统计数据。',
     'param-username-desc':'Docker Hub 用户名',
     'param-fields-desc':'逗号分隔的返回字段列表。可用字段：name, full_name, namespace, pull_count, star_count, repo_count, last_updated',
     'param-namespace-desc':'仓库所属的用户或组织命名空间',
@@ -502,6 +634,9 @@ const t={
     'param-q-desc':'搜索查询字符串',
     'param-page-desc':'分页页码（默认：1）',
     'param-pagesize-desc':'每页结果数（默认：25，最大：100）',
+    'param-usernames-desc':'逗号分隔的用户名（2–5 个）',
+    'param-popular-namespace-desc':'要浏览的命名空间（默认：library）',
+    'param-batch-usernames-desc':'逗号分隔的用户名（最多 10 个）',
     'example-response':'响应示例',
     'example-embed-title':'嵌入代码',
     'footer-contribute':'贡献',
@@ -634,6 +769,31 @@ if(location.hash){
 lang=localStorage.getItem('lang')==='zh'?'zh':'en';
 applyLang();
 updateThemeButton();
+
+async function generateEmbed(){
+  const username=(document.getElementById('embed-username')?.value||'').trim()||'xuxuclassmate';
+  const out=document.getElementById('embed-output');
+  if(out)out.textContent='Loading...';
+  try{
+    const res=await fetch(`/api/embed?username=${encodeURIComponent(username)}`);
+    const data=await res.json();
+    if(!res.ok||!data.success){
+      if(out)out.textContent=data.error||'Failed to generate embed snippets';
+      return;
+    }
+    if(out){
+      out.textContent=[
+        data.badges.pulls.markdown,
+        data.badges.stars.markdown,
+        data.badges.repos.markdown,
+        '',
+        data.card.markdown
+      ].join('\n');
+    }
+  }catch(error){
+    if(out)out.textContent=error.message;
+  }
+}
 </script>
 </body>
 </html>

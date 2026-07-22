@@ -250,6 +250,12 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
     <option value="repo-details">/api/repo/details</option>
     <option value="repo-tags">/api/repo/tags</option>
     <option value="search">/api/search</option>
+    <option value="compare">/api/compare</option>
+    <option value="embed">/api/embed</option>
+    <option value="top-repos">/api/user/top-repos</option>
+    <option value="popular-repos">/api/popular/repos</option>
+    <option value="batch-stats">/api/batch/stats</option>
+    <option value="badge-pulls">/api/badge/pulls</option>
   </select>
 </div>
 <div id="params-container"></div>
@@ -345,7 +351,9 @@ const endpoints={
   'docker-stats':{
     path:'/api/docker-stats',
     params:[
-      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'username',label:'Username',type:'text',required:false,placeholder:'xuxuclassmate',desc_en:'User card mode',desc_zh:'用户卡片模式'},
+      {name:'namespace',label:'Namespace',type:'text',required:false,placeholder:'library',desc_en:'Repo card mode',desc_zh:'仓库卡片模式'},
+      {name:'repo',label:'Repository',type:'text',required:false,placeholder:'nginx',desc_en:'Repo card mode',desc_zh:'仓库卡片模式'},
       {name:'style',label:'Style',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
     ]
   },
@@ -370,6 +378,45 @@ const endpoints={
       {name:'q',label:'Query',type:'text',required:true,placeholder:'nginx',desc_en:'Search query',desc_zh:'搜索关键词'},
       {name:'page',label:'Page',type:'number',required:false,placeholder:'1',desc_en:'Page number',desc_zh:'页码'},
       {name:'page_size',label:'Page Size',type:'number',required:false,placeholder:'25',desc_en:'Results per page',desc_zh:'每页结果数'}
+    ]
+  },
+  'compare':{
+    path:'/api/compare',
+    params:[
+      {name:'usernames',label:'Usernames',type:'text',required:true,placeholder:'library,bitnami',desc_en:'2-5 usernames, comma-separated',desc_zh:'2-5 个用户名，逗号分隔'}
+    ]
+  },
+  'embed':{
+    path:'/api/embed',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Generate README snippets',desc_zh:'生成 README 片段'}
+    ]
+  },
+  'top-repos':{
+    path:'/api/user/top-repos',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'library',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'limit',label:'Limit',type:'number',required:false,placeholder:'5',desc_en:'Number of top repos',desc_zh:'返回热门仓库数量'}
+    ]
+  },
+  'popular-repos':{
+    path:'/api/popular/repos',
+    params:[
+      {name:'namespace',label:'Namespace',type:'text',required:false,placeholder:'library',desc_en:'Default: library',desc_zh:'默认 library'},
+      {name:'page',label:'Page',type:'number',required:false,placeholder:'1',desc_en:'Page number',desc_zh:'页码'},
+      {name:'page_size',label:'Page Size',type:'number',required:false,placeholder:'25',desc_en:'Results per page',desc_zh:'每页结果数'}
+    ]
+  },
+  'batch-stats':{
+    path:'/api/batch/stats',
+    params:[
+      {name:'usernames',label:'Usernames',type:'text',required:true,placeholder:'library,bitnami,bitnami',desc_en:'Up to 10 usernames',desc_zh:'最多 10 个用户名'}
+    ]
+  },
+  'badge-pulls':{
+    path:'/api/badge/pulls',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Shields.io pulls badge',desc_zh:'Shields.io 拉取量徽章'}
     ]
   }
 };

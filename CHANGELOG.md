@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-07-22
+
+### Added
+- Enforced rate limiting with Redis-backed counters and HTTP `429`
+- Short user-stats cache (2 minutes) with `?fresh=1` bypass
+- Shields badges: `/api/badge/pulls`, `/api/badge/stars`, `/api/badge/repos`
+- Compare API: `/api/compare`
+- Embed helper: `/api/embed` plus docs-page snippet generator
+- Top repos API: `/api/user/top-repos`
+- Repository SVG cards via `/api/docker-stats?namespace=&repo=`
+
+### Changed
+- Popular repos now lists a namespace ordered by `-pull_count` (default `library`)
+- Health checks no longer inflate total API call stats
+- API usage tracking uses Redis pipeline / mget
+- Docs and API tester cover the new endpoints
+
+### Fixed
+- Unified validation/error payloads with `code` fields
+- SVG/JSON responses now send short `Cache-Control` headers for embed-friendly caching
+
 ## [2.0.1] - 2026-07-22
 
 ### Changed
