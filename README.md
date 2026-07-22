@@ -22,7 +22,7 @@
 🏆 **Popular Repos** - Browse namespaces ordered by pull count
 📄 **OpenAPI Spec** - Full OpenAPI specification endpoint
 🌐 **Bilingual** - English & Chinese support
-🧪 **Interactive Testing** - Try APIs directly in the documentation
+🧪 **Signal Bridge** - Docs and live API testing in one sci-fi console
 ⚡ **Short Cache** - 2-minute cache with `?fresh=1` escape hatch
 🛡 **Enforced Rate Limits** - Redis-backed limits with HTTP 429
 
@@ -276,16 +276,15 @@ Repository card:
 
 User stats responses use a short in-memory cache (default 2 minutes) and return `Cache-Control: public, max-age=120`. Pass `?fresh=1` to bypass the cache.
 
-## 🌍 Interactive Documentation
+## 🌍 Signal Bridge Console
 
-Visit the deployed URL to access the interactive API documentation with:
+Open the deployed site to enter **Signal Bridge** — a unified console where documentation and live requests share one screen:
 
-- Live testing interface
-- Parameter customization
-- SVG card preview
-- Embed snippet generator
-- Real-time response display
-- Language switcher (EN/中文)
+- **Signal Map** — pick any endpoint
+- **Briefing** — path, params, and examples for the selection
+- **Transmission** — fill params, transmit, inspect JSON/SVG responses
+
+Deep links work via hash, e.g. `/#signal=compare`. Legacy `/api-tester.html` redirects into the bridge.
 
 ## ⚠️ Rate Limiting
 

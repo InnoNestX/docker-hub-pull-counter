@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2026-07-22
+
+### Added
+- **Signal Bridge** unified docs + live testing console (`public/index.html`)
+- Single endpoint catalog driving briefing text and request forms together
+- Deep links via `/#signal=<endpoint-id>`
+
+### Changed
+- `api-tester.html` now redirects into Signal Bridge
+- README entry point updated for the new console experience
+
 ## [2.2.0] - 2026-07-22
 
 ### Added

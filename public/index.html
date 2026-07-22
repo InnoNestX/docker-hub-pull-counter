@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="InnoNest Docker Hub Stats API - Free API to fetch Docker Hub repository stars, pull counts, and tag information. No authentication required.">
-<meta name="theme-color" content="#0F172A">
-<meta property="og:title" content="Docker Hub Stats API - InnoNest">
-<meta property="og:description" content="Free API to fetch Docker Hub repository stars, pull counts, and tags. No auth required.">
-<meta property="og:type" content="website">
+<meta name="description" content="Signal Bridge — unified Docker Hub API docs and live transmission console.">
+<meta name="theme-color" content="#070b12">
+<title>Signal Bridge — Docker Hub API</title>
 <link rel="icon" href="https://avatars.githubusercontent.com/u/273979879?v=4" sizes="any" type="image/png">
-<title>Docker Hub Stats API - InnoNest Documentation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script>
 (function(){
   let saved=localStorage.getItem('theme');
@@ -22,815 +19,754 @@
 })();
 </script>
 <style>
-:root{--bg:#0a0a0a;--surface:#111;--border:#222;--text:#fff;--text-dim:#888;--accent:#3b82f6;--success:#22c55e;--code-bg:#1a1a1a}
-[data-theme="light"]{--bg:#ffffff;--surface:#f6f8fa;--border:#d0d7de;--text:#1f2328;--text-dim:#656d76;--accent:#0969da;--success:#1a7f37;--code-bg:#f6f8fa}
+:root{
+  --bg:#070b12;--panel:rgba(10,18,28,.88);--grid:rgba(61,231,201,.06);--line:rgba(61,231,201,.22);
+  --text:#e8f7f3;--dim:#7f9a94;--cyan:#3de7c9;--amber:#f0b429;--danger:#ff6b6b;--ok:#3de7c9;
+  --scan:rgba(61,231,201,.04);--input:#0b1520;--glow:rgba(61,231,201,.35);
+}
+[data-theme="light"]{
+  --bg:#edf4f2;--panel:rgba(255,255,255,.9);--grid:rgba(8,60,52,.05);--line:rgba(8,90,78,.18);
+  --text:#10221e;--dim:#4d6a63;--cyan:#0f7a6a;--amber:#b8860b;--danger:#c62828;--ok:#0f7a6a;
+  --scan:rgba(15,122,106,.04);--input:#f7fbfa;--glow:rgba(15,122,106,.2);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html{overflow-x:clip}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-.container{max-width:1200px;margin:0 auto;padding:0 24px}
-header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;background:rgba(10,10,10,0.8);backdrop-filter:blur(12px);z-index:100}
-.header-inner{display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:1.25rem;font-weight:700;letter-spacing:-0.5px}.logo span{color:var(--accent)}
-.header-links{display:flex;gap:24px;align-items:center}
-.header-link{color:var(--text-dim);text-decoration:none;font-size:0.875rem;transition:color 0.2s;display:flex;align-items:center;gap:6px}
-.header-link:hover{color:var(--text)}
-.header-link.active{color:var(--accent)}
-.lang-switch{display:flex;gap:8px;align-items:center}
-.menu-toggle{display:none;background:transparent;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:8px}
-.toggle-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.875rem;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:34px}
-.toggle-btn:hover{border-color:var(--text-dim);color:var(--text)}
-.hero{padding:80px 0 60px;border-bottom:1px solid var(--border)}
-.hero h1{font-size:2.5rem;font-weight:700;letter-spacing:-1px;margin-bottom:16px;line-height:1.2}
-.hero p{font-size:1.125rem;color:var(--text-dim);max-width:600px}
-.hero-note{margin-top:24px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:0.9rem;color:var(--text-dim);max-width:600px;display:flex;align-items:center;gap:10px}
-.hero-note .icon{font-size:1.1rem}
-.main{display:grid;grid-template-columns:280px minmax(0,1fr);gap:48px;padding:48px 0;align-items:start}
-.sidebar{position:sticky;top:80px;align-self:start;width:100%;max-height:calc(100vh - 96px);overflow:auto;z-index:10}
-.nav-section{margin-bottom:32px}
-.nav-section:last-child{margin-bottom:0}
-.nav-title{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px}
-.nav-item{display:block;padding:8px 12px;margin:4px -12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.875rem;transition:all 0.2s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
-.nav-item:hover{background:var(--surface);color:var(--text)}
-.nav-item.active{background:var(--surface);color:var(--accent)}
-.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:16px;z-index:99;max-height:70vh;overflow-y:auto}
-.mobile-menu.active{display:block}
-.mobile-nav-item{display:block;padding:12px 16px;margin:4px 0;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.9rem;transition:all 0.2s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
-.mobile-nav-item:hover{background:var(--bg);color:var(--text)}
-.mobile-nav-item.active{background:var(--bg);color:var(--accent)}
-.mobile-nav-divider{height:1px;background:var(--border);margin:12px 0}
-.content{min-width:0;padding-bottom:calc(100vh - 140px)}
-.endpoint{margin-bottom:64px;scroll-margin-top:100px}
-.endpoint:last-child{margin-bottom:0;min-height:calc(100vh - 140px)}
-.endpoint-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
-.method{font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:600;padding:4px 10px;border-radius:6px;text-transform:uppercase}
-.method.get{background:rgba(34,197,94,0.15);color:var(--success)}
-.path{font-family:'JetBrains Mono',monospace;font-size:1rem;color:var(--text)}
-.endpoint h2{font-size:1.5rem;font-weight:600;margin-bottom:12px}
-.endpoint p{color:var(--text-dim);margin-bottom:24px}
-.params{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px}
-.param-row{display:grid;grid-template-columns:180px 1fr 120px;border-bottom:1px solid var(--border);padding:16px;align-items:start}
-.param-row:last-child{border-bottom:none}
-.param-name{font-family:'JetBrains Mono',monospace;font-size:0.875rem;font-weight:500}
-.param-desc{color:var(--text-dim);font-size:0.875rem}
-.param-type{font-size:0.75rem;color:var(--text-dim);text-align:right}
-.example-response{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.example-header{padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02)}
-.example-title{font-size:0.75rem;font-weight:500;color:var(--text-dim);text-transform:uppercase}
-.example-content{padding:16px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.8rem;line-height:1.7;max-height:300px;overflow-y:auto}
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:500;margin-left:8px}
-.badge.req{background:rgba(239,68,68,0.15);color:#ef4444}
-.badge.opt{background:rgba(59,130,246,0.15);color:var(--accent)}
-.badge.depr{background:rgba(168,85,247,0.15);color:#a855f7}
-.embed-example{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-dim);overflow-x:auto}
-.site-footer{background:var(--surface);border-top:1px solid var(--border);padding:48px 24px 24px;margin-top:64px}
-.footer-content{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:32px;margin-bottom:32px}
-.footer-section h4{color:var(--text);font-size:0.9rem;font-weight:600;margin-bottom:8px}
-.footer-section p{color:var(--text-dim);font-size:0.8rem;margin-bottom:16px}
-.footer-links{display:flex;flex-direction:column;gap:8px}
-.footer-links a{color:var(--text-dim);text-decoration:none;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:color 0.2s}
-.footer-links a:hover{color:var(--accent)}
-.footer-links .icon{font-size:1rem}
-.footer-bottom{max-width:1200px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:0.8rem}
-@media(max-width:1024px){
-  .main{grid-template-columns:220px minmax(0,1fr);gap:28px}
-  .hero h1{font-size:2rem}
+html,body{height:100%}
+body{
+  font-family:Oxanium,system-ui,sans-serif;color:var(--text);background:var(--bg);
+  background-image:
+    linear-gradient(var(--scan) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px),
+    radial-gradient(ellipse at 20% 0%,rgba(61,231,201,.08),transparent 45%),
+    radial-gradient(ellipse at 90% 80%,rgba(240,180,41,.05),transparent 40%);
+  background-size:100% 4px,28px 28px,auto,auto;
+  overflow-x:hidden;
 }
-@media(max-width:768px){
-  .menu-toggle{display:block}
-  .header-links{display:none}
-  .container{padding:0 16px}
-  .hero{padding:48px 0 32px}
-  .hero h1{font-size:1.75rem}
-  .hero p{font-size:1rem}
-  .main{grid-template-columns:1fr;padding:32px 0}
-  .sidebar{display:none}
-  .content{padding-bottom:32px}
-  .endpoint:last-child{min-height:0}
-  .endpoint{margin-bottom:40px}
-  .endpoint h2{font-size:1.25rem}
-  .param-row{grid-template-columns:1fr;gap:8px}
-  .param-type{text-align:left}
-  .footer-content{grid-template-columns:1fr;gap:24px}
-  .site-footer{padding:32px 16px 16px}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.08) 50%);
+  background-size:100% 3px;opacity:.25;
 }
-@media(max-width:480px){
-  .hero h1{font-size:1.5rem}
-  .hero p{font-size:0.9rem}
-  .hero-note{flex-direction:column;align-items:flex-start}
-  .lang-switch{gap:4px}
-  .toggle-btn{padding:4px 8px;font-size:0.8rem;min-width:36px;height:30px}
-  .method{font-size:0.7rem;padding:3px 8px}
-  .path{font-size:0.9rem}
+a{color:var(--cyan);text-decoration:none}
+button,input,select{font:inherit}
+.mono{font-family:'Share Tech Mono',monospace}
+.shell{position:relative;z-index:2;min-height:100%;display:flex;flex-direction:column}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 20px;border-bottom:1px solid var(--line);backdrop-filter:blur(10px);
+  background:linear-gradient(180deg,rgba(7,11,18,.92),rgba(7,11,18,.65));
+}
+[data-theme="light"] .topbar{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(237,244,242,.8))}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:34px;height:34px;border-radius:8px;border:1px solid var(--line)}
+.brand-title{font-size:1.05rem;font-weight:700;letter-spacing:.04em}
+.brand-title span{color:var(--cyan)}
+.brand-sub{font-size:.72rem;color:var(--dim);letter-spacing:.18em;text-transform:uppercase}
+.top-actions{display:flex;align-items:center;gap:8px}
+.toggle-btn,.ghost-btn{
+  background:transparent;border:1px solid var(--line);color:var(--dim);padding:7px 12px;
+  cursor:pointer;min-width:42px;height:34px;display:inline-flex;align-items:center;justify-content:center;
+  transition:.2s border-color,.2s color,.2s box-shadow;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+}
+.toggle-btn:hover,.ghost-btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow)}
+.status-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);
+  color:var(--dim);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+}
+.status-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.bridge{
+  flex:1;display:grid;grid-template-columns:240px minmax(0,1.05fr) minmax(320px,.95fr);
+  gap:14px;padding:14px;min-height:0;
+}
+.panel{
+  position:relative;background:var(--panel);border:1px solid var(--line);min-height:0;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border-color:var(--cyan);border-style:solid;pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.panel::after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 14px;border-bottom:1px solid var(--line);letter-spacing:.16em;text-transform:uppercase;
+  font-size:.72rem;color:var(--dim);
+}
+.panel-head strong{color:var(--cyan);font-weight:600}
+.panel-body{padding:12px 14px;overflow:auto;flex:1;min-height:0}
+.group-label{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin:12px 0 8px}
+.group-label:first-child{margin-top:0}
+.signal-item{
+  width:100%;text-align:left;background:transparent;border:1px solid transparent;color:var(--dim);
+  padding:10px 10px;margin-bottom:6px;cursor:pointer;transition:.2s;position:relative;
+}
+.signal-item:hover{border-color:var(--line);color:var(--text);background:rgba(61,231,201,.04)}
+.signal-item.active{
+  border-color:var(--cyan);color:var(--text);background:rgba(61,231,201,.08);
+  box-shadow:inset 3px 0 0 var(--cyan),0 0 18px var(--glow);
+}
+.signal-item .path{display:block;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--cyan);margin-top:2px}
+.signal-item .name{font-size:.9rem;font-weight:600}
+.method{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:.68rem;padding:2px 6px;border:1px solid var(--ok);color:var(--ok);margin-right:6px}
+.brief-path{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px;
+  border:1px solid var(--line);background:rgba(61,231,201,.04);
+}
+.brief-path code{font-family:'Share Tech Mono',monospace;font-size:.95rem;color:var(--text)}
+.brief-title{font-size:1.35rem;font-weight:700;margin-bottom:8px}
+.brief-desc{color:var(--dim);line-height:1.6;margin-bottom:16px;font-size:.95rem}
+.param-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:.85rem}
+.param-table th,.param-table td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.param-table th{color:var(--dim);font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-size:.7rem}
+.param-table .pname{font-family:'Share Tech Mono',monospace;color:var(--cyan)}
+.badge{display:inline-block;font-size:.65rem;padding:1px 6px;margin-left:6px;border:1px solid var(--line);color:var(--dim)}
+.badge.req{border-color:var(--danger);color:var(--danger)}
+.example-box{
+  border:1px solid var(--line);background:var(--input);padding:12px;overflow:auto;max-height:220px;
+  font-family:'Share Tech Mono',monospace;font-size:.78rem;line-height:1.55;color:var(--dim);white-space:pre-wrap;
+}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.form-label .req{color:var(--danger);margin-left:4px}
+.form-input,.form-select{
+  width:100%;background:var(--input);border:1px solid var(--line);color:var(--text);
+  padding:11px 12px;font-family:'Share Tech Mono',monospace;font-size:.85rem;outline:none;
+}
+.form-input:focus,.form-select:focus{border-color:var(--cyan);box-shadow:0 0 0 1px var(--glow)}
+.form-hint{font-size:.75rem;color:var(--dim);margin-top:5px}
+.url-box{
+  display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);background:var(--input);
+  padding:10px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;font-size:.78rem;word-break:break-all;
+}
+.url-box .base{color:var(--cyan)}.url-box .rest{color:var(--dim);flex:1}
+.transmit{
+  width:100%;border:1px solid var(--cyan);background:rgba(61,231,201,.12);color:var(--cyan);
+  padding:12px 16px;cursor:pointer;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  position:relative;overflow:hidden;transition:.2s;
+}
+.transmit:hover{background:rgba(61,231,201,.2);box-shadow:0 0 20px var(--glow)}
+.transmit:disabled{opacity:.5;cursor:not-allowed}
+.transmit.sending::after{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:35%;
+  background:linear-gradient(90deg,transparent,rgba(61,231,201,.35),transparent);
+  animation:sweep 1s linear infinite;
+}
+@keyframes sweep{from{transform:translateX(-120%)}to{transform:translateX(320%)}}
+.meta-row{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0;font-size:.8rem;color:var(--dim)}
+.meta-row b{color:var(--text);font-family:'Share Tech Mono',monospace;font-weight:500}
+.meta-row b.ok{color:var(--ok)}.meta-row b.bad{color:var(--danger)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:10px}
+.tab{padding:8px 14px;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.response-stage{
+  border:1px solid var(--line);background:var(--input);min-height:220px;max-height:42vh;overflow:auto;
+  font-family:'Share Tech Mono',monospace;font-size:.78rem;line-height:1.55;
+}
+.response-stage pre{margin:0;padding:12px;white-space:pre-wrap;word-break:break-word;color:var(--dim)}
+.response-stage .svg-render{padding:12px;display:none}
+.response-stage .svg-render.active{display:block}
+.placeholder{padding:28px 16px;text-align:center;color:var(--dim)}
+.placeholder .glyph{font-size:1.6rem;color:var(--cyan);margin-bottom:8px;letter-spacing:.3em}
+.foot{
+  border-top:1px solid var(--line);padding:10px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  color:var(--dim);font-size:.75rem;
+}
+.foot a{color:var(--dim)}.foot a:hover{color:var(--cyan)}
+.map-toggle{display:none}
+@media(max-width:1100px){
+  .bridge{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .map-toggle{display:inline-flex}
+  .signal-map{display:none}
+  .signal-map.open{display:flex}
+  .signal-map .panel-body{display:flex;flex-wrap:wrap;gap:6px}
+  .group-label{width:100%}
+  .signal-item{width:auto;min-width:140px;margin:0}
+}
+@media(max-width:640px){
+  .topbar{padding:12px}.brand-sub{display:none}.bridge{padding:10px;gap:10px}
+  .response-stage{max-height:50vh}
 }
 </style>
 </head>
 <body>
-<header><div class="container header-inner">
-  <a href="https://innonest.cn" class="logo" style="display:flex;align-items:center;gap:10px;text-decoration:none">
-    <img src="https://avatars.githubusercontent.com/u/273979879?v=4" alt="InnoNest" style="width:32px;height:32px;border-radius:8px">
-    <span style="font-size:1.25rem;font-weight:700;letter-spacing:-0.5px">Docker<span>Hub</span></span>
-  </a>
-  <div class="header-links">
-    <a href="index.html" class="header-link active">
-      <span>📖</span> <span data-i18n="nav-docs">Documentation</span>
-    </a>
-    <a href="api-tester.html" class="header-link">
-      <span>🧪</span> <span data-i18n="nav-tester">API Tester</span>
-    </a>
+<div class="shell">
+<header class="topbar">
+  <div class="brand">
+    <img src="https://avatars.githubusercontent.com/u/273979879?v=4" alt="InnoNest">
+    <div>
+      <div class="brand-title">SIGNAL <span>BRIDGE</span></div>
+      <div class="brand-sub">Docker Hub API Console</div>
+    </div>
   </div>
-  <div class="lang-switch">
-    <button class="toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme"></button>
-    <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()" title="Toggle language" aria-label="Toggle language">中文</button>
-    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <div class="top-actions">
+    <div class="status-chip"><span class="dot"></span><span data-i18n="link-live">Link Active</span></div>
+    <button class="ghost-btn map-toggle" type="button" onclick="toggleMap()" data-i18n="map-toggle">Signals</button>
+    <a class="ghost-btn" href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">GitHub</a>
+    <button class="toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+    <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
   </div>
-</div></header>
-<nav class="mobile-menu">
-  <a class="mobile-nav-item active" href="index.html" data-i18n="nav-docs">Documentation</a>
-  <a class="mobile-nav-item" href="api-tester.html" data-i18n="nav-tester">API Tester</a>
-  <div class="mobile-nav-divider"></div>
-  <div class="nav-title" style="padding:0 16px" data-i18n="nav-quick">Quick Links</div>
-  <a class="mobile-nav-item" href="#user-stats" data-i18n="nav-user-stats" onclick="toggleMenu()">User Statistics</a>
-  <a class="mobile-nav-item" href="#docker-stats-card" data-i18n="nav-docker-stats" onclick="toggleMenu()">Docker Stats Card</a>
-  <a class="mobile-nav-item" href="#repo-details" data-i18n="nav-repo-details" onclick="toggleMenu()">Repository Details</a>
-  <a class="mobile-nav-item" href="#repo-tags" data-i18n="nav-repo-tags" onclick="toggleMenu()">Repository Tags</a>
-  <a class="mobile-nav-item" href="#search" data-i18n="nav-search" onclick="toggleMenu()">Search</a>
-  <a class="mobile-nav-item" href="#compare" data-i18n="nav-compare" onclick="toggleMenu()">Compare Users</a>
-  <a class="mobile-nav-item" href="#embed" data-i18n="nav-embed" onclick="toggleMenu()">Embed & Badges</a>
-  <a class="mobile-nav-item" href="#history" data-i18n="nav-history" onclick="toggleMenu()">Pull History</a>
-  <a class="mobile-nav-item" href="#popular-repos" data-i18n="nav-popular" onclick="toggleMenu()">Popular Repos</a>
-  <a class="mobile-nav-item" href="#batch-stats" data-i18n="nav-batch" onclick="toggleMenu()">Batch Stats</a>
-</nav>
-<main>
-<section class="hero"><div class="container">
-  <h1 data-i18n="hero-title">Access Docker Hub data with a simple REST API</h1>
-  <p data-i18n="hero-desc">Pull counts, repository details, tags, search, and embeddable SVG cards — all available through our unified gateway.</p>
-  <div class="hero-note">
-    <span class="icon">💡</span>
-    <span data-i18n="hero-note">Want to test the API? Use the <a href="api-tester.html" style="color:var(--accent)">API Tester</a> to try requests interactively.</span>
-  </div>
-</div></section>
-<div class="container main">
-<aside class="sidebar">
-<nav class="nav-section">
-  <div class="nav-title" data-i18n="nav-quick">Quick Links</div>
-  <a class="nav-item" href="#user-stats" data-i18n="nav-user-stats">User Statistics</a>
-  <a class="nav-item" href="#docker-stats-card" data-i18n="nav-docker-stats">Docker Stats Card</a>
-  <a class="nav-item" href="#repo-details" data-i18n="nav-repo-details">Repository Details</a>
-  <a class="nav-item" href="#repo-tags" data-i18n="nav-repo-tags">Repository Tags</a>
-  <a class="nav-item" href="#search" data-i18n="nav-search">Search</a>
-  <a class="nav-item" href="#compare" data-i18n="nav-compare">Compare Users</a>
-  <a class="nav-item" href="#embed" data-i18n="nav-embed">Embed & Badges</a>
-  <a class="nav-item" href="#history" data-i18n="nav-history">Pull History</a>
-  <a class="nav-item" href="#popular-repos" data-i18n="nav-popular">Popular Repos</a>
-  <a class="nav-item" href="#batch-stats" data-i18n="nav-batch">Batch Stats</a>
-</nav>
-<nav class="nav-section">
-  <div class="nav-title" data-i18n="nav-base">Base URL</div>
-  <div style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text-dim);padding:8px 12px;background:var(--surface);border-radius:6px;">
-    docker-hub-pull-counter.vercel.app
-  </div>
-</nav>
-</aside>
-<div class="content">
+</header>
 
-<!-- User Stats Endpoint -->
-<div class="endpoint" id="user-stats">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/user/stats</span>
-  </div>
-  <h2 data-i18n="ep-user-title">User Statistics</h2>
-  <p data-i18n="ep-user-desc">Retrieve total pull counts and repository statistics for a Docker Hub user. This endpoint aggregates data across all public repositories belonging to the specified user.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">username<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div>
-      <div class="param-type">string</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">fields<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-fields-desc">Comma-separated list of fields to return. Available: name, full_name, namespace, pull_count, star_count, repo_count, last_updated</div>
-      <div class="param-type">string</div>
-    </div>
-  </div>
-  <div class="example-response">
-    <div class="example-header"><span class="example-title" data-i18n="example-response">Example Response</span></div>
-    <div class="example-content"><pre>{
-  "name": "xuxuclassmate",
-  "namespace": "xuxuclassmate",
-  "pull_count": 1234567,
-  "star_count": 42,
-  "repo_count": 12,
-  "last_updated": "2026-04-24T00:00:00Z"
-}</pre></div>
-  </div>
-</div>
+<main class="bridge">
+  <aside class="panel signal-map" id="signal-map">
+    <div class="panel-head"><span data-i18n="map-title">Signal Map</span><strong id="signal-count">0</strong></div>
+    <div class="panel-body" id="signal-list"></div>
+  </aside>
 
-<!-- Docker Stats Card Endpoint -->
-<div class="endpoint" id="docker-stats-card">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/docker-stats</span>
-  </div>
-  <h2 data-i18n="ep-card-title">Docker Stats Card</h2>
-  <p data-i18n="ep-card-desc">Returns an SVG image card with fresh Docker Hub user statistics. Perfect for embedding in README files or documentation pages.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">username<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div>
-      <div class="param-type">string</div>
-    </div>
-  </div>
-  <div class="example-response">
-    <div class="example-header"><span class="example-title" data-i18n="example-embed-title">Embed Code</span></div>
-    <div class="example-content"><pre>&lt;img src="https://docker-hub-pull-counter.vercel.app/api/docker-stats?username=xuxuclassmate" alt="Docker Hub Stats" /&gt;</pre></div>
-  </div>
-</div>
+  <section class="panel" id="briefing-panel">
+    <div class="panel-head"><span data-i18n="brief-title">Briefing</span><strong data-i18n="brief-sync">Synced</strong></div>
+    <div class="panel-body" id="briefing"></div>
+  </section>
 
-<!-- Repo Details Endpoint -->
-<div class="endpoint" id="repo-details">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/repo/details</span>
-  </div>
-  <h2 data-i18n="ep-repo-title">Repository Details</h2>
-  <p data-i18n="ep-repo-desc">Get detailed information about a specific Docker Hub repository including description, star count, pull count, automated build status, and media types.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">namespace<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-namespace-desc">Repository namespace or user/organization name</div>
-      <div class="param-type">string</div>
+  <section class="panel" id="console-panel">
+    <div class="panel-head"><span data-i18n="console-title">Transmission</span><strong id="console-status">IDLE</strong></div>
+    <div class="panel-body">
+      <div id="params-container"></div>
+      <div class="form-label" data-i18n="url-label">Request Vector</div>
+      <div class="url-box">
+        <span class="base" id="url-base">docker-hub-pull-counter.vercel.app</span>
+        <span class="rest"><span id="url-path"></span><span id="url-params"></span></span>
+        <button class="ghost-btn" type="button" onclick="copyUrl()" data-i18n="copy">Copy</button>
+      </div>
+      <button class="transmit" id="send-btn" type="button" onclick="sendRequest()" data-i18n="transmit">Transmit</button>
+      <div class="meta-row" id="response-meta" style="display:none">
+        <span><span data-i18n="status-label">Status</span> <b id="response-status"></b></span>
+        <span><span data-i18n="time-label">Time</span> <b id="response-time-value"></b></span>
+        <span><span data-i18n="size-label">Size</span> <b id="response-size"></b></span>
+      </div>
+      <div class="tabs" id="response-tabs" style="display:none">
+        <div class="tab active" data-tab="body" onclick="switchTab('body')" data-i18n="tab-body">Body</div>
+        <div class="tab" data-tab="headers" onclick="switchTab('headers')" data-i18n="tab-headers">Headers</div>
+      </div>
+      <div class="response-stage" id="response-stage">
+        <div class="placeholder" id="response-placeholder">
+          <div class="glyph">///</div>
+          <div data-i18n="placeholder">Select a signal, set params, then transmit.</div>
+        </div>
+        <pre id="response-pre" style="display:none"></pre>
+        <div class="svg-render" id="svg-render"></div>
+      </div>
     </div>
-    <div class="param-row">
-      <div class="param-name">repo<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-repo-desc">Repository name</div>
-      <div class="param-type">string</div>
-    </div>
-  </div>
-  <div class="example-response">
-    <div class="example-header"><span class="example-title" data-i18n="example-response">Example Response</span></div>
-    <div class="example-content"><pre>{
-  "name": "nginx",
-  "namespace": "library",
-  "full_name": "library/nginx",
-  "description": "Official build of Nginx.",
-  "pull_count": 12345678901,
-  "star_count": 19999,
-  "is_automated": false,
-  "is_private": false,
-  "last_updated": "2026-04-23T12:00:00Z",
-  "media_types": ["application/vnd.docker.container.image.v1+json"],
-  "volumes": ["var/cache/nginx", "var/log/nginx", "var/run"]
-}</pre></div>
-  </div>
-</div>
-
-<!-- Repo Tags Endpoint -->
-<div class="endpoint" id="repo-tags">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/repo/tags</span>
-  </div>
-  <h2 data-i18n="ep-tags-title">Repository Tags</h2>
-  <p data-i18n="ep-tags-desc">List all available tags for a repository along with their digests, sizes, and last updated timestamps. Results are sorted by most recently updated.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">namespace<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-namespace-desc">Repository namespace or user/organization name</div>
-      <div class="param-type">string</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">repo<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-repo-desc">Repository name</div>
-      <div class="param-type">string</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">limit<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-limit-desc">Maximum number of tags to return (default: 100, max: 1000)</div>
-      <div class="param-type">integer</div>
-    </div>
-  </div>
-  <div class="example-response">
-    <div class="example-header"><span class="example-title" data-i18n="example-response">Example Response</span></div>
-    <div class="example-content"><pre>{
-  "namespace": "library",
-  "repo": "nginx",
-  "tags": [
-    {
-      "name": "latest",
-      "digest": "sha256:abc123...",
-      "size": "142MB",
-      "last_updated": "2026-04-20T08:00:00Z"
-    },
-    {
-      "name": "1.27-alpine",
-      "digest": "sha256:def456...",
-      "size": "42MB",
-      "last_updated": "2026-04-18T14:30:00Z"
-    }
-  ],
-  "total": 250
-}</pre></div>
-  </div>
-</div>
-
-<!-- Search Endpoint -->
-<div class="endpoint" id="search">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/search</span>
-  </div>
-  <h2 data-i18n="ep-search-title">Search</h2>
-  <p data-i18n="ep-search-desc">Search Docker Hub repositories by keyword. Supports pagination and filtering by repository is_official flag. Results are ranked by relevance and popularity.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">q<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-q-desc">Search query string</div>
-      <div class="param-type">string</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">page<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-page-desc">Page number for pagination (default: 1)</div>
-      <div class="param-type">integer</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">page_size<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-pagesize-desc">Number of results per page (default: 25, max: 100)</div>
-      <div class="param-type">integer</div>
-    </div>
-  </div>
-  <div class="example-response">
-    <div class="example-header"><span class="example-title" data-i18n="example-response">Example Response</span></div>
-    <div class="example-content"><pre>{
-  "query": "nginx",
-  "page": 1,
-  "page_size": 25,
-  "count": 25,
-  "total": 1500,
-  "results": [
-    {
-      "name": "nginx",
-      "namespace": "library",
-      "description": "Official build of Nginx.",
-      "pull_count": 12345678901,
-      "star_count": 19999,
-      "is_official": true
-    },
-    {
-      "name": "nginx-proxy",
-      "namespace": "jwilder",
-      "description": "Automated nginx reverse proxy.",
-      "pull_count": 9876543210,
-      "star_count": 8500,
-      "is_official": false
-    }
-  ]
-}</pre></div>
-  </div>
-</div>
-
-<!-- Compare -->
-<div class="endpoint" id="compare">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/compare</span>
-  </div>
-  <h2 data-i18n="ep-compare-title">Compare Users</h2>
-  <p data-i18n="ep-compare-desc">Compare 2–5 Docker Hub users by total pulls, stars, and repositories. Returns a ranked leaderboard with each user's top repos.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">usernames<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-usernames-desc">Comma-separated usernames (2–5)</div>
-      <div class="param-type">string</div>
-    </div>
-  </div>
-  <div class="example-response">
-    <div class="example-header"><span class="example-title" data-i18n="example-response">Example Response</span></div>
-    <div class="example-content"><pre>{
-  "success": true,
-  "winner": "library",
-  "rankedBy": "totalPulls",
-  "profiles": [
-    { "username": "library", "totalPulls": 999999999, "totalStars": 100000, "repositoryCount": 180 }
-  ]
-}</pre></div>
-  </div>
-</div>
-
-<!-- Embed & Badges -->
-<div class="endpoint" id="embed">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/embed</span>
-  </div>
-  <h2 data-i18n="ep-embed-title">Embed & Badges</h2>
-  <p data-i18n="ep-embed-desc">Generate ready-to-paste Markdown/HTML for README badges and SVG cards. Also available as Shields.io endpoints: /api/badge/pulls, /api/badge/stars, /api/badge/repos.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">username<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div>
-      <div class="param-type">string</div>
-    </div>
-  </div>
-  <div class="embed-example" style="margin-bottom:16px">![Docker Pulls](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Fpulls%3Fusername%3Dxuxuclassmate)</div>
-  <div class="params" style="padding:16px">
-    <div class="param-row" style="border:none;padding:0;grid-template-columns:1fr auto;gap:12px;align-items:center">
-      <input id="embed-username" class="form-input" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.875rem" placeholder="xuxuclassmate" value="xuxuclassmate">
-      <button type="button" onclick="generateEmbed()" style="background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:8px;cursor:pointer;font-weight:500">Generate</button>
-    </div>
-    <pre id="embed-output" style="margin-top:16px;white-space:pre-wrap;word-break:break-word;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:0.8rem">Click Generate to create README snippets.</pre>
-  </div>
-</div>
-
-<!-- Pull History -->
-<div class="endpoint" id="history">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/user/history</span>
-  </div>
-  <h2 data-i18n="ep-history-title">Pull History & Growth</h2>
-  <p data-i18n="ep-history-desc">We snapshot pull/star counts once per day when stats are fetched. Use history/growth APIs and the trend SVG card to show README-ready growth charts. Related: /api/user/growth, /api/trend, /api/badge/growth, /api/repo/history.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">username<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-username-desc">Docker Hub username</div>
-      <div class="param-type">string</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">days<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-days-desc">Lookback window in days (1–90, default 30)</div>
-      <div class="param-type">integer</div>
-    </div>
-  </div>
-  <div class="embed-example" style="margin-top:16px">![Pull Growth](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Fgrowth%3Fusername%3Dxuxuclassmate%26days%3D7)
-
-[![Pull Trend](https://docker-hub-pull-counter.vercel.app/api/trend?username=xuxuclassmate&days=30)](https://hub.docker.com/u/xuxuclassmate)</div>
-</div>
-
-<!-- Popular Repos -->
-<div class="endpoint" id="popular-repos">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/popular/repos</span>
-  </div>
-  <h2 data-i18n="ep-popular-title">Popular Repositories</h2>
-  <p data-i18n="ep-popular-desc">List repositories for a namespace ordered by pull count. Defaults to official library images.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">namespace<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-popular-namespace-desc">Namespace to browse (default: library)</div>
-      <div class="param-type">string</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">page<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-page-desc">Page number for pagination (default: 1)</div>
-      <div class="param-type">integer</div>
-    </div>
-    <div class="param-row">
-      <div class="param-name">page_size<span class="badge opt">Optional</span></div>
-      <div class="param-desc" data-i18n="param-pagesize-desc">Number of results per page (default: 25, max: 100)</div>
-      <div class="param-type">integer</div>
-    </div>
-  </div>
-</div>
-
-<!-- Batch Stats -->
-<div class="endpoint" id="batch-stats">
-  <div class="endpoint-header">
-    <span class="method get">GET</span>
-    <span class="path">/api/batch/stats</span>
-  </div>
-  <h2 data-i18n="ep-batch-title">Batch Stats</h2>
-  <p data-i18n="ep-batch-desc">Fetch statistics for up to 10 usernames in one request.</p>
-  <div class="params">
-    <div class="param-row">
-      <div class="param-name">usernames<span class="badge req">Required</span></div>
-      <div class="param-desc" data-i18n="param-batch-usernames-desc">Comma-separated usernames (max 10)</div>
-      <div class="param-type">string</div>
-    </div>
-  </div>
-</div>
-
-</div>
-</div>
+  </section>
 </main>
-<footer class="site-footer">
-<div class="footer-content">
-<div class="footer-section">
-  <h4 data-i18n="footer-contribute">Contribute</h4>
-  <p data-i18n="footer-contribute-desc">Found a bug or want to contribute?</p>
-  <div class="footer-links">
-    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/issues" target="_blank" rel="noopener">
-      <span class="icon">🐛</span> <span data-i18n="footer-report-bug">Report Bug</span>
-    </a>
-    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/pulls" target="_blank" rel="noopener">
-      <span class="icon">🔧</span> <span data-i18n="footer-submit-pr">Submit PR</span>
-    </a>
-    <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">
-      <span class="icon">⭐</span> <span data-i18n="footer-star-repo">Star Repo</span>
-    </a>
+
+<footer class="foot">
+  <div>© 2026 InnoNestX · Signal Bridge</div>
+  <div>
+    <a href="https://github.com/sponsors/InnoNestX" target="_blank" rel="noopener">Sponsor</a> ·
+    <a href="https://www.buymeacoffee.com/xuxuclassmate" target="_blank" rel="noopener">Coffee</a> ·
+    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/issues" target="_blank" rel="noopener">Issues</a>
   </div>
-</div>
-<div class="footer-section">
-  <h4 data-i18n="footer-support">Support</h4>
-  <p data-i18n="footer-support-desc">Enjoy the API? Support the project!</p>
-  <div class="footer-links">
-    <a href="https://github.com/sponsors/InnoNestX" target="_blank" rel="noopener">
-      <span class="icon">💖</span> <span data-i18n="footer-sponsor">Sponsor</span>
-    </a>
-    <a href="https://www.buymeacoffee.com/xuxuclassmate" target="_blank" rel="noopener">
-      <span class="icon">☕</span> <span data-i18n="footer-coffee">Buy Me a Coffee</span>
-    </a>
-    <a href="https://github.com/InnoNestX/docker-hub-pull-counter/discussions" target="_blank" rel="noopener">
-      <span class="icon">💬</span> <span data-i18n="footer-discussions">Discussions</span>
-    </a>
-  </div>
-</div>
-</div>
-<div class="footer-bottom">
-  <p>© 2026 InnoNestX. <span data-i18n="footer-made-with">Made with</span> ❤️ <span data-i18n="footer-for-community">for the community</span>.</p>
-</div>
 </footer>
+</div>
+
 <script>
+const BASE_URL='docker-hub-pull-counter.vercel.app';
 let lang='en';
-const t={
+let currentSignal='user-stats';
+let currentTab='body';
+let lastResponse=null;
+
+const CATEGORIES=[
+  {id:'stats',label_en:'Core Stats',label_zh:'核心统计',ids:['user-stats','top-repos','batch-stats','compare']},
+  {id:'cards',label_en:'Cards & Badges',label_zh:'卡片与徽章',ids:['docker-stats','trend','badge-pulls','badge-growth','embed']},
+  {id:'history',label_en:'History',label_zh:'历史增长',ids:['history','growth','repo-history']},
+  {id:'discovery',label_en:'Discovery',label_zh:'发现',ids:['repo-details','repo-tags','search','popular-repos']}
+];
+
+const CATALOG={
+  'user-stats':{
+    path:'/api/user/stats',method:'GET',
+    title_en:'User Statistics',title_zh:'用户统计',
+    summary_en:'Aggregate pull counts, stars, and repository totals for a Docker Hub user.',
+    summary_zh:'汇总 Docker Hub 用户的拉取量、星标与仓库总数。',
+    example:'{\n  "success": true,\n  "username": "xuxuclassmate",\n  "repositoryCount": 5,\n  "totalPulls": 123456,\n  "totalStars": 42\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'fields',label_en:'Fields',label_zh:'字段',type:'text',required:false,placeholder:'name,pullCount,starCount',desc_en:'Optional projected fields',desc_zh:'可选投影字段'}
+    ]
+  },
+  'top-repos':{
+    path:'/api/user/top-repos',method:'GET',
+    title_en:'Top Repositories',title_zh:'热门仓库',
+    summary_en:'Return a user\'s repositories ranked by pull count.',
+    summary_zh:'按拉取量返回用户仓库排行。',
+    example:'{\n  "success": true,\n  "repositories": [{"name":"app","pullCount":9000}]\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'library',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'limit',label_en:'Limit',label_zh:'数量',type:'number',required:false,placeholder:'5',desc_en:'Max repos',desc_zh:'返回数量'}
+    ]
+  },
+  'batch-stats':{
+    path:'/api/batch/stats',method:'GET',
+    title_en:'Batch Stats',title_zh:'批量统计',
+    summary_en:'Fetch stats for up to 10 usernames in one request.',
+    summary_zh:'一次请求获取最多 10 个用户的统计。',
+    example:'{\n  "success": true,\n  "total": 2,\n  "successful": 2,\n  "results": []\n}',
+    params:[
+      {name:'usernames',label_en:'Usernames',label_zh:'用户名列表',type:'text',required:true,placeholder:'library,bitnami',desc_en:'Comma-separated, max 10',desc_zh:'逗号分隔，最多 10 个'}
+    ]
+  },
+  'compare':{
+    path:'/api/compare',method:'GET',
+    title_en:'Compare Users',title_zh:'用户对比',
+    summary_en:'Rank 2–5 users by total pulls with top-repo context.',
+    summary_zh:'对比 2–5 个用户的拉取量并给出排行。',
+    example:'{\n  "success": true,\n  "winner": "library",\n  "rankedBy": "totalPulls",\n  "profiles": []\n}',
+    params:[
+      {name:'usernames',label_en:'Usernames',label_zh:'用户名列表',type:'text',required:true,placeholder:'library,bitnami',desc_en:'2–5 usernames',desc_zh:'2–5 个用户名'}
+    ]
+  },
+  'docker-stats':{
+    path:'/api/docker-stats',method:'GET',
+    title_en:'Stats Card SVG',title_zh:'统计卡片 SVG',
+    summary_en:'User card via username, or repository card via namespace + repo.',
+    summary_zh:'用户名生成用户卡片；namespace + repo 生成仓库卡片。',
+    example:'<svg xmlns="..."><!-- SVG card --></svg>',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:false,placeholder:'xuxuclassmate',desc_en:'User card mode',desc_zh:'用户卡片模式'},
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:false,placeholder:'library',desc_en:'Repo card mode',desc_zh:'仓库卡片模式'},
+      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:false,placeholder:'nginx',desc_en:'Repo card mode',desc_zh:'仓库卡片模式'},
+      {name:'style',label_en:'Style',label_zh:'样式',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
+    ]
+  },
+  'trend':{
+    path:'/api/trend',method:'GET',
+    title_en:'Pull Trend SVG',title_zh:'拉取趋势 SVG',
+    summary_en:'Sparkline card of daily pull history for a user or repository.',
+    summary_zh:'用户或仓库的每日拉取趋势折线图卡片。',
+    example:'<svg xmlns="..."><!-- trend sparkline --></svg>',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:false,placeholder:'xuxuclassmate',desc_en:'User trend',desc_zh:'用户趋势'},
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:false,placeholder:'library',desc_en:'Repo trend',desc_zh:'仓库趋势'},
+      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:false,placeholder:'nginx',desc_en:'Repo trend',desc_zh:'仓库趋势'},
+      {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'},
+      {name:'style',label_en:'Style',label_zh:'样式',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
+    ]
+  },
+  'badge-pulls':{
+    path:'/api/badge/pulls',method:'GET',
+    title_en:'Pulls Badge',title_zh:'拉取量徽章',
+    summary_en:'Shields.io endpoint JSON for total pulls.',
+    summary_zh:'Shields.io 拉取量徽章端点。',
+    example:'{\n  "schemaVersion": 1,\n  "label": "docker pulls",\n  "message": "1.2M",\n  "color": "blue"\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'}
+    ]
+  },
+  'badge-growth':{
+    path:'/api/badge/growth',method:'GET',
+    title_en:'Growth Badge',title_zh:'增长徽章',
+    summary_en:'Shields badge for pull growth over N days.',
+    summary_zh:'N 天拉取增长的 Shields 徽章。',
+    example:'{\n  "schemaVersion": 1,\n  "label": "pulls/7d",\n  "message": "+12k",\n  "color": "brightgreen"\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'7',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'embed':{
+    path:'/api/embed',method:'GET',
+    title_en:'Embed Helper',title_zh:'嵌入助手',
+    summary_en:'Ready-to-paste Markdown/HTML for badges, cards, and trend.',
+    summary_zh:'可直接粘贴的徽章、卡片、趋势 Markdown/HTML。',
+    example:'{\n  "success": true,\n  "badges": {},\n  "card": {},\n  "trend": {}\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'}
+    ]
+  },
+  'history':{
+    path:'/api/user/history',method:'GET',
+    title_en:'User History',title_zh:'用户历史',
+    summary_en:'Daily snapshots with pull/star deltas for a user.',
+    summary_zh:'用户每日快照与拉取/星标增量。',
+    example:'{\n  "success": true,\n  "points": [],\n  "growth": {"pulls": 1200}\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'growth':{
+    path:'/api/user/growth',method:'GET',
+    title_en:'User Growth',title_zh:'用户增长',
+    summary_en:'Compact growth summary for a time window.',
+    summary_zh:'时间窗口内的增长摘要。',
+    example:'{\n  "success": true,\n  "growth": {"pulls": 800, "pullPercent": 2.1}\n}',
+    params:[
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
+      {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'7',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'repo-history':{
+    path:'/api/repo/history',method:'GET',
+    title_en:'Repo History',title_zh:'仓库历史',
+    summary_en:'Daily snapshots for a single repository.',
+    summary_zh:'单个仓库的每日快照。',
+    example:'{\n  "success": true,\n  "namespace": "library",\n  "repo": "nginx",\n  "points": []\n}',
+    params:[
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:true,placeholder:'library',desc_en:'Owner/org',desc_zh:'所有者/组织'},
+      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:true,placeholder:'nginx',desc_en:'Repository name',desc_zh:'仓库名'},
+      {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'repo-details':{
+    path:'/api/repo/details',method:'GET',
+    title_en:'Repository Details',title_zh:'仓库详情',
+    summary_en:'Full Docker Hub repository metadata.',
+    summary_zh:'Docker Hub 仓库完整元数据。',
+    example:'{\n  "success": true,\n  "data": {"name": "nginx", "pull_count": 1000000000}\n}',
+    params:[
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:true,placeholder:'library',desc_en:'Owner/org',desc_zh:'所有者/组织'},
+      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:true,placeholder:'nginx',desc_en:'Repository name',desc_zh:'仓库名'}
+    ]
+  },
+  'repo-tags':{
+    path:'/api/repo/tags',method:'GET',
+    title_en:'Repository Tags',title_zh:'仓库标签',
+    summary_en:'List image tags with digests and sizes.',
+    summary_zh:'列出镜像标签、摘要与大小。',
+    example:'{\n  "success": true,\n  "tags": [],\n  "total": 100\n}',
+    params:[
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:true,placeholder:'library',desc_en:'Owner/org',desc_zh:'所有者/组织'},
+      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:true,placeholder:'nginx',desc_en:'Repository name',desc_zh:'仓库名'},
+      {name:'limit',label_en:'Limit',label_zh:'数量',type:'number',required:false,placeholder:'100',desc_en:'Max tags',desc_zh:'最大标签数'}
+    ]
+  },
+  'search':{
+    path:'/api/search',method:'GET',
+    title_en:'Search',title_zh:'搜索',
+    summary_en:'Search Docker Hub repositories by keyword.',
+    summary_zh:'按关键词搜索 Docker Hub 仓库。',
+    example:'{\n  "success": true,\n  "query": "nginx",\n  "results": []\n}',
+    params:[
+      {name:'q',label_en:'Query',label_zh:'关键词',type:'text',required:true,placeholder:'nginx',desc_en:'Search query',desc_zh:'搜索词'},
+      {name:'page',label_en:'Page',label_zh:'页码',type:'number',required:false,placeholder:'1',desc_en:'Page number',desc_zh:'页码'},
+      {name:'page_size',label_en:'Page Size',label_zh:'每页数量',type:'number',required:false,placeholder:'25',desc_en:'Results per page',desc_zh:'每页结果数'}
+    ]
+  },
+  'popular-repos':{
+    path:'/api/popular/repos',method:'GET',
+    title_en:'Popular Repos',title_zh:'热门仓库',
+    summary_en:'Browse a namespace ordered by pull count (default library).',
+    summary_zh:'按拉取量浏览命名空间仓库（默认 library）。',
+    example:'{\n  "success": true,\n  "namespace": "library",\n  "ordering": "-pull_count",\n  "results": []\n}',
+    params:[
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:false,placeholder:'library',desc_en:'Default library',desc_zh:'默认 library'},
+      {name:'page',label_en:'Page',label_zh:'页码',type:'number',required:false,placeholder:'1',desc_en:'Page number',desc_zh:'页码'},
+      {name:'page_size',label_en:'Page Size',label_zh:'每页数量',type:'number',required:false,placeholder:'25',desc_en:'Results per page',desc_zh:'每页结果数'}
+    ]
+  }
+};
+
+const UI={
   en:{
-    'nav-docs':'Documentation',
-    'nav-tester':'API Tester',
-    'nav-quick':'Quick Links',
-    'nav-base':'Base URL',
-    'nav-user-stats':'User Statistics',
-    'nav-docker-stats':'Docker Stats Card',
-    'nav-repo-details':'Repository Details',
-    'nav-repo-tags':'Repository Tags',
-    'nav-search':'Search',
-    'nav-compare':'Compare Users',
-    'nav-embed':'Embed & Badges',
-    'nav-history':'Pull History',
-    'nav-popular':'Popular Repos',
-    'nav-batch':'Batch Stats',
-    'hero-title':'Access Docker Hub data with a simple REST API',
-    'hero-desc':'Pull counts, repository details, tags, search, and embeddable SVG cards — all available through our unified gateway.',
-    'hero-note':'Want to test the API? Use the API Tester to try requests interactively.',
-    'ep-user-title':'User Statistics',
-    'ep-user-desc':'Retrieve total pull counts and repository statistics for a Docker Hub user. This endpoint aggregates data across all public repositories belonging to the specified user.',
-    'ep-card-title':'Docker Stats Card',
-    'ep-card-desc':'Returns an SVG image card with Docker Hub user statistics, or a repository card when namespace + repo are provided. Perfect for README embeds.',
-    'ep-repo-title':'Repository Details',
-    'ep-repo-desc':'Get detailed information about a specific Docker Hub repository including description, star count, pull count, automated build status, and media types.',
-    'ep-tags-title':'Repository Tags',
-    'ep-tags-desc':'List all available tags for a repository along with their digests, sizes, and last updated timestamps. Results are sorted by most recently updated.',
-    'ep-search-title':'Search',
-    'ep-search-desc':'Search Docker Hub repositories by keyword. Supports pagination and filtering by repository is_official flag. Results are ranked by relevance and popularity.',
-    'ep-compare-title':'Compare Users',
-    'ep-compare-desc':'Compare 2–5 Docker Hub users by total pulls, stars, and repositories. Returns a ranked leaderboard with each user\'s top repos.',
-    'ep-embed-title':'Embed & Badges',
-    'ep-embed-desc':'Generate ready-to-paste Markdown/HTML for README badges and SVG cards. Also available as Shields.io endpoints: /api/badge/pulls, /api/badge/stars, /api/badge/repos.',
-    'ep-history-title':'Pull History & Growth',
-    'ep-history-desc':'We snapshot pull/star counts once per day when stats are fetched. Use history/growth APIs and the trend SVG card to show README-ready growth charts. Related: /api/user/growth, /api/trend, /api/badge/growth, /api/repo/history.',
-    'ep-popular-title':'Popular Repositories',
-    'ep-popular-desc':'List repositories for a namespace ordered by pull count. Defaults to official library images.',
-    'ep-batch-title':'Batch Stats',
-    'ep-batch-desc':'Fetch statistics for up to 10 usernames in one request.',
-    'param-username-desc':'Docker Hub username',
-    'param-fields-desc':'Comma-separated list of fields to return. Available: name, full_name, namespace, pull_count, star_count, repo_count, last_updated',
-    'param-namespace-desc':'Repository namespace or user/organization name',
-    'param-repo-desc':'Repository name',
-    'param-limit-desc':'Maximum number of tags to return (default: 100, max: 1000)',
-    'param-q-desc':'Search query string',
-    'param-page-desc':'Page number for pagination (default: 1)',
-    'param-pagesize-desc':'Number of results per page (default: 25, max: 100)',
-    'param-usernames-desc':'Comma-separated usernames (2–5)',
-    'param-days-desc':'Lookback window in days (1–90, default 30)',
-    'param-popular-namespace-desc':'Namespace to browse (default: library)',
-    'param-batch-usernames-desc':'Comma-separated usernames (max 10)',
-    'example-response':'Example Response',
-    'example-embed-title':'Embed Code',
-    'footer-contribute':'Contribute',
-    'footer-contribute-desc':'Found a bug or want to contribute?',
-    'footer-report-bug':'Report Bug',
-    'footer-submit-pr':'Submit PR',
-    'footer-star-repo':'Star Repo',
-    'footer-support':'Support',
-    'footer-support-desc':'Enjoy the API? Support the project!',
-    'footer-sponsor':'Sponsor',
-    'footer-coffee':'Buy Me a Coffee',
-    'footer-discussions':'Discussions',
-    'footer-made-with':'Made with',
-    'footer-for-community':'for the community',
-    'footer-contribute':'Contribute',
-    'footer-support':'Support',
-    'footer-home':'Home'
+    'link-live':'Link Active','map-toggle':'Signals','map-title':'Signal Map','brief-title':'Briefing',
+    'brief-sync':'Synced','console-title':'Transmission','url-label':'Request Vector','copy':'Copy',
+    'transmit':'Transmit','status-label':'Status','time-label':'Time','size-label':'Size',
+    'tab-body':'Body','tab-headers':'Headers','placeholder':'Select a signal, set params, then transmit.',
+    'optional':'(optional)','required':'required','example':'Example Payload','params':'Parameters',
+    'sending':'Transmitting…','error-fetch':'Transmission failed'
   },
   zh:{
-    'nav-docs':'文档',
-    'nav-tester':'API 测试',
-    'nav-quick':'快速链接',
-    'nav-base':'基础 URL',
-    'nav-user-stats':'用户统计',
-    'nav-docker-stats':'Docker 统计卡',
-    'nav-repo-details':'仓库详情',
-    'nav-repo-tags':'仓库标签',
-    'nav-search':'搜索',
-    'nav-compare':'用户对比',
-    'nav-embed':'嵌入与徽章',
-    'nav-history':'拉取历史',
-    'nav-popular':'热门仓库',
-    'nav-batch':'批量统计',
-    'hero-title':'通过简洁的 REST API 访问 Docker Hub 数据',
-    'hero-desc':'拉取次数、仓库详情、标签、搜索以及可嵌入的 SVG 卡片，全部通过统一网关提供。',
-    'hero-note':'想要测试 API？使用 API 测试工具进行交互式请求测试。',
-    'ep-user-title':'用户统计',
-    'ep-user-desc':'获取 Docker Hub 用户的总拉取次数和仓库统计信息。该接口聚合指定用户所有公共仓库的数据。',
-    'ep-card-title':'Docker 统计卡',
-    'ep-card-desc':'返回用户统计 SVG 卡片；传入 namespace + repo 时可生成单仓库卡片，适合 README 嵌入。',
-    'ep-repo-title':'仓库详情',
-    'ep-repo-desc':'获取特定 Docker Hub 仓库的详细信息，包括描述、星标数、拉取数、自动构建状态和媒体类型。',
-    'ep-tags-title':'仓库标签',
-    'ep-tags-desc':'列出仓库的所有可用标签及其摘要、大小和最后更新时间。结果按最近更新时间排序。',
-    'ep-search-title':'搜索',
-    'ep-search-desc':'通过关键词搜索 Docker Hub 仓库。支持分页和按官方仓库筛选。结果按相关性和热度排名。',
-    'ep-compare-title':'用户对比',
-    'ep-compare-desc':'对比 2–5 个 Docker Hub 用户的拉取量、星标和仓库数，返回排行榜及各自热门仓库。',
-    'ep-embed-title':'嵌入与徽章',
-    'ep-embed-desc':'生成可直接粘贴到 README 的 Markdown/HTML 徽章与卡片。也可使用 Shields.io 端点：/api/badge/pulls、/api/badge/stars、/api/badge/repos。',
-    'ep-history-title':'拉取历史与增长',
-    'ep-history-desc':'每次获取统计时按天写入快照。可用 history/growth API 和趋势 SVG 卡片展示增长。相关接口：/api/user/growth、/api/trend、/api/badge/growth、/api/repo/history。',
-    'ep-popular-title':'热门仓库',
-    'ep-popular-desc':'按拉取量排序列出命名空间下的仓库，默认官方 library 镜像。',
-    'ep-batch-title':'批量统计',
-    'ep-batch-desc':'一次请求获取最多 10 个用户的统计数据。',
-    'param-username-desc':'Docker Hub 用户名',
-    'param-fields-desc':'逗号分隔的返回字段列表。可用字段：name, full_name, namespace, pull_count, star_count, repo_count, last_updated',
-    'param-namespace-desc':'仓库所属的用户或组织命名空间',
-    'param-repo-desc':'仓库名称',
-    'param-limit-desc':'返回的最大标签数（默认：100，最大：1000）',
-    'param-q-desc':'搜索查询字符串',
-    'param-page-desc':'分页页码（默认：1）',
-    'param-pagesize-desc':'每页结果数（默认：25，最大：100）',
-    'param-usernames-desc':'逗号分隔的用户名（2–5 个）',
-    'param-days-desc':'回溯天数（1–90，默认 30）',
-    'param-popular-namespace-desc':'要浏览的命名空间（默认：library）',
-    'param-batch-usernames-desc':'逗号分隔的用户名（最多 10 个）',
-    'example-response':'响应示例',
-    'example-embed-title':'嵌入代码',
-    'footer-contribute':'贡献',
-    'footer-contribute-desc':'发现 Bug 或想贡献代码？',
-    'footer-report-bug':'报告 Bug',
-    'footer-submit-pr':'提交 PR',
-    'footer-star-repo':'Star 仓库',
-    'footer-support':'支持',
-    'footer-support-desc':'喜欢这个 API？支持项目！',
-    'footer-sponsor':'赞助',
-    'footer-coffee':'请我喝咖啡',
-    'footer-discussions':'讨论区',
-    'footer-made-with':'用',
-    'footer-for-community':'为社区制作',
-    'footer-contribute':'贡献',
-    'footer-support':'支持',
-    'footer-home':'首页'
+    'link-live':'链路已接通','map-toggle':'信号表','map-title':'信号图','brief-title':'简报',
+    'brief-sync':'已同步','console-title':'传输台','url-label':'请求矢量','copy':'复制',
+    'transmit':'发射','status-label':'状态','time-label':'耗时','size-label':'大小',
+    'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择信号、填写参数，然后发射。',
+    'optional':'(可选)','required':'必填','example':'示例载荷','params':'参数',
+    'sending':'发射中…','error-fetch':'传输失败'
   }
 };
 
 const ICON_SUN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 const ICON_MOON='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
-function applyLang(){
+function t(key){return UI[lang][key]||key;}
+function ep(){return CATALOG[currentSignal];}
+function L(obj,enKey,zhKey){return lang==='zh'?(obj[zhKey]||obj[enKey]):obj[enKey];}
+
+function applyChrome(){
   document.documentElement.lang=lang==='zh'?'zh-CN':'en';
   document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.dataset.i18n;
-    if(t[lang][k])el.textContent=t[lang][k];
+    const key=el.dataset.i18n;
+    if(UI[lang][key])el.textContent=UI[lang][key];
   });
   const langBtn=document.getElementById('lang-toggle');
   if(langBtn){
     langBtn.textContent=lang==='en'?'中文':'EN';
     langBtn.title=lang==='en'?'切换到中文':'Switch to English';
   }
+  updateThemeButton();
 }
 
-function setLang(l){
-  lang=l;
-  localStorage.setItem('lang',l);
-  applyLang();
+function setLang(next){
+  lang=next;
+  localStorage.setItem('lang',next);
+  applyChrome();
+  renderAll();
 }
-
-function toggleLang(){
-  setLang(lang==='en'?'zh':'en');
-}
-
+function toggleLang(){setLang(lang==='en'?'zh':'en');}
 function getTheme(){
   const saved=localStorage.getItem('theme');
   if(saved==='light'||saved==='dark')return saved;
   return document.documentElement.getAttribute('data-theme')||'dark';
 }
-
 function updateThemeButton(){
   const theme=getTheme();
   const btn=document.getElementById('theme-toggle');
   if(!btn)return;
   btn.innerHTML=theme==='dark'?ICON_SUN:ICON_MOON;
-  btn.title=theme==='dark'?'Switch to light':'Switch to dark';
 }
-
 function setTheme(theme){
   localStorage.setItem('theme',theme);
   document.documentElement.setAttribute('data-theme',theme);
   updateThemeButton();
 }
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark');}
+function toggleMap(){document.getElementById('signal-map').classList.toggle('open');}
 
-function toggleTheme(){
-  setTheme(getTheme()==='dark'?'light':'dark');
+function setSignal(id, pushHash=true){
+  if(!CATALOG[id])id='user-stats';
+  currentSignal=id;
+  if(pushHash)history.replaceState(null,'',`#signal=${id}`);
+  lastResponse=null;
+  currentTab='body';
+  document.getElementById('response-meta').style.display='none';
+  document.getElementById('response-tabs').style.display='none';
+  document.getElementById('response-pre').style.display='none';
+  document.getElementById('svg-render').classList.remove('active');
+  document.getElementById('response-placeholder').style.display='block';
+  document.getElementById('console-status').textContent='IDLE';
+  renderAll();
+  if(window.innerWidth<=1100){
+    document.getElementById('signal-map').classList.remove('open');
+    document.getElementById('console-panel').scrollIntoView({behavior:'smooth',block:'start'});
+  }
 }
 
-function toggleMenu(){
-  document.querySelector('.mobile-menu').classList.toggle('active');
-}
-
-function setActiveNav(hash){
-  const current=hash||location.hash||'#user-stats';
-  document.querySelectorAll('.sidebar .nav-item').forEach(item=>{
-    item.classList.toggle('active',item.getAttribute('href')===current);
-  });
-}
-
-function getSidebarMaxScroll(){
-  const main=document.querySelector('.main');
-  const sidebar=document.querySelector('.sidebar');
-  if(!main||!sidebar||window.innerWidth<=768)return Infinity;
-  const stickyTop=80;
-  return main.offsetTop+main.offsetHeight-stickyTop-sidebar.offsetHeight-16;
-}
-
-function scrollToEndpoint(hash){
-  const id=String(hash||'').replace(/^#/,'');
-  const el=document.getElementById(id);
-  if(!el)return;
-  const headerOffset=100;
-  const target=el.getBoundingClientRect().top+window.scrollY-headerOffset;
-  const maxScroll=getSidebarMaxScroll();
-  window.scrollTo({
-    top:Math.max(0,Math.min(target,maxScroll)),
-    behavior:'smooth'
-  });
-}
-
-function bindEndpointNav(){
-  document.querySelectorAll('.sidebar .nav-item, .mobile-menu a[href^="#"]').forEach(link=>{
-    link.addEventListener('click',e=>{
-      const href=link.getAttribute('href');
-      if(!href||href.charAt(0)!=='#')return;
-      e.preventDefault();
-      history.pushState(null,'',href);
-      setActiveNav(href);
-      scrollToEndpoint(href);
+function renderSignalMap(){
+  const list=document.getElementById('signal-list');
+  let html='';
+  let count=0;
+  CATEGORIES.forEach(group=>{
+    html+=`<div class="group-label">${L(group,'label_en','label_zh')}</div>`;
+    group.ids.forEach(id=>{
+      const item=CATALOG[id];
+      if(!item)return;
+      count++;
+      html+=`<button type="button" class="signal-item ${id===currentSignal?'active':''}" onclick="setSignal('${id}')">
+        <span class="name"><span class="method">${item.method}</span>${L(item,'title_en','title_zh')}</span>
+        <span class="path">${item.path}</span>
+      </button>`;
     });
   });
+  list.innerHTML=html;
+  document.getElementById('signal-count').textContent=String(count).padStart(2,'0');
 }
 
-window.addEventListener('hashchange',()=>{
-  setActiveNav();
-  scrollToEndpoint(location.hash);
-});
-window.addEventListener('resize',()=>{
-  if(location.hash)scrollToEndpoint(location.hash);
-});
+function renderBriefing(){
+  const item=ep();
+  const briefing=document.getElementById('briefing');
+  const rows=item.params.map(p=>`<tr>
+    <td class="pname">${p.name}${p.required?`<span class="badge req">${t('required')}</span>`:`<span class="badge">${t('optional')}</span>`}</td>
+    <td>${L(p,'desc_en','desc_zh')}</td>
+    <td class="mono">${p.type}</td>
+  </tr>`).join('');
+  briefing.innerHTML=`
+    <div class="brief-path">
+      <span class="method">${item.method}</span>
+      <code id="brief-path-code">${item.path}</code>
+      <button class="ghost-btn" type="button" onclick="copyPath()">${t('copy')}</button>
+    </div>
+    <h2 class="brief-title">${L(item,'title_en','title_zh')}</h2>
+    <p class="brief-desc">${L(item,'summary_en','summary_zh')}</p>
+    <div class="form-label">${t('params')}</div>
+    <table class="param-table">
+      <thead><tr><th>Name</th><th>Desc</th><th>Type</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="form-label">${t('example')}</div>
+    <div class="example-box">${item.example.replace(/</g,'&lt;')}</div>
+  `;
+}
 
-bindEndpointNav();
-setActiveNav();
-if(location.hash){
-  requestAnimationFrame(()=>scrollToEndpoint(location.hash));
+function renderParams(){
+  const item=ep();
+  const container=document.getElementById('params-container');
+  container.innerHTML=item.params.map(p=>{
+    const label=L(p,'label_en','label_zh');
+    const desc=L(p,'desc_en','desc_zh');
+    const req=p.required?`<span class="req">*</span>`:` <span style="opacity:.65;text-transform:none;letter-spacing:0">${t('optional')}</span>`;
+    if(p.type==='select'){
+      return `<div class="form-group">
+        <label class="form-label">${label}${req}</label>
+        <select id="param-${p.name}" class="form-select" onchange="updateUrlPreview()">
+          ${p.options.map(opt=>`<option value="${opt}">${opt}</option>`).join('')}
+        </select>
+        <div class="form-hint">${desc}</div>
+      </div>`;
+    }
+    return `<div class="form-group">
+      <label class="form-label">${label}${req}</label>
+      <input class="form-input" id="param-${p.name}" type="${p.type}" placeholder="${p.placeholder||''}" oninput="updateUrlPreview()">
+      <div class="form-hint">${desc}</div>
+    </div>`;
+  }).join('');
+  updateUrlPreview();
+}
+
+function collectParams(){
+  const params=new URLSearchParams();
+  ep().params.forEach(p=>{
+    const input=document.getElementById('param-'+p.name);
+    if(input&&input.value.trim())params.set(p.name,input.value.trim());
+  });
+  return params;
+}
+
+function updateUrlPreview(){
+  const item=ep();
+  document.getElementById('url-path').textContent=item.path;
+  const qs=collectParams().toString();
+  document.getElementById('url-params').textContent=qs?'?'+qs:'';
+}
+
+function buildUrl(){
+  const item=ep();
+  const qs=collectParams().toString();
+  return `https://${BASE_URL}${item.path}${qs?'?'+qs:''}`;
+}
+
+function copyUrl(){
+  navigator.clipboard.writeText(buildUrl());
+}
+function copyPath(){
+  navigator.clipboard.writeText(ep().path);
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
+  renderResponse();
+}
+
+function renderResponse(){
+  if(!lastResponse)return;
+  const pre=document.getElementById('response-pre');
+  const svg=document.getElementById('svg-render');
+  const placeholder=document.getElementById('response-placeholder');
+  placeholder.style.display='none';
+  if(currentTab==='body'){
+    if(lastResponse.isSvg){
+      pre.style.display='none';
+      svg.innerHTML=lastResponse.body;
+      svg.classList.add('active');
+    }else{
+      svg.classList.remove('active');
+      pre.style.display='block';
+      pre.textContent=lastResponse.isRawText?lastResponse.body:JSON.stringify(lastResponse.body,null,2);
+    }
+  }else{
+    svg.classList.remove('active');
+    pre.style.display='block';
+    const headers={};
+    lastResponse.headers.forEach((v,k)=>headers[k]=v);
+    pre.textContent=JSON.stringify(headers,null,2);
+  }
+}
+
+async function sendRequest(){
+  const item=ep();
+  const btn=document.getElementById('send-btn');
+  for(const p of item.params){
+    if(!p.required)continue;
+    const input=document.getElementById('param-'+p.name);
+    if(!input||!input.value.trim()){
+      input&&input.focus();
+      return;
+    }
+  }
+  // docker-stats / trend need username OR namespace+repo
+  if((currentSignal==='docker-stats'||currentSignal==='trend')){
+    const u=document.getElementById('param-username');
+    const ns=document.getElementById('param-namespace');
+    const repo=document.getElementById('param-repo');
+    const hasUser=u&&u.value.trim();
+    const hasRepo=ns&&repo&&ns.value.trim()&&repo.value.trim();
+    if(!hasUser&&!hasRepo){
+      (u||ns).focus();
+      return;
+    }
+  }
+
+  btn.disabled=true;
+  btn.classList.add('sending');
+  btn.textContent=t('sending');
+  document.getElementById('console-status').textContent='LIVE';
+  const started=performance.now();
+
+  try{
+    const res=await fetch(buildUrl());
+    const elapsed=Math.round(performance.now()-started);
+    const contentType=res.headers.get('content-type')||'';
+    let body;
+    let isSvg=false;
+    let isRawText=false;
+    if(contentType.includes('image/svg')){
+      body=await res.text();
+      isSvg=true;
+    }else if(contentType.includes('application/json')){
+      body=await res.json();
+    }else{
+      body=await res.text();
+      isRawText=true;
+    }
+    lastResponse={body,headers:res.headers,isSvg,isRawText,status:res.status};
+    document.getElementById('response-meta').style.display='flex';
+    document.getElementById('response-tabs').style.display='flex';
+    const statusEl=document.getElementById('response-status');
+    statusEl.textContent=String(res.status);
+    statusEl.className=res.ok?'ok':'bad';
+    document.getElementById('response-time-value').textContent=elapsed+'ms';
+    const size=typeof body==='string'?body.length:JSON.stringify(body).length;
+    document.getElementById('response-size').textContent=size>1024?(size/1024).toFixed(1)+'KB':size+'B';
+    currentTab='body';
+    document.querySelectorAll('.tab').forEach(el=>el.classList.toggle('active',el.dataset.tab==='body'));
+    renderResponse();
+    document.getElementById('console-status').textContent=res.ok?'OK':'ERR';
+  }catch(error){
+    lastResponse={body:{success:false,error:error.message||t('error-fetch')},headers:new Headers(),isSvg:false,isRawText:false,status:0};
+    document.getElementById('response-meta').style.display='flex';
+    document.getElementById('response-tabs').style.display='flex';
+    document.getElementById('response-status').textContent='ERR';
+    document.getElementById('response-status').className='bad';
+    document.getElementById('response-time-value').textContent='-';
+    document.getElementById('response-size').textContent='-';
+    renderResponse();
+    document.getElementById('console-status').textContent='ERR';
+  }finally{
+    btn.disabled=false;
+    btn.classList.remove('sending');
+    btn.textContent=t('transmit');
+  }
+}
+
+function renderAll(){
+  renderSignalMap();
+  renderBriefing();
+  renderParams();
+  applyChrome();
+}
+
+function bootFromHash(){
+  const match=location.hash.match(/signal=([a-z0-9-]+)/i);
+  if(match&&CATALOG[match[1]])currentSignal=match[1];
 }
 
 lang=localStorage.getItem('lang')==='zh'?'zh':'en';
-applyLang();
-updateThemeButton();
-
-async function generateEmbed(){
-  const username=(document.getElementById('embed-username')?.value||'').trim()||'xuxuclassmate';
-  const out=document.getElementById('embed-output');
-  if(out)out.textContent='Loading...';
-  try{
-    const res=await fetch(`/api/embed?username=${encodeURIComponent(username)}`);
-    const data=await res.json();
-    if(!res.ok||!data.success){
-      if(out)out.textContent=data.error||'Failed to generate embed snippets';
-      return;
-    }
-    if(out){
-      out.textContent=[
-        data.badges.pulls.markdown,
-        data.badges.stars.markdown,
-        data.badges.repos.markdown,
-        data.badges.growth?.markdown,
-        '',
-        data.card.markdown,
-        data.trend?.markdown
-      ].filter(Boolean).join('\n');
-    }
-  }catch(error){
-    if(out)out.textContent=error.message;
-  }
-}
+bootFromHash();
+renderAll();
+window.addEventListener('hashchange',()=>{
+  const match=location.hash.match(/signal=([a-z0-9-]+)/i);
+  if(match&&CATALOG[match[1]]&&match[1]!==currentSignal)setSignal(match[1],false);
+});
 </script>
 </body>
 </html>
