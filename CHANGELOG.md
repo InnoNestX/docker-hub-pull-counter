@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.4] - 2026-07-22
+
+### Added
+- Standalone bilingual API reference at `/docs.html` with parameter types, enums, and response field meanings
+- OpenAPI `style` enum for SVG card endpoints and `/api/docker-stats/styles` path
+
+### Changed
+- Signal Bridge links to full docs; docker-stats style values documented in console briefing
+
 ## [2.3.3] - 2026-07-22
 
 ### Fixed

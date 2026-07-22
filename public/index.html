@@ -263,6 +263,7 @@ button,input,select{font:inherit}
       <b id="total-calls">—</b>
     </a>
     <button class="ghost-btn map-toggle" type="button" onclick="toggleMap()" data-i18n="map-toggle">Endpoints</button>
+    <a class="ghost-btn" href="./docs.html" data-i18n="nav-docs">Docs</a>
     <a class="ghost-btn" href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">GitHub</a>
     <button class="toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
     <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
@@ -382,14 +383,14 @@ const CATALOG={
   'docker-stats':{
     path:'/api/docker-stats',method:'GET',
     title_en:'Stats Card SVG',title_zh:'统计卡片 SVG',
-    summary_en:'User card via username, or repository card via namespace + repo.',
-    summary_zh:'用户名生成用户卡片；namespace + repo 生成仓库卡片。',
-    example:'<svg xmlns="..."><!-- SVG card --></svg>',
+    summary_en:'User card via username, or repository card via namespace + repo. style: gradient | minimal | dark | light | github | compact. Full docs: /docs.html#docker-stats',
+    summary_zh:'用户名生成用户卡片；namespace + repo 生成仓库卡片。style：gradient | minimal | dark | light | github | compact。完整文档：/docs.html#docker-stats',
+    example:'GET /api/docker-stats?username=xuxuclassmate&style=github\nGET /api/docker-stats?namespace=library&repo=nginx&style=minimal',
     params:[
-      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:false,placeholder:'xuxuclassmate',desc_en:'User card mode',desc_zh:'用户卡片模式'},
-      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:false,placeholder:'library',desc_en:'Repo card mode',desc_zh:'仓库卡片模式'},
-      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:false,placeholder:'nginx',desc_en:'Repo card mode',desc_zh:'仓库卡片模式'},
-      {name:'style',label_en:'Style',label_zh:'样式',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
+      {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:false,placeholder:'xuxuclassmate',desc_en:'User card mode (required unless namespace+repo)',desc_zh:'用户卡片模式（未提供 namespace+repo 时必填）'},
+      {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:false,placeholder:'library',desc_en:'Repo card mode (with repo)',desc_zh:'仓库卡片模式（配合 repo）'},
+      {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:false,placeholder:'nginx',desc_en:'Repo card mode (with namespace)',desc_zh:'仓库卡片模式（配合 namespace）'},
+      {name:'style',label_en:'Style',label_zh:'样式',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'gradient=default blue; minimal=light; dark=black; light=sky; github=GH dark; compact=amber',desc_zh:'gradient=默认蓝渐变；minimal=浅色；dark=近黑；light=浅蓝；github=GitHub 深色；compact=琥珀'}
     ]
   },
   'trend':{
@@ -403,7 +404,7 @@ const CATALOG={
       {name:'namespace',label_en:'Namespace',label_zh:'命名空间',type:'text',required:false,placeholder:'library',desc_en:'Repo trend',desc_zh:'仓库趋势'},
       {name:'repo',label_en:'Repository',label_zh:'仓库',type:'text',required:false,placeholder:'nginx',desc_en:'Repo trend',desc_zh:'仓库趋势'},
       {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'},
-      {name:'style',label_en:'Style',label_zh:'样式',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
+      {name:'style',label_en:'Style',label_zh:'样式',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Same style enum as docker-stats (see /docs.html#docker-stats)',desc_zh:'与 docker-stats 相同的 style 枚举（见 /docs.html#docker-stats）'}
     ]
   },
   'badge-pulls':{
@@ -528,7 +529,7 @@ const UI={
     'tab-body':'Body','tab-headers':'Headers','placeholder':'Select an endpoint, set params, then send.',
     'optional':'(optional)','required':'required','example':'Example Response','params':'Parameters',
     'sending':'Sending…','error-fetch':'Request failed',
-    'stats-pulse':'Calls'
+    'stats-pulse':'Calls','nav-docs':'Docs'
   },
   zh:{
     'link-live':'在线','map-toggle':'接口','map-title':'接口列表','brief-title':'说明',
@@ -537,7 +538,7 @@ const UI={
     'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择接口、填写参数，然后发送。',
     'optional':'(可选)','required':'必填','example':'示例响应','params':'参数',
     'sending':'发送中…','error-fetch':'请求失败',
-    'stats-pulse':'调用'
+    'stats-pulse':'调用','nav-docs':'文档'
   }
 };
 
@@ -646,6 +647,7 @@ function renderBriefing(){
     </div>
     <h2 class="brief-title">${L(item,'title_en','title_zh')}</h2>
     <p class="brief-desc">${L(item,'summary_en','summary_zh')}</p>
+    <p class="brief-desc" style="margin-top:-8px"><a href="./docs.html#${currentSignal}">${lang==='zh'?'打开完整接口文档 →':'Open full API docs →'}</a></p>
     <div class="form-label">${t('params')}</div>
     <table class="param-table">
       <thead><tr><th>Name</th><th>Desc</th><th>Type</th></tr></thead>
