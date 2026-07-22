@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-07-22
+
+### Added
+- Daily Redis history snapshots for users and repositories
+- `/api/user/history`, `/api/user/growth`, `/api/repo/history`
+- Trend SVG card `/api/trend` and Shields growth badge `/api/badge/growth`
+- Vercel cron `/api/internal/snapshot-history` (daily 06:00 UTC)
+- Embed snippets now include growth badge + trend card Markdown
+
+### Changed
+- Stats fetches automatically record one snapshot per user/day
+
 ## [2.1.0] - 2026-07-22
 
 ### Added

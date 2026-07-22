@@ -19,5 +19,11 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/internal/snapshot-history",
+      "schedule": "0 6 * * *"
+    }
   ]
 }

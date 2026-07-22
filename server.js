@@ -10,20 +10,28 @@ const {
   getTopRepositories,
   getUserStats
 } = require('./lib/user-stats');
-const {
-  createDockerStatsSvgWithStyle,
-  createRepoStatsSvgWithStyle,
-  getAvailableStyles,
-  getUserFacingStatsError
-} = require('./lib/svg-utils');
 const { generateOpenApiSpec } = require('./lib/openapi');
 const { buildShieldsBadge, buildUserBadges, formatCompact } = require('./lib/badges');
+const {
+  getRepoHistory,
+  getUserHistory,
+  listTrackedUsers,
+  recordRepoSnapshot,
+  recordUserSnapshot
+} = require('./lib/history');
 const {
   AppError,
   ValidationError,
   NotFoundError,
   RateLimitError
 } = require('./lib/errors');
+const {
+  createDockerStatsSvgWithStyle,
+  createRepoStatsSvgWithStyle,
+  createTrendSvgWithStyle,
+  getAvailableStyles,
+  getUserFacingStatsError
+} = require('./lib/svg-utils');
 
 const app = new Hono();
 const dockerClient = createDockerClient();
@@ -48,8 +56,13 @@ const EMPTY_ENDPOINT_STATS = {
   compare: 0,
   embed: 0,
   'user/top-repos': 0,
+  'user/history': 0,
+  'user/growth': 0,
+  'repo/history': 0,
+  trend: 0,
   openapi: 0,
-  badge: 0
+  badge: 0,
+  'internal/snapshot-history': 0
 };
 
 async function trackCall(endpoint) {
@@ -140,6 +153,22 @@ function wantsFresh(c) {
   return c.req.query('fresh') === '1' || c.req.query('fresh') === 'true';
 }
 
+async function loadUserStats(username, options = {}) {
+  const result = await getUserStats(username, {
+    dockerClient,
+    forceRefresh: Boolean(options.forceRefresh)
+  });
+  // Fire-and-forget daily snapshot so growth charts can build over time
+  recordUserSnapshot(redis, result.stats).catch(() => {});
+  return result;
+}
+
+function parseDays(value, fallback = 30) {
+  const days = parseInt(value || String(fallback), 10);
+  if (!Number.isFinite(days)) return fallback;
+  return Math.max(1, Math.min(days, 90));
+}
+
 app.use('/api/*', cors());
 
 app.use('/api/*', async (c, next) => {
@@ -181,8 +210,7 @@ app.get('/api/user/stats', async (c) => {
   await trackCall('user/stats');
 
   try {
-    const { stats, source } = await getUserStats(username, {
-      dockerClient,
+    const { stats, source } = await loadUserStats(username, {
       forceRefresh: wantsFresh(c)
     });
     return c.json(
@@ -212,8 +240,7 @@ app.get('/api/user/top-repos', async (c) => {
   await trackCall('user/top-repos');
 
   try {
-    const { stats, source } = await getUserStats(username, {
-      dockerClient,
+    const { stats, source } = await loadUserStats(username, {
       forceRefresh: wantsFresh(c)
     });
     return c.json(
@@ -248,6 +275,7 @@ app.get('/api/docker-stats', async (c) => {
     await trackCall('docker-stats');
     try {
       const data = await fetchDockerHub(`/repositories/${namespace}/${repo}`);
+      recordRepoSnapshot(redis, namespace, repo, data).catch(() => {});
       return c.body(createRepoStatsSvgWithStyle(style, data), 200, {
         'Content-Type': 'image/svg+xml; charset=utf-8',
         ...rateHeaders(c, {
@@ -280,8 +308,7 @@ app.get('/api/docker-stats', async (c) => {
   await trackCall('docker-stats');
 
   try {
-    const { stats, source } = await getUserStats(username, {
-      dockerClient,
+    const { stats, source } = await loadUserStats(username, {
       forceRefresh: wantsFresh(c)
     });
 
@@ -330,6 +357,7 @@ app.get('/api/repo/details', async (c) => {
 
   try {
     const data = await fetchDockerHub(`/repositories/${namespace}/${repo}`);
+    recordRepoSnapshot(redis, namespace, repo, data).catch(() => {});
     return c.json(
       { success: true, data, timestamp: new Date().toISOString() },
       200,
@@ -453,7 +481,7 @@ app.get('/api/batch/stats', async (c) => {
   await Promise.allSettled(
     usernames.map(async (username) => {
       try {
-        const { stats, source } = await getUserStats(username, { dockerClient, forceRefresh });
+        const { stats, source } = await loadUserStats(username, { forceRefresh });
         results.push({
           username,
           ...buildUserStatsResponse(stats, null),
@@ -502,8 +530,7 @@ app.get('/api/compare', async (c) => {
   await Promise.allSettled(
     usernames.map(async (username) => {
       try {
-        const { stats, source } = await getUserStats(username, {
-          dockerClient,
+        const { stats, source } = await loadUserStats(username, {
           forceRefresh: wantsFresh(c)
         });
         profiles.push({
@@ -546,8 +573,7 @@ app.get('/api/embed', async (c) => {
   await trackCall('embed');
 
   try {
-    const { stats, source } = await getUserStats(username, {
-      dockerClient,
+    const { stats, source } = await loadUserStats(username, {
       forceRefresh: wantsFresh(c)
     });
     const payload = buildUserBadges(stats, PUBLIC_BASE_URL);
@@ -605,6 +631,171 @@ app.get('/api/popular/repos', async (c) => {
   }
 });
 
+app.get('/api/user/history', async (c) => {
+  const username = c.req.query('username');
+  const days = parseDays(c.req.query('days'), 30);
+  if (!username) {
+    return c.json(new ValidationError('username parameter required', 'username').toJSON(), 400, rateHeaders(c));
+  }
+
+  await trackCall('user/history');
+
+  try {
+    // Ensure today's snapshot exists when history is requested
+    await loadUserStats(username, { forceRefresh: wantsFresh(c) });
+    const history = await getUserHistory(redis, username, days);
+    return c.json(
+      {
+        success: true,
+        ...history,
+        timestamp: new Date().toISOString()
+      },
+      200,
+      rateHeaders(c, { 'Cache-Control': 'public, max-age=60' })
+    );
+  } catch (error) {
+    return c.json(
+      errorPayload(error, getUserFacingStatsError(username, error)),
+      isNotFoundError(error) ? 404 : 500,
+      rateHeaders(c)
+    );
+  }
+});
+
+app.get('/api/user/growth', async (c) => {
+  const username = c.req.query('username');
+  const days = parseDays(c.req.query('days'), 7);
+  if (!username) {
+    return c.json(new ValidationError('username parameter required', 'username').toJSON(), 400, rateHeaders(c));
+  }
+
+  await trackCall('user/growth');
+
+  try {
+    await loadUserStats(username, { forceRefresh: wantsFresh(c) });
+    const history = await getUserHistory(redis, username, days);
+    return c.json(
+      {
+        success: true,
+        username: history.username,
+        days: history.days,
+        insufficientHistory: history.insufficientHistory,
+        growth: history.growth,
+        latest: history.points[history.points.length - 1] || null,
+        sampleCount: history.sampleCount,
+        timestamp: new Date().toISOString()
+      },
+      200,
+      rateHeaders(c, { 'Cache-Control': 'public, max-age=60' })
+    );
+  } catch (error) {
+    return c.json(
+      errorPayload(error, getUserFacingStatsError(username, error)),
+      isNotFoundError(error) ? 404 : 500,
+      rateHeaders(c)
+    );
+  }
+});
+
+app.get('/api/repo/history', async (c) => {
+  const namespace = c.req.query('namespace');
+  const repo = c.req.query('repo');
+  const days = parseDays(c.req.query('days'), 30);
+  if (!namespace || !repo) {
+    return c.json(new ValidationError('namespace and repo parameters required').toJSON(), 400, rateHeaders(c));
+  }
+
+  await trackCall('repo/history');
+
+  try {
+    const data = await fetchDockerHub(`/repositories/${namespace}/${repo}`);
+    await recordRepoSnapshot(redis, namespace, repo, data);
+    const history = await getRepoHistory(redis, namespace, repo, days);
+    return c.json(
+      {
+        success: true,
+        ...history,
+        timestamp: new Date().toISOString()
+      },
+      200,
+      rateHeaders(c, { 'Cache-Control': 'public, max-age=60' })
+    );
+  } catch (error) {
+    return c.json(
+      errorPayload(error),
+      isNotFoundError(error) ? 404 : 500,
+      rateHeaders(c)
+    );
+  }
+});
+
+app.get('/api/trend', async (c) => {
+  const username = c.req.query('username');
+  const namespace = c.req.query('namespace');
+  const repo = c.req.query('repo');
+  const style = c.req.query('style') || 'gradient';
+  const days = parseDays(c.req.query('days'), 30);
+
+  await trackCall('trend');
+
+  try {
+    if (namespace && repo) {
+      const data = await fetchDockerHub(`/repositories/${namespace}/${repo}`);
+      await recordRepoSnapshot(redis, namespace, repo, data);
+      const history = await getRepoHistory(redis, namespace, repo, days);
+      return c.body(
+        createTrendSvgWithStyle(style, {
+          username: `${history.namespace}/${history.repo}`,
+          ...history
+        }),
+        200,
+        {
+          'Content-Type': 'image/svg+xml; charset=utf-8',
+          ...rateHeaders(c, { 'Cache-Control': 'public, max-age=120' })
+        }
+      );
+    }
+
+    if (!username) {
+      return c.body(
+        createTrendSvgWithStyle(style, {
+          username: 'missing-user',
+          error: 'username parameter required (or namespace + repo)',
+          points: [],
+          growth: { pulls: 0 }
+        }),
+        400,
+        {
+          'Content-Type': 'image/svg+xml; charset=utf-8',
+          ...rateHeaders(c, { 'Cache-Control': 'no-store' })
+        }
+      );
+    }
+
+    await loadUserStats(username, { forceRefresh: wantsFresh(c) });
+    const history = await getUserHistory(redis, username, days);
+    return c.body(createTrendSvgWithStyle(style, history), 200, {
+      'Content-Type': 'image/svg+xml; charset=utf-8',
+      ...rateHeaders(c, { 'Cache-Control': 'public, max-age=120' })
+    });
+  } catch (error) {
+    const label = username || `${namespace}/${repo}`;
+    return c.body(
+      createTrendSvgWithStyle(style, {
+        username: label,
+        error: getUserFacingStatsError(label, error),
+        points: [],
+        growth: { pulls: 0 }
+      }),
+      isNotFoundError(error) ? 404 : 500,
+      {
+        'Content-Type': 'image/svg+xml; charset=utf-8',
+        ...rateHeaders(c, { 'Cache-Control': 'no-store' })
+      }
+    );
+  }
+});
+
 app.get('/api/stats', async (c) => {
   const stats = await getStats();
   return c.json({
@@ -623,8 +814,7 @@ async function userBadgeHandler(c, type) {
   await trackCall('badge');
 
   try {
-    const { stats, source } = await getUserStats(username, {
-      dockerClient,
+    const { stats, source } = await loadUserStats(username, {
       forceRefresh: wantsFresh(c)
     });
 
@@ -648,6 +838,51 @@ app.get('/api/badge/pulls', (c) => userBadgeHandler(c, 'pulls'));
 app.get('/api/badge/stars', (c) => userBadgeHandler(c, 'stars'));
 app.get('/api/badge/repos', (c) => userBadgeHandler(c, 'repos'));
 
+app.get('/api/badge/growth', async (c) => {
+  const username = c.req.query('username');
+  const days = parseDays(c.req.query('days'), 7);
+  if (!username) {
+    return c.json(new ValidationError('username parameter required', 'username').toJSON(), 400, rateHeaders(c));
+  }
+
+  await trackCall('badge');
+
+  try {
+    await loadUserStats(username, { forceRefresh: wantsFresh(c) });
+    const history = await getUserHistory(redis, username, days);
+
+    if (history.insufficientHistory) {
+      return c.json(
+        buildShieldsBadge({
+          label: `pulls/${days}d`,
+          message: 'collecting',
+          color: 'lightgrey'
+        }),
+        200,
+        rateHeaders(c, { 'Cache-Control': 'public, max-age=60' })
+      );
+    }
+
+    const delta = history.growth.pulls;
+    const message = `${delta >= 0 ? '+' : ''}${formatCompact(delta)}`;
+    return c.json(
+      buildShieldsBadge({
+        label: `pulls/${days}d`,
+        message,
+        color: delta >= 0 ? 'brightgreen' : 'red'
+      }),
+      200,
+      rateHeaders(c, { 'Cache-Control': 'public, max-age=60' })
+    );
+  } catch (error) {
+    return c.json(
+      buildShieldsBadge({ label: `pulls/${days}d`, message: 'error', color: 'red' }),
+      isNotFoundError(error) ? 404 : 500,
+      rateHeaders(c, { 'Cache-Control': 'no-store' })
+    );
+  }
+});
+
 app.get('/api/badge/total-calls', async (c) => {
   const stats = await getStats();
   return c.json(
@@ -661,6 +896,48 @@ app.get('/api/badge/total-calls', async (c) => {
   );
 });
 
+app.get('/api/internal/snapshot-history', async (c) => {
+  const cronHeader = c.req.header('x-vercel-cron');
+  const authHeader = c.req.header('authorization') || '';
+  const cronSecret = process.env.CRON_SECRET;
+  const authorized = Boolean(cronHeader)
+    || (cronSecret && authHeader === `Bearer ${cronSecret}`)
+    || c.req.query('secret') === cronSecret;
+
+  if (!authorized) {
+    return c.json({ success: false, error: 'Unauthorized', code: 'AUTHENTICATION_ERROR' }, 401, rateHeaders(c));
+  }
+
+  await trackCall('internal/snapshot-history');
+
+  const usernames = await listTrackedUsers(redis);
+  const refreshed = [];
+  const failed = [];
+
+  for (const username of usernames.slice(0, 50)) {
+    try {
+      await loadUserStats(username, { forceRefresh: true });
+      refreshed.push(username);
+    } catch (error) {
+      failed.push({ username, error: error.message });
+    }
+  }
+
+  return c.json(
+    {
+      success: true,
+      tracked: usernames.length,
+      refreshed: refreshed.length,
+      failed: failed.length,
+      users: refreshed,
+      errors: failed.length > 0 ? failed : undefined,
+      timestamp: new Date().toISOString()
+    },
+    200,
+    rateHeaders(c)
+  );
+});
+
 app.get('/api/health', async (c) => {
   return c.json(
     {
@@ -668,6 +945,7 @@ app.get('/api/health', async (c) => {
       redis: redis ? 'connected' : 'not-configured',
       rateLimit: 'enforced',
       cacheTtlSeconds: STATS_CACHE_SECONDS,
+      history: redis ? 'redis' : 'memory',
       timestamp: new Date().toISOString()
     },
     200,

@@ -12,6 +12,8 @@
 🖼️ **Docker Stats Card** - Embed user or repository SVG cards
 🏷️ **Shields Badges** - Pulls / stars / repos badges for README
 ⚔️ **Compare Users** - Rank 2–5 accounts by pulls and stars
+📈 **Pull History** - Daily snapshots with growth deltas
+📉 **Trend Cards** - Sparkline SVG + Shields growth badges
 🧩 **Embed Helper** - One API call returns ready-to-paste Markdown
 📦 **Repository Details** - Fetch detailed repository information
 🏷️ **Tag Listing** - List all image tags for a repository
@@ -214,6 +216,30 @@ Return README-ready Markdown/HTML for badges and SVG cards.
 curl "http://localhost:3000/api/embed?username=xuxuclassmate"
 ```
 
+### Pull history & growth
+
+Docker Hub only exposes cumulative pull counts. This gateway snapshots them daily (on request + Vercel cron) so you can show growth.
+
+```bash
+curl "http://localhost:3000/api/user/history?username=xuxuclassmate&days=30"
+curl "http://localhost:3000/api/user/growth?username=xuxuclassmate&days=7"
+curl "http://localhost:3000/api/repo/history?namespace=library&repo=nginx&days=30"
+```
+
+Trend SVG card:
+
+```html
+<img src="https://docker-hub-pull-counter.vercel.app/api/trend?username=xuxuclassmate&days=30" alt="Pull trend" />
+```
+
+Growth badge:
+
+```md
+![Pull Growth](https://img.shields.io/endpoint?url=https%3A%2F%2Fdocker-hub-pull-counter.vercel.app%2Fapi%2Fbadge%2Fgrowth%3Fusername%3Dxuxuclassmate%26days%3D7)
+```
+
+> First day shows `collecting` until a second daily snapshot exists.
+
 ### Shields badges
 
 ```md
@@ -278,6 +304,7 @@ Visit the deployed URL to access the interactive API documentation with:
 | UPSTASH_REDIS_REST_TOKEN | Upstash Redis REST token                                           |
 | USER_STATS_CACHE_TTL_MS  | Optional user-stats cache TTL in milliseconds (default: 120000)    |
 | PUBLIC_BASE_URL          | Public site URL used by `/api/embed` snippets                      |
+| CRON_SECRET              | Optional secret for protecting `/api/internal/snapshot-history`    |
 
 ## 📄 License
 

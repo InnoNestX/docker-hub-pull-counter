@@ -256,6 +256,11 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
     <option value="popular-repos">/api/popular/repos</option>
     <option value="batch-stats">/api/batch/stats</option>
     <option value="badge-pulls">/api/badge/pulls</option>
+    <option value="badge-growth">/api/badge/growth</option>
+    <option value="history">/api/user/history</option>
+    <option value="growth">/api/user/growth</option>
+    <option value="trend">/api/trend</option>
+    <option value="repo-history">/api/repo/history</option>
   </select>
 </div>
 <div id="params-container"></div>
@@ -417,6 +422,45 @@ const endpoints={
     path:'/api/badge/pulls',
     params:[
       {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Shields.io pulls badge',desc_zh:'Shields.io 拉取量徽章'}
+    ]
+  },
+  'badge-growth':{
+    path:'/api/badge/growth',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Shields growth badge',desc_zh:'增长徽章'},
+      {name:'days',label:'Days',type:'number',required:false,placeholder:'7',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'history':{
+    path:'/api/user/history',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Daily snapshots',desc_zh:'每日快照'},
+      {name:'days',label:'Days',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'growth':{
+    path:'/api/user/growth',
+    params:[
+      {name:'username',label:'Username',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Growth summary',desc_zh:'增长摘要'},
+      {name:'days',label:'Days',type:'number',required:false,placeholder:'7',desc_en:'Lookback days',desc_zh:'回溯天数'}
+    ]
+  },
+  'trend':{
+    path:'/api/trend',
+    params:[
+      {name:'username',label:'Username',type:'text',required:false,placeholder:'xuxuclassmate',desc_en:'User trend card',desc_zh:'用户趋势卡片'},
+      {name:'namespace',label:'Namespace',type:'text',required:false,placeholder:'library',desc_en:'Repo trend mode',desc_zh:'仓库趋势模式'},
+      {name:'repo',label:'Repository',type:'text',required:false,placeholder:'nginx',desc_en:'Repo trend mode',desc_zh:'仓库趋势模式'},
+      {name:'days',label:'Days',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'},
+      {name:'style',label:'Style',type:'select',required:false,options:['gradient','minimal','dark','light','github','compact'],desc_en:'Card style',desc_zh:'卡片样式'}
+    ]
+  },
+  'repo-history':{
+    path:'/api/repo/history',
+    params:[
+      {name:'namespace',label:'Namespace',type:'text',required:true,placeholder:'library',desc_en:'Repository namespace',desc_zh:'仓库命名空间'},
+      {name:'repo',label:'Repository',type:'text',required:true,placeholder:'nginx',desc_en:'Repository name',desc_zh:'仓库名称'},
+      {name:'days',label:'Days',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'}
     ]
   }
 };
