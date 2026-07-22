@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Signal Bridge — unified Docker Hub API docs and live transmission console.">
+<meta name="description" content="Signal Bridge — unified Docker Hub API docs and live request console.">
 <meta name="theme-color" content="#070b12">
 <title>Signal Bridge — Docker Hub API</title>
 <link rel="icon" href="https://avatars.githubusercontent.com/u/273979879?v=4" sizes="any" type="image/png">
@@ -197,8 +197,8 @@ button,input,select{font:inherit}
     </div>
   </div>
   <div class="top-actions">
-    <div class="status-chip"><span class="dot"></span><span data-i18n="link-live">Link Active</span></div>
-    <button class="ghost-btn map-toggle" type="button" onclick="toggleMap()" data-i18n="map-toggle">Signals</button>
+    <div class="status-chip"><span class="dot"></span><span data-i18n="link-live">Online</span></div>
+    <button class="ghost-btn map-toggle" type="button" onclick="toggleMap()" data-i18n="map-toggle">Endpoints</button>
     <a class="ghost-btn" href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">GitHub</a>
     <button class="toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
     <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
@@ -207,26 +207,26 @@ button,input,select{font:inherit}
 
 <main class="bridge">
   <aside class="panel signal-map" id="signal-map">
-    <div class="panel-head"><span data-i18n="map-title">Signal Map</span><strong id="signal-count">0</strong></div>
+    <div class="panel-head"><span data-i18n="map-title">Endpoints</span><strong id="signal-count">0</strong></div>
     <div class="panel-body" id="signal-list"></div>
   </aside>
 
   <section class="panel" id="briefing-panel">
-    <div class="panel-head"><span data-i18n="brief-title">Briefing</span><strong data-i18n="brief-sync">Synced</strong></div>
+    <div class="panel-head"><span data-i18n="brief-title">Docs</span><strong data-i18n="brief-sync">Ready</strong></div>
     <div class="panel-body" id="briefing"></div>
   </section>
 
   <section class="panel" id="console-panel">
-    <div class="panel-head"><span data-i18n="console-title">Transmission</span><strong id="console-status">IDLE</strong></div>
+    <div class="panel-head"><span data-i18n="console-title">Request</span><strong id="console-status">IDLE</strong></div>
     <div class="panel-body">
       <div id="params-container"></div>
-      <div class="form-label" data-i18n="url-label">Request Vector</div>
+      <div class="form-label" data-i18n="url-label">Request URL</div>
       <div class="url-box">
         <span class="base" id="url-base">docker-hub-pull-counter.vercel.app</span>
         <span class="rest"><span id="url-path"></span><span id="url-params"></span></span>
         <button class="ghost-btn" type="button" onclick="copyUrl()" data-i18n="copy">Copy</button>
       </div>
-      <button class="transmit" id="send-btn" type="button" onclick="sendRequest()" data-i18n="transmit">Transmit</button>
+      <button class="transmit" id="send-btn" type="button" onclick="sendRequest()" data-i18n="transmit">Send</button>
       <div class="meta-row" id="response-meta" style="display:none">
         <span><span data-i18n="status-label">Status</span> <b id="response-status"></b></span>
         <span><span data-i18n="time-label">Time</span> <b id="response-time-value"></b></span>
@@ -239,7 +239,7 @@ button,input,select{font:inherit}
       <div class="response-stage" id="response-stage">
         <div class="placeholder" id="response-placeholder">
           <div class="glyph">///</div>
-          <div data-i18n="placeholder">Select a signal, set params, then transmit.</div>
+          <div data-i18n="placeholder">Select an endpoint, set params, then send.</div>
         </div>
         <pre id="response-pre" style="display:none"></pre>
         <div class="svg-render" id="svg-render"></div>
@@ -458,20 +458,20 @@ const CATALOG={
 
 const UI={
   en:{
-    'link-live':'Link Active','map-toggle':'Signals','map-title':'Signal Map','brief-title':'Briefing',
-    'brief-sync':'Synced','console-title':'Transmission','url-label':'Request Vector','copy':'Copy',
-    'transmit':'Transmit','status-label':'Status','time-label':'Time','size-label':'Size',
-    'tab-body':'Body','tab-headers':'Headers','placeholder':'Select a signal, set params, then transmit.',
-    'optional':'(optional)','required':'required','example':'Example Payload','params':'Parameters',
-    'sending':'Transmitting…','error-fetch':'Transmission failed'
+    'link-live':'Online','map-toggle':'Endpoints','map-title':'Endpoints','brief-title':'Docs',
+    'brief-sync':'Ready','console-title':'Request','url-label':'Request URL','copy':'Copy',
+    'transmit':'Send','status-label':'Status','time-label':'Time','size-label':'Size',
+    'tab-body':'Body','tab-headers':'Headers','placeholder':'Select an endpoint, set params, then send.',
+    'optional':'(optional)','required':'required','example':'Example Response','params':'Parameters',
+    'sending':'Sending…','error-fetch':'Request failed'
   },
   zh:{
-    'link-live':'链路已接通','map-toggle':'信号表','map-title':'信号图','brief-title':'简报',
-    'brief-sync':'已同步','console-title':'传输台','url-label':'请求矢量','copy':'复制',
-    'transmit':'发射','status-label':'状态','time-label':'耗时','size-label':'大小',
-    'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择信号、填写参数，然后发射。',
-    'optional':'(可选)','required':'必填','example':'示例载荷','params':'参数',
-    'sending':'发射中…','error-fetch':'传输失败'
+    'link-live':'在线','map-toggle':'接口','map-title':'接口列表','brief-title':'说明',
+    'brief-sync':'就绪','console-title':'请求','url-label':'请求 URL','copy':'复制',
+    'transmit':'发送','status-label':'状态','time-label':'耗时','size-label':'大小',
+    'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择接口、填写参数，然后发送。',
+    'optional':'(可选)','required':'必填','example':'示例响应','params':'参数',
+    'sending':'发送中…','error-fetch':'请求失败'
   }
 };
 

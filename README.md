@@ -280,9 +280,9 @@ User stats responses use a short in-memory cache (default 2 minutes) and return 
 
 Open the deployed site to enter **Signal Bridge** — a unified console where documentation and live requests share one screen:
 
-- **Signal Map** — pick any endpoint
-- **Briefing** — path, params, and examples for the selection
-- **Transmission** — fill params, transmit, inspect JSON/SVG responses
+- **Endpoints** — pick any API
+- **Docs** — path, params, and examples for the selection
+- **Request** — fill params, send, inspect JSON/SVG responses
 
 Deep links work via hash, e.g. `/#signal=compare`. Legacy `/api-tester.html` redirects into the bridge.
 
