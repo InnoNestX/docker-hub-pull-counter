@@ -119,7 +119,6 @@ button{font:inherit}
   font-family:'Share Tech Mono',monospace;font-size:1.15rem;text-align:right;color:var(--text);
 }
 .empty{padding:48px 12px;text-align:center;color:var(--dim)}
-.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .foot{
   margin-top:48px;padding-top:18px;border-top:1px solid var(--line);
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--dim);font-size:.8rem;
@@ -146,8 +145,6 @@ button{font:inherit}
       </div>
     </a>
     <div class="actions">
-      <a class="ghost" href="./index.html" data-i18n="nav-console">Console</a>
-      <a class="ghost" href="https://github.com/InnoNestX/docker-hub-pull-counter#readme" target="_blank" rel="noopener" data-i18n="nav-docs">Docs</a>
       <button class="ghost" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
       <button class="ghost" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
     </div>
@@ -165,10 +162,6 @@ button{font:inherit}
         · <span data-i18n="refresh-in">Refresh in</span> <span id="countdown">30s</span>
       </div>
     </div>
-    <div class="toolbar" style="justify-content:center;margin-top:22px">
-      <button class="ghost" type="button" onclick="loadStats(true)" data-i18n="refresh">Refresh</button>
-      <a class="ghost" href="./index.html#signal=user-stats" data-i18n="try-api">Try the API</a>
-    </div>
   </section>
 
   <section class="section" aria-labelledby="top-title">
@@ -182,11 +175,11 @@ button{font:inherit}
   </section>
 
   <footer class="foot">
-    <div>© 2026 InnoNestX · <a href="https://docker-hub-pull-counter.vercel.app/usage.html">docker-hub-pull-counter.vercel.app/usage.html</a></div>
+    <div>© 2026 InnoNestX</div>
     <div>
-      <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">GitHub</a> ·
-      <a href="/api/openapi.json" target="_blank" rel="noopener">OpenAPI</a> ·
-      <a href="./index.html">Console</a>
+      <a href="https://github.com/sponsors/InnoNestX" target="_blank" rel="noopener">Sponsor</a> ·
+      <a href="https://www.buymeacoffee.com/xuxuclassmate" target="_blank" rel="noopener">Coffee</a> ·
+      <a href="https://github.com/InnoNestX/docker-hub-pull-counter/issues" target="_blank" rel="noopener">Issues</a>
     </div>
   </footer>
 </div>
@@ -194,17 +187,17 @@ button{font:inherit}
 <script>
 const UI={
   en:{
-    'brand-sub':'Usage Showcase','nav-console':'Console','nav-docs':'Docs','live':'Live usage',
+    'brand-sub':'Usage Showcase','live':'Live usage',
     'hero-title':'How the gateway is being used','hero-desc':'Total public API calls across this deployment — a simple signal of how often people rely on the Docker Hub stats gateway.',
-    'total-label':'Total API Calls','updated':'Updated','refresh-in':'Refresh in','refresh':'Refresh',
-    'try-api':'Try the API','top-title':'Top Endpoints','top-sub':'Ranked by call volume',
+    'total-label':'Total API Calls','updated':'Updated','refresh-in':'Refresh in',
+    'top-title':'Top Endpoints','top-sub':'Ranked by call volume',
     'loading':'Loading usage…','empty':'No usage data yet','error':'Failed to load usage'
   },
   zh:{
-    'brand-sub':'调用展示','nav-console':'控制台','nav-docs':'文档','live':'实时调用',
+    'brand-sub':'调用展示','live':'实时调用',
     'hero-title':'网关正在被怎样使用','hero-desc':'本部署累计的公开 API 调用次数，用来直观展示项目受欢迎程度与真实使用情况。',
-    'total-label':'接口总调用次数','updated':'更新于','refresh-in':'刷新倒计时','refresh':'刷新',
-    'try-api':'去调用接口','top-title':'热门接口','top-sub':'按调用量排序',
+    'total-label':'接口总调用次数','updated':'更新于','refresh-in':'刷新倒计时',
+    'top-title':'热门接口','top-sub':'按调用量排序',
     'loading':'正在加载调用数据…','empty':'暂无调用数据','error':'调用数据加载失败'
   }
 };
