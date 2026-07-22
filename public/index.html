@@ -442,7 +442,7 @@ const CATALOG={
     title_en:'User History',title_zh:'用户历史',
     summary_en:'Daily snapshots with pull/star deltas for a user.',
     summary_zh:'用户每日快照与拉取/星标增量。',
-    example:'{\n  "success": true,\n  "points": [],\n  "growth": {"pulls": 1200}\n}',
+    example:'{\n  "success": true,\n  "days": 7,\n  "from": "2026-07-16",\n  "to": "2026-07-22",\n  "sampleCount": 2,\n  "points": [{"date":"2026-07-16","totalPulls":50000},{"date":"2026-07-22","totalPulls":54709}],\n  "growth": {"pulls": 4709, "from": "2026-07-16", "to": "2026-07-22"}\n}',
     params:[
       {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
       {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'30',desc_en:'Lookback days',desc_zh:'回溯天数'}
@@ -451,9 +451,9 @@ const CATALOG={
   'growth':{
     path:'/api/user/growth',method:'GET',
     title_en:'User Growth',title_zh:'用户增长',
-    summary_en:'Compact growth summary for a time window.',
-    summary_zh:'时间窗口内的增长摘要。',
-    example:'{\n  "success": true,\n  "growth": {"pulls": 800, "pullPercent": 2.1}\n}',
+    summary_en:'Compact growth summary for a requested day window. from/to are the window bounds; baselineDate/latestDate are actual snapshots used.',
+    summary_zh:'指定天数窗口内的增长摘要。from/to 为请求窗口；baselineDate/latestDate 为实际用于对比的快照日期。',
+    example:'{\n  "success": true,\n  "days": 7,\n  "from": "2026-07-16",\n  "to": "2026-07-22",\n  "insufficientHistory": true,\n  "growth": {"pulls": 0, "from": "2026-07-16", "to": "2026-07-22", "baselineDate": "2026-07-22", "latestDate": "2026-07-22"},\n  "sampleCount": 1\n}',
     params:[
       {name:'username',label_en:'Username',label_zh:'用户名',type:'text',required:true,placeholder:'xuxuclassmate',desc_en:'Docker Hub username',desc_zh:'Docker Hub 用户名'},
       {name:'days',label_en:'Days',label_zh:'天数',type:'number',required:false,placeholder:'7',desc_en:'Lookback days',desc_zh:'回溯天数'}

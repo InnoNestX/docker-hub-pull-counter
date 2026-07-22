@@ -158,8 +158,8 @@ async function loadUserStats(username, options = {}) {
     dockerClient,
     forceRefresh: Boolean(options.forceRefresh)
   });
-  // Fire-and-forget daily snapshot so growth charts can build over time
-  recordUserSnapshot(redis, result.stats).catch(() => {});
+  // Await daily snapshot so history/growth reads see today's sample
+  await recordUserSnapshot(redis, result.stats).catch(() => {});
   return result;
 }
 
@@ -679,9 +679,16 @@ app.get('/api/user/growth', async (c) => {
         success: true,
         username: history.username,
         days: history.days,
+        from: history.from,
+        to: history.to,
         insufficientHistory: history.insufficientHistory,
+        message: history.insufficientHistory
+          ? `Need at least 2 daily snapshots in this window. Collected ${history.sampleCount} so far${history.growth.latestDate ? ` (latest: ${history.growth.latestDate})` : ''}.`
+          : undefined,
         growth: history.growth,
-        latest: history.points[history.points.length - 1] || null,
+        latest: history.points.filter((point) => point.recorded).slice(-1)[0]
+          || history.points[history.points.length - 1]
+          || null,
         sampleCount: history.sampleCount,
         timestamp: new Date().toISOString()
       },

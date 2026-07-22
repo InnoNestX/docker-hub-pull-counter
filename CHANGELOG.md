@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.3] - 2026-07-22
+
+### Fixed
+- `/api/user/growth` and history series now use the requested day window for `from`/`to`
+- Growth `pullPercent` is `null` until at least 2 daily snapshots exist
+- Snapshot recording is awaited before history/growth reads to avoid empty races
+
+### Changed
+- History timelines densify from the first recorded sample through today for trend charts
+
 ## [2.3.2] - 2026-07-22
 
 ### Added
