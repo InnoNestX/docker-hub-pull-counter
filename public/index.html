@@ -104,16 +104,18 @@ button,input,select{font:inherit}
 .brand-title{font-size:1.05rem;font-weight:700;letter-spacing:.04em}
 .brand-title span{color:var(--cyan)}
 .brand-sub{font-size:.72rem;color:var(--dim);letter-spacing:.18em;text-transform:uppercase}
-.top-actions{display:flex;align-items:center;gap:8px}
-.toggle-btn,.ghost-btn{
-  background:transparent;border:1px solid var(--line);color:var(--dim);padding:7px 12px;
-  cursor:pointer;min-width:42px;height:34px;display:inline-flex;align-items:center;justify-content:center;
+.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.toggle-btn,.ghost-btn,.usage-pulse{
+  background:transparent;border:1px solid var(--line);color:var(--dim);
+  padding:0 12px;height:34px;min-height:34px;min-width:42px;font-size:.8125rem;line-height:1;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;
   transition:.2s border-color,.2s color,.2s box-shadow;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  text-decoration:none;
 }
-.toggle-btn:hover,.ghost-btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow)}
+.toggle-btn:hover,.ghost-btn:hover,.usage-pulse:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow);text-decoration:none}
 .status-chip{
-  display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);
-  color:var(--dim);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:8px;padding:0 12px;height:34px;border:1px solid var(--line);
+  color:var(--dim);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;box-sizing:border-box;
 }
 .status-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
@@ -220,13 +222,6 @@ button,input,select{font:inherit}
   color:var(--dim);font-size:.75rem;flex-shrink:0;
 }
 .foot a{color:var(--dim)}.foot a:hover{color:var(--cyan)}
-.usage-pulse{
-  display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid var(--line);
-  color:var(--dim);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
-  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
-  transition:.2s;
-}
-.usage-pulse:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow)}
 .usage-pulse b{font-family:'Share Tech Mono',monospace;color:var(--cyan);font-weight:600;letter-spacing:0;text-transform:none;font-size:.9rem}
 .map-toggle{display:none}
 @media(max-width:1100px){

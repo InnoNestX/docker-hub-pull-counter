@@ -53,18 +53,19 @@ button{font:inherit}
   display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:48px;
 }
 .brand{display:flex;align-items:center;gap:12px}
-.brand img{width:36px;height:36px;border-radius:8px;border:1px solid var(--line)}
+.brand img{width:34px;height:34px;border-radius:8px;border:1px solid var(--line)}
 .brand-title{font-size:1.05rem;font-weight:700;letter-spacing:.04em}
 .brand-title span{color:var(--cyan)}
 .brand-sub{font-size:.7rem;color:var(--dim);letter-spacing:.16em;text-transform:uppercase}
 .actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ghost{
-  background:transparent;border:1px solid var(--line);color:var(--dim);padding:8px 14px;
-  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:36px;
+  background:transparent;border:1px solid var(--line);color:var(--dim);
+  padding:0 12px;height:34px;min-height:34px;min-width:42px;font-size:.8125rem;line-height:1;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
   clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
-  transition:.2s;
+  transition:.2s border-color,.2s color,.2s box-shadow;text-decoration:none;
 }
-.ghost:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px var(--glow)}
+.ghost:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow);text-decoration:none}
 .hero{text-align:center;padding:48px 12px 56px}
 .kicker{
   display:inline-flex;align-items:center;gap:8px;font-size:.75rem;letter-spacing:.22em;
