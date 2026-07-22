@@ -44,19 +44,21 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .hero p{font-size:1.125rem;color:var(--text-dim);max-width:600px}
 .hero-note{margin-top:24px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:0.9rem;color:var(--text-dim);max-width:600px;display:flex;align-items:center;gap:10px}
 .hero-note .icon{font-size:1.1rem}
-.main{display:grid;grid-template-columns:280px 1fr;gap:48px;padding:48px 0}
-.sidebar{position:sticky;top:80px;height:fit-content}
+.main{display:grid;grid-template-columns:280px minmax(0,1fr);gap:48px;padding:48px 0;align-items:start}
+.sidebar{position:sticky;top:80px;align-self:start;max-height:calc(100vh - 96px);overflow-y:auto;z-index:10}
 .nav-section{margin-bottom:32px}
+.nav-section:last-child{margin-bottom:0}
 .nav-title{font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px}
 .nav-item{display:block;padding:8px 12px;margin:4px -12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.875rem;transition:all 0.2s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
 .nav-item:hover{background:var(--surface);color:var(--text)}
 .nav-item.active{background:var(--surface);color:var(--accent)}
-.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:16px;z-index:99;max-height:400px;overflow-y:auto}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);padding:16px;z-index:99;max-height:70vh;overflow-y:auto}
 .mobile-menu.active{display:block}
 .mobile-nav-item{display:block;padding:12px 16px;margin:4px 0;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:0.9rem;transition:all 0.2s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
 .mobile-nav-item:hover{background:var(--bg);color:var(--text)}
 .mobile-nav-item.active{background:var(--bg);color:var(--accent)}
-.content{min-width:0}
+.mobile-nav-divider{height:1px;background:var(--border);margin:12px 0}
+.content{min-width:0;padding-bottom:min(50vh,420px)}
 .endpoint{margin-bottom:64px;scroll-margin-top:100px}
 .endpoint-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .method{font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:600;padding:4px 10px;border-radius:6px;text-transform:uppercase}
@@ -88,13 +90,20 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 .footer-links a:hover{color:var(--accent)}
 .footer-links .icon{font-size:1rem}
 .footer-bottom{max-width:1200px;margin:0 auto;padding-top:24px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:0.8rem}
-@media(max-width:1024px){.main{grid-template-columns:1fr}.sidebar{display:none}.hero h1{font-size:2rem}}
-@media(max-width:768px){.menu-toggle{display:block}.header-links{display:none}
+@media(max-width:1024px){
+  .main{grid-template-columns:220px minmax(0,1fr);gap:28px}
+  .hero h1{font-size:2rem}
+}
+@media(max-width:768px){
+  .menu-toggle{display:block}
+  .header-links{display:none}
   .container{padding:0 16px}
   .hero{padding:48px 0 32px}
   .hero h1{font-size:1.75rem}
   .hero p{font-size:1rem}
-  .main{padding:32px 0}
+  .main{grid-template-columns:1fr;padding:32px 0}
+  .sidebar{display:none}
+  .content{padding-bottom:32px}
   .endpoint{margin-bottom:40px}
   .endpoint h2{font-size:1.25rem}
   .param-row{grid-template-columns:1fr;gap:8px}
@@ -136,6 +145,13 @@ header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:
 <nav class="mobile-menu">
   <a class="mobile-nav-item active" href="index.html" data-i18n="nav-docs">Documentation</a>
   <a class="mobile-nav-item" href="api-tester.html" data-i18n="nav-tester">API Tester</a>
+  <div class="mobile-nav-divider"></div>
+  <div class="nav-title" style="padding:0 16px" data-i18n="nav-quick">Quick Links</div>
+  <a class="mobile-nav-item" href="#user-stats" data-i18n="nav-user-stats" onclick="toggleMenu()">User Statistics</a>
+  <a class="mobile-nav-item" href="#docker-stats-card" data-i18n="nav-docker-stats" onclick="toggleMenu()">Docker Stats Card</a>
+  <a class="mobile-nav-item" href="#repo-details" data-i18n="nav-repo-details" onclick="toggleMenu()">Repository Details</a>
+  <a class="mobile-nav-item" href="#repo-tags" data-i18n="nav-repo-tags" onclick="toggleMenu()">Repository Tags</a>
+  <a class="mobile-nav-item" href="#search" data-i18n="nav-search" onclick="toggleMenu()">Search</a>
 </nav>
 <main>
 <section class="hero"><div class="container">
