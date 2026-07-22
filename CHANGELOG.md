@@ -2,42 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.0.0] - 2025-XX-XX
-
-### Added
-- **Frontend Split**: Separated documentation from API testing
-  - `/public/index.html` - Pure API documentation (no interactive testing)
-  - `/public/api-tester.html` - Unified API testing tool with:
-    - Endpoint selector dropdown
-    - Dynamic parameter forms
-    - JSON syntax highlighting
-    - cURL generator
-    - Request history (localStorage)
-- **OpenAPI Specification**: `GET /api/openapi.json` returns complete OpenAPI 3.0 spec
-- **Rate Limiting Headers**: All API responses include `X-RateLimit-*` headers
-  - `X-RateLimit-Limit`: Maximum requests per window
-  - `X-RateLimit-Remaining`: Remaining requests
-  - `X-RateLimit-Reset`: Unix timestamp when window resets
-  - Window: 1 hour (100 requests for unauthenticated, 200 for authenticated)
-- **Batch Stats Endpoint**: `GET /api/batch/stats?usernames=user1,user2,...` - Fetch stats for up to 10 users in one request
-- **Popular Repos Endpoint**: `GET /api/popular/repos?page=1&page_size=25` - Browse popular Docker Hub repositories
-- **Error Classes**: Custom error hierarchy in `lib/errors.js`
-  - `ValidationError`, `NotFoundError`, `RateLimitError`, `DockerHubError`, etc.
-- **Rate Limiter Module**: `lib/rate-limiter.js` with configurable limits
-- **Docker Client Module**: `lib/docker-client.js` extracted Docker Hub API client
-- **SVG Utils Module**: `lib/svg-utils.js` extracted SVG generation utilities
+## [2.0.1] - 2026-07-22
 
 ### Changed
-- **Improved Error Messages**: More descriptive error messages with hints
-- **Response Enhancement**: All API responses now include rate limit headers
-- **Stats Endpoint**: Now tracks calls to new endpoints (batch, popular, openapi)
-- **User Stats Freshness**: User statistics now fetch fresh Docker Hub data on each request instead of reading memory or Redis snapshots
+- Wired `server.js` to shared modules (`lib/rate-limiter.js`, `lib/docker-client.js`, `lib/openapi.js`)
+- User stats `fields` projection now returns only requested fields
+- Cleaned setup docs and removed unused duplicate OpenAPI / type stub files
 
 ### Fixed
-- Search endpoint now uses correct Docker Hub API parameter naming
+- Restored `getUserFacingStatsError` import used by stats card endpoints
+- Corrected Docker Hub auth token cache key in the Docker client
+
+## [2.0.0] - 2026-05-02
+
+### Added
+- Frontend split between API docs (`public/index.html`) and tester (`public/api-tester.html`)
+- OpenAPI specification at `GET /api/openapi.json`
+- Rate limit headers on API responses
+- Batch stats and popular repos endpoints
+- Shared modules for rate limiting, Docker Hub client, errors, and SVG cards
+
+### Changed
+- User statistics always fetch fresh Docker Hub data
 
 ### Removed
-- Obsolete scheduled user-stat refresh endpoint
+- Scheduled user-stat refresh endpoint
 - User statistics snapshot caching in memory and Redis
 
 ## [1.0.0] - 2025-04-13
