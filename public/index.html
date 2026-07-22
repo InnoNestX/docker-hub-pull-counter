@@ -228,12 +228,6 @@ button,input,select{font:inherit}
 }
 .usage-pulse:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow)}
 .usage-pulse b{font-family:'Share Tech Mono',monospace;color:var(--cyan);font-weight:600;letter-spacing:0;text-transform:none;font-size:.9rem}
-.seo-strip{
-  flex-shrink:0;border-top:1px solid var(--line);padding:10px 20px;background:rgba(0,0,0,.12);
-}
-.seo-strip p{font-size:.75rem;color:var(--dim);line-height:1.5;max-width:1100px;margin:0 0 6px}
-.seo-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.75rem}
-.seo-links a{color:var(--cyan)}
 .map-toggle{display:none}
 @media(max-width:1100px){
   .shell{height:auto;max-height:none;overflow:visible}
@@ -249,7 +243,6 @@ button,input,select{font:inherit}
 @media(max-width:640px){
   .topbar{padding:12px}.brand-sub{display:none}.bridge{padding:10px;gap:10px}
   .response-stage{max-height:50vh}
-  .usage-pulse span[data-i18n="stats-pulse"]{display:none}
 }
 </style>
 </head>
@@ -270,7 +263,6 @@ button,input,select{font:inherit}
       <b id="total-calls">—</b>
     </a>
     <button class="ghost-btn map-toggle" type="button" onclick="toggleMap()" data-i18n="map-toggle">Endpoints</button>
-    <a class="ghost-btn" href="./usage.html" data-i18n="nav-usage">Usage</a>
     <a class="ghost-btn" href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">GitHub</a>
     <button class="toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
     <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
@@ -319,21 +311,6 @@ button,input,select{font:inherit}
     </div>
   </section>
 </main>
-
-<footer class="seo-strip">
-  <p data-i18n="seo-blurb">
-    Query Docker Hub user and repository statistics without writing your own scraper. Live deployment:
-    https://docker-hub-pull-counter.vercel.app — use Signal Bridge to read endpoint docs and send requests,
-    or open the GitHub README and OpenAPI spec for full reference.
-  </p>
-  <div class="seo-links">
-    <a href="https://docker-hub-pull-counter.vercel.app/">Live demo</a>
-    <a href="./usage.html">Usage showcase</a>
-    <a href="https://github.com/InnoNestX/docker-hub-pull-counter#readme" target="_blank" rel="noopener">Full documentation (README)</a>
-    <a href="/api/openapi.json" target="_blank" rel="noopener">OpenAPI specification</a>
-    <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">Source on GitHub</a>
-  </div>
-</footer>
 
 <footer class="foot">
   <div>© 2026 InnoNestX · Signal Bridge</div>
@@ -551,8 +528,7 @@ const UI={
     'tab-body':'Body','tab-headers':'Headers','placeholder':'Select an endpoint, set params, then send.',
     'optional':'(optional)','required':'required','example':'Example Response','params':'Parameters',
     'sending':'Sending…','error-fetch':'Request failed',
-    'stats-pulse':'Calls','nav-usage':'Usage',
-    'seo-blurb':'Query Docker Hub user and repository statistics without writing your own scraper. Live deployment: https://docker-hub-pull-counter.vercel.app — use Signal Bridge to read endpoint docs and send requests, or open the GitHub README and OpenAPI spec for full reference.'
+    'stats-pulse':'Calls'
   },
   zh:{
     'link-live':'在线','map-toggle':'接口','map-title':'接口列表','brief-title':'说明',
@@ -561,8 +537,7 @@ const UI={
     'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择接口、填写参数，然后发送。',
     'optional':'(可选)','required':'必填','example':'示例响应','params':'参数',
     'sending':'发送中…','error-fetch':'请求失败',
-    'stats-pulse':'调用','nav-usage':'调用展示',
-    'seo-blurb':'无需自建爬虫即可查询 Docker Hub 用户与仓库统计。在线地址：https://docker-hub-pull-counter.vercel.app — 可在 Signal Bridge 查看接口说明并发送请求，完整文档见 GitHub README 与 OpenAPI。'
+    'stats-pulse':'调用'
   }
 };
 
