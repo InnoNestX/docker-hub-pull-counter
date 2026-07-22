@@ -118,8 +118,8 @@ button,input,select{font:inherit}
 .status-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .bridge{
-  flex:1;display:grid;grid-template-columns:240px minmax(0,1.05fr) minmax(320px,.95fr);
-  gap:14px;padding:14px;min-height:0;overflow:hidden;
+  flex:1;display:grid;grid-template-columns:260px minmax(0,1.1fr) minmax(340px,1fr);
+  gap:18px;padding:18px 20px 20px;min-height:0;overflow:hidden;
 }
 .panel{
   position:relative;background:var(--panel);border:1px solid var(--line);min-height:0;
@@ -220,32 +220,18 @@ button,input,select{font:inherit}
   color:var(--dim);font-size:.75rem;flex-shrink:0;
 }
 .foot a{color:var(--dim)}.foot a:hover{color:var(--cyan)}
-.usage-deck{
-  flex-shrink:0;margin:0 14px;padding:10px 14px;border:1px solid var(--line);background:var(--panel);
-  display:grid;grid-template-columns:minmax(160px,220px) minmax(0,1fr) auto;gap:14px;align-items:center;
-  position:relative;
+.usage-pulse{
+  display:inline-flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid var(--line);
+  color:var(--dim);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  transition:.2s;
 }
-.usage-deck::before,.usage-deck::after{content:"";position:absolute;width:10px;height:10px;border-color:var(--amber);border-style:solid;pointer-events:none}
-.usage-deck::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
-.usage-deck::after{right:-1px;bottom:-1px;border-width:0 2px 2px 0}
-.usage-total-label{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
-.usage-total-value{font-family:'Share Tech Mono',monospace;font-size:1.85rem;font-weight:700;color:var(--cyan);line-height:1;letter-spacing:.02em}
-.usage-chart{min-width:0}
-.usage-chart-title{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
-.usage-bars{display:flex;flex-direction:column;gap:4px}
-.usage-bar-row{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;font-size:.72rem}
-.usage-bar-label{font-family:'Share Tech Mono',monospace;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.usage-bar-track{height:6px;background:rgba(61,231,201,.08);border:1px solid var(--line);position:relative}
-.usage-bar-fill{height:100%;background:linear-gradient(90deg,rgba(61,231,201,.35),var(--cyan));box-shadow:0 0 8px var(--glow)}
-.usage-bar-value{font-family:'Share Tech Mono',monospace;color:var(--text);text-align:right}
-.usage-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:.72rem;color:var(--dim);text-align:right}
-.usage-meta button{font-size:.72rem;padding:5px 10px;min-width:auto;height:auto}
-.usage-empty{color:var(--dim);font-size:.8rem;padding:6px 0}
+.usage-pulse:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px var(--glow)}
+.usage-pulse b{font-family:'Share Tech Mono',monospace;color:var(--cyan);font-weight:600;letter-spacing:0;text-transform:none;font-size:.9rem}
 .seo-strip{
-  flex-shrink:0;border-top:1px solid var(--line);padding:12px 20px 8px;background:rgba(0,0,0,.12);
+  flex-shrink:0;border-top:1px solid var(--line);padding:10px 20px;background:rgba(0,0,0,.12);
 }
-.seo-strip h1{font-size:.95rem;font-weight:600;margin-bottom:6px}
-.seo-strip p{font-size:.78rem;color:var(--dim);line-height:1.55;max-width:1100px;margin-bottom:8px}
+.seo-strip p{font-size:.75rem;color:var(--dim);line-height:1.5;max-width:1100px;margin:0 0 6px}
 .seo-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.75rem}
 .seo-links a{color:var(--cyan)}
 .map-toggle{display:none}
@@ -253,8 +239,6 @@ button,input,select{font:inherit}
   .shell{height:auto;max-height:none;overflow:visible}
   .bridge{grid-template-columns:1fr;grid-template-rows:auto;overflow:visible;height:auto}
   .panel{height:auto}
-  .usage-deck{grid-template-columns:1fr;margin:0 10px}
-  .usage-meta{align-items:flex-start;text-align:left}
   .map-toggle{display:inline-flex}
   .signal-map{display:none;max-height:42vh}
   .signal-map.open{display:flex}
@@ -265,7 +249,7 @@ button,input,select{font:inherit}
 @media(max-width:640px){
   .topbar{padding:12px}.brand-sub{display:none}.bridge{padding:10px;gap:10px}
   .response-stage{max-height:50vh}
-  .usage-bar-row{grid-template-columns:90px 1fr 48px}
+  .usage-pulse span[data-i18n="stats-pulse"]{display:none}
 }
 </style>
 </head>
@@ -281,28 +265,17 @@ button,input,select{font:inherit}
   </div>
   <div class="top-actions">
     <div class="status-chip"><span class="dot"></span><span data-i18n="link-live">Online</span></div>
+    <a class="usage-pulse" href="./usage.html" title="API usage showcase">
+      <span data-i18n="stats-pulse">Calls</span>
+      <b id="total-calls">—</b>
+    </a>
     <button class="ghost-btn map-toggle" type="button" onclick="toggleMap()" data-i18n="map-toggle">Endpoints</button>
+    <a class="ghost-btn" href="./usage.html" data-i18n="nav-usage">Usage</a>
     <a class="ghost-btn" href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">GitHub</a>
     <button class="toggle-btn" id="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme"></button>
     <button class="toggle-btn" id="lang-toggle" type="button" onclick="toggleLang()">中文</button>
   </div>
 </header>
-
-<section class="usage-deck" id="usage-deck" aria-label="API usage statistics">
-  <div>
-    <div class="usage-total-label" data-i18n="stats-total-label">Total API Calls</div>
-    <div class="usage-total-value" id="total-calls">—</div>
-  </div>
-  <div class="usage-chart">
-    <div class="usage-chart-title" data-i18n="stats-endpoints">Top Endpoints</div>
-    <div class="usage-bars" id="usage-bars"><div class="usage-empty" data-i18n="stats-loading">Loading usage…</div></div>
-  </div>
-  <div class="usage-meta">
-    <div><span data-i18n="stats-updated">Updated</span>: <span id="stats-updated">—</span></div>
-    <div><span data-i18n="stats-refresh-in">Refresh in</span> <span id="stats-countdown">30s</span></div>
-    <button class="ghost-btn" type="button" onclick="loadStats(true)" data-i18n="stats-refresh">Refresh</button>
-  </div>
-</section>
 
 <main class="bridge">
   <aside class="panel signal-map" id="signal-map">
@@ -348,7 +321,6 @@ button,input,select{font:inherit}
 </main>
 
 <footer class="seo-strip">
-  <h1>Docker Hub API Gateway — free pull counts, stats cards, and badges</h1>
   <p data-i18n="seo-blurb">
     Query Docker Hub user and repository statistics without writing your own scraper. Live deployment:
     https://docker-hub-pull-counter.vercel.app — use Signal Bridge to read endpoint docs and send requests,
@@ -356,12 +328,10 @@ button,input,select{font:inherit}
   </p>
   <div class="seo-links">
     <a href="https://docker-hub-pull-counter.vercel.app/">Live demo</a>
+    <a href="./usage.html">Usage showcase</a>
     <a href="https://github.com/InnoNestX/docker-hub-pull-counter#readme" target="_blank" rel="noopener">Full documentation (README)</a>
     <a href="/api/openapi.json" target="_blank" rel="noopener">OpenAPI specification</a>
     <a href="https://github.com/InnoNestX/docker-hub-pull-counter" target="_blank" rel="noopener">Source on GitHub</a>
-    <a href="/#signal=user-stats">User stats API</a>
-    <a href="/#signal=docker-stats">SVG stats card</a>
-    <a href="/#signal=badge-pulls">Shields pulls badge</a>
   </div>
 </footer>
 
@@ -581,9 +551,7 @@ const UI={
     'tab-body':'Body','tab-headers':'Headers','placeholder':'Select an endpoint, set params, then send.',
     'optional':'(optional)','required':'required','example':'Example Response','params':'Parameters',
     'sending':'Sending…','error-fetch':'Request failed',
-    'stats-total-label':'Total API Calls','stats-endpoints':'Top Endpoints','stats-updated':'Updated',
-    'stats-refresh-in':'Refresh in','stats-refresh':'Refresh','stats-loading':'Loading usage…',
-    'stats-error':'Failed to load usage','stats-empty':'No usage data yet',
+    'stats-pulse':'Calls','nav-usage':'Usage',
     'seo-blurb':'Query Docker Hub user and repository statistics without writing your own scraper. Live deployment: https://docker-hub-pull-counter.vercel.app — use Signal Bridge to read endpoint docs and send requests, or open the GitHub README and OpenAPI spec for full reference.'
   },
   zh:{
@@ -593,9 +561,7 @@ const UI={
     'tab-body':'响应体','tab-headers':'响应头','placeholder':'选择接口、填写参数，然后发送。',
     'optional':'(可选)','required':'必填','example':'示例响应','params':'参数',
     'sending':'发送中…','error-fetch':'请求失败',
-    'stats-total-label':'接口总调用次数','stats-endpoints':'热门接口','stats-updated':'更新于',
-    'stats-refresh-in':'刷新倒计时','stats-refresh':'刷新','stats-loading':'正在加载调用数据…',
-    'stats-error':'调用数据加载失败','stats-empty':'暂无调用数据',
+    'stats-pulse':'调用','nav-usage':'调用展示',
     'seo-blurb':'无需自建爬虫即可查询 Docker Hub 用户与仓库统计。在线地址：https://docker-hub-pull-counter.vercel.app — 可在 Signal Bridge 查看接口说明并发送请求，完整文档见 GitHub README 与 OpenAPI。'
   }
 };
@@ -626,7 +592,7 @@ function setLang(next){
   localStorage.setItem('lang',next);
   applyChrome();
   renderAll();
-  loadStats(false);
+  loadStats();
 }
 function toggleLang(){setLang(lang==='en'?'zh':'en');}
 function getTheme(){
@@ -888,64 +854,27 @@ function bootFromHash(){
   if(match&&CATALOG[match[1]])currentSignal=match[1];
 }
 
-let statsSeconds=30;
 let statsTimer=null;
 
-async function loadStats(manual=false){
-  const bars=document.getElementById('usage-bars');
+async function loadStats(){
   const totalEl=document.getElementById('total-calls');
-  if(manual&&bars)bars.innerHTML=`<div class="usage-empty">${t('stats-loading')}</div>`;
+  if(!totalEl)return;
   try{
     const res=await fetch('/api/stats');
     if(!res.ok)throw new Error('HTTP '+res.status);
     const data=await res.json();
-    const total=Number(data.totalCalls||0);
-    totalEl.textContent=total.toLocaleString(lang==='zh'?'zh-CN':'en-US');
-    const updated=data.lastUpdated?new Date(data.lastUpdated):null;
-    document.getElementById('stats-updated').textContent=updated
-      ?updated.toLocaleString(lang==='zh'?'zh-CN':'en-US')
-      :'—';
-    const by=data.byEndpoint||{};
-    const ranked=Object.keys(by)
-      .map(name=>({name,calls:Number(by[name]||0)}))
-      .filter(x=>x.calls>0)
-      .sort((a,b)=>b.calls-a.calls)
-      .slice(0,6);
-    if(!ranked.length){
-      bars.innerHTML=`<div class="usage-empty">${t('stats-empty')}</div>`;
-    }else{
-      const max=Math.max(...ranked.map(x=>x.calls),1);
-      bars.innerHTML=ranked.map(x=>`
-        <div class="usage-bar-row" title="/api/${x.name}">
-          <div class="usage-bar-label">/${x.name}</div>
-          <div class="usage-bar-track"><div class="usage-bar-fill" style="width:${(x.calls/max*100).toFixed(1)}%"></div></div>
-          <div class="usage-bar-value">${x.calls.toLocaleString(lang==='zh'?'zh-CN':'en-US')}</div>
-        </div>`).join('');
-    }
-    statsSeconds=30;
+    totalEl.textContent=Number(data.totalCalls||0).toLocaleString(lang==='zh'?'zh-CN':'en-US');
   }catch(err){
     totalEl.textContent='—';
-    bars.innerHTML=`<div class="usage-empty">${t('stats-error')}</div>`;
   }
-}
-
-function tickStatsCountdown(){
-  const el=document.getElementById('stats-countdown');
-  if(!el)return;
-  el.textContent=statsSeconds+'s';
-  if(statsSeconds<=0){
-    loadStats(false);
-    return;
-  }
-  statsSeconds-=1;
 }
 
 lang=localStorage.getItem('lang')==='zh'?'zh':'en';
 bootFromHash();
 renderAll();
-loadStats(false);
+loadStats();
 if(statsTimer)clearInterval(statsTimer);
-statsTimer=setInterval(tickStatsCountdown,1000);
+statsTimer=setInterval(loadStats,30000);
 window.addEventListener('hashchange',()=>{
   const match=location.hash.match(/signal=([a-z0-9-]+)/i);
   if(match&&CATALOG[match[1]]&&match[1]!==currentSignal)setSignal(match[1],false);

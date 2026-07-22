@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.2] - 2026-07-22
+
+### Added
+- Dedicated usage showcase page at `/usage.html` for total calls and top endpoints
+
+### Changed
+- Signal Bridge keeps only a compact live-calls entry, giving the console more breathing room
+
 ## [2.3.1] - 2026-07-22
 
 ### Added
