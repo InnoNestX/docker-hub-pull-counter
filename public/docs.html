@@ -560,6 +560,25 @@ function render(){
       <pre class="example">${ep.example}</pre>
     </article>`;
   }).join('');
+
+  scrollToHash();
+}
+
+function scrollToHash(retries=30){
+  const raw=location.hash||'';
+  const id=decodeURIComponent(raw.replace(/^#/, '')).trim();
+  if(!id)return;
+  const el=document.getElementById(id);
+  if(el){
+    el.scrollIntoView({behavior:'auto',block:'start'});
+    document.querySelectorAll('.toc a').forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href')==='#'+id);
+    });
+    // Re-assert after layout/fonts settle
+    requestAnimationFrame(()=>el.scrollIntoView({behavior:'auto',block:'start'}));
+    return;
+  }
+  if(retries>0)requestAnimationFrame(()=>scrollToHash(retries-1));
 }
 
 function toggleLang(){
@@ -576,10 +595,8 @@ function toggleTheme(){
 }
 
 render();
-if(location.hash){
-  const el=document.querySelector(location.hash);
-  if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),50);
-}
+window.addEventListener('hashchange',()=>scrollToHash());
+window.addEventListener('load',()=>scrollToHash());
 </script>
 </body>
 </html>

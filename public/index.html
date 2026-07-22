@@ -642,7 +642,7 @@ function renderBriefing(){
     </div>
     <h2 class="brief-title">${L(item,'title_en','title_zh')}</h2>
     <p class="brief-desc">${L(item,'summary_en','summary_zh')}</p>
-    <p class="brief-desc" style="margin-top:-8px"><a href="./docs.html#${currentSignal}">${lang==='zh'?'打开完整接口文档 →':'Open full API docs →'}</a></p>
+    <p class="brief-desc" style="margin-top:-8px"><a href="./docs.html#${encodeURIComponent(currentSignal)}">${lang==='zh'?'打开完整接口文档 →':'Open full API docs →'}</a></p>
     <div class="form-label">${t('params')}</div>
     <table class="param-table">
       <thead><tr><th>Name</th><th>Desc</th><th>Type</th></tr></thead>
